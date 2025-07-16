@@ -1,0 +1,9 @@
+name: test_prompt_creation
+type: prompt
+version: 1.0.0
+description: Testing prompt creation workflow
+mixins: []
+components: []
+variables: {}
+metadata:
+  category: test
