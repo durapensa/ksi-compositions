@@ -4,7 +4,7 @@ version: 1.0.0
 description: Base rewriter judge for improving prompts based on analysis
 author: ksi_system
 
-extends: base_single_agent
+extends: system/single_agent
 model: claude-cli/sonnet
 
 prompt: |

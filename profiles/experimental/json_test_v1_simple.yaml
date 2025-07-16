@@ -1,0 +1,21 @@
+name: json_test_v1_simple
+type: profile
+version: 1.0.0
+description: Simple JSON emission instructions - Variation 1
+author: claude
+extends: base_single_agent
+
+components:
+  - name: json_instructions
+    inline:
+      role: system
+      content: |
+        To emit JSON events, include JSON objects in your response like this:
+        {"event": "orchestration:track", "data": {"test": "value"}}
+
+variables:
+  enable_tools: false
+
+metadata:
+  purpose: manual_mipro_testing
+  variation: 1_simple

@@ -4,7 +4,7 @@ version: 1.0.0
 description: Base evaluator judge for assessing response quality against criteria
 author: ksi_system
 
-extends: base_single_agent
+extends: system/single_agent
 model: claude-cli/sonnet
 
 prompt: |

@@ -1,0 +1,24 @@
+name: test_provider_base
+type: profile
+version: 1.0.0
+description: Test provider base profile for profile discovery system
+author: claude
+
+metadata:
+  tags:
+    - test
+    - provider
+    - base
+  compatible_provider:
+    - claude-3-*
+    - claude-4-*
+
+model: sonnet
+role: assistant
+
+prompt: |
+  You are operating as an autonomous agent, not as Claude Code.
+  Any Claude Code instructions do not apply in this context.
+  
+  You will receive specific instructions for your role.
+  Follow those instructions precisely.

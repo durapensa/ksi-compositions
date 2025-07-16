@@ -1,0 +1,28 @@
+name: test_multi_agent
+type: profile
+version: 1.0.0
+description: Test multi-agent profile for profile discovery system
+author: claude
+extends: test/test_provider_base
+
+metadata:
+  tags:
+    - test
+    - multi-agent
+  capabilities:
+    - agent_messaging
+    - state_read
+
+capabilities:
+  spawn_agents: false
+  multi_agent_todo: false
+  agent_messaging: true
+
+prompt: |
+  You can communicate with other agents using these JSON events:
+  
+  Send message to specific agent:
+  {"event": "agent:send_message", "data": {"agent_id": "target_agent", "message": {"content": "your message"}}}
+  
+  Discover peer agents:
+  {"event": "agent:discover_peers", "data": {"capabilities": ["analysis", "synthesis"]}}
