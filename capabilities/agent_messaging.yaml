@@ -1,0 +1,104 @@
+name: agent_messaging
+type: capability
+version: 1.0.0
+description: "Inter-agent communication and coordination capabilities"
+author: ksi
+extends: base
+
+metadata:
+  tags:
+    - messaging
+    - communication
+    - coordination
+    - inter-agent
+  category: system
+  priority: medium
+
+permissions:
+  events:
+    - agent:send_message
+    - agent:broadcast_message
+    - agent:get_message_history
+    - agent:get_info
+    - agent:list
+    - state:relationship:query
+    - state:relationship:set
+  claude_tools: []
+  mcp_servers: []
+
+knowledge:
+  instructions: |
+    ## Inter-Agent Communication
+    
+    ### Direct Messaging
+    Send message to specific agent:
+    {"event": "agent:send_message", "data": {"agent_id": "agent_123", "message": {"type": "task_assignment", "content": "Analyze dataset X"}}}
+    
+    Broadcast message to multiple agents:
+    {"event": "agent:broadcast_message", "data": {"agent_ids": ["agent_1", "agent_2"], "message": {"type": "status_update", "content": "Phase 1 complete"}}}
+    
+    ### Message History
+    Get message history:
+    {"event": "agent:get_message_history", "data": {"agent_id": "agent_123", "limit": 20}}
+    
+    ### Agent Discovery
+    Get agent information:
+    {"event": "agent:get_info", "data": {"agent_id": "agent_123"}}
+    
+    List available agents:
+    {"event": "agent:list", "data": {"filters": {"status": "active", "profile": "research*"}}}
+    
+    ### Relationship Management
+    Query agent relationships:
+    {"event": "state:relationship:query", "data": {"from": "{{agent_id}}", "type": "collaborates_with"}}
+    
+    Set agent relationships:
+    {"event": "state:relationship:set", "data": {"from": "{{agent_id}}", "to": "other_agent", "type": "supervises"}}
+    
+  examples:
+    - name: "Coordinate research team"
+      description: "Send coordination message to research team"
+      code: |
+        {"event": "agent:broadcast_message", "data": {"agent_ids": ["researcher_1", "researcher_2", "analyst_1"], "message": {"type": "coordination", "content": "Please share your findings by 3 PM for synthesis"}}}
+    
+    - name: "Check agent status"
+      description: "Get information about an agent's current state"
+      code: |
+        {"event": "agent:get_info", "data": {"agent_id": "researcher_1"}}
+    
+    - name: "Establish collaboration"
+      description: "Set up collaborative relationship between agents"
+      code: |
+        {"event": "state:relationship:set", "data": {"from": "{{agent_id}}", "to": "research_partner", "type": "collaborates_with"}}
+
+communication_patterns:
+  message_types:
+    - task_assignment
+    - status_update
+    - coordination
+    - information_sharing
+    - feedback
+    - completion_notification
+  routing_strategies:
+    - direct
+    - broadcast
+    - hierarchical
+    - peer_to_peer
+  delivery_guarantees:
+    - at_least_once
+    - best_effort
+    - reliable
+
+validation:
+  required_permissions:
+    - agent:send_message
+  message_validation: true
+  relationship_validation: true
+
+compatibility:
+  provider_models:
+    - claude-3-*
+    - claude-4-*
+  minimum_version: "1.0.0"
+  requires_capabilities:
+    - base

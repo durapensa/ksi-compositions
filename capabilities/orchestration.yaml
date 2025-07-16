@@ -1,0 +1,117 @@
+name: orchestration
+type: capability
+version: 1.0.0
+description: "Multi-agent orchestration capabilities for spawning, coordinating, and managing agents"
+author: ksi
+extends: base
+
+metadata:
+  tags:
+    - orchestration
+    - multi-agent
+    - coordination
+    - management
+  category: system
+  priority: high
+
+permissions:
+  events:
+    - agent:spawn
+    - agent:terminate
+    - agent:send_message
+    - agent:get_info
+    - orchestration:start
+    - orchestration:stop
+    - orchestration:track
+    - orchestration:coordinate
+    - orchestration:query
+    - composition:discover
+    - composition:get
+    - composition:select
+  claude_tools: []
+  mcp_servers: []
+
+knowledge:
+  instructions: |
+    ## Multi-Agent Orchestration
+    
+    ### Agent Management
+    Spawn specialized agents:
+    {"event": "agent:spawn", "data": {"profile": "domain/research", "prompt": "Analyze recent ML papers"}}
+    
+    Terminate agents:
+    {"event": "agent:terminate", "data": {"agent_id": "agent_123"}}
+    
+    Send messages to agents:
+    {"event": "agent:send_message", "data": {"agent_id": "agent_123", "message": {"task": "update status"}}}
+    
+    Get agent information:
+    {"event": "agent:get_info", "data": {"agent_id": "agent_123"}}
+    
+    ### Orchestration Patterns
+    Start orchestration:
+    {"event": "orchestration:start", "data": {"pattern": "pattern_name", "vars": {"key": "value"}}}
+    
+    Track orchestration decisions:
+    {"event": "orchestration:track", "data": {"type": "decision", "data": {"decision": "spawn_analyst", "rationale": "Need domain expertise"}}}
+    
+    Coordinate agent workflows:
+    {"event": "orchestration:coordinate", "data": {"type": "barrier", "agents": ["agent_1", "agent_2"]}}
+    
+    ### Pattern Discovery
+    Discover patterns:
+    {"event": "composition:discover", "data": {"type": "orchestration", "tags": ["analysis"]}}
+    
+    Select patterns for tasks:
+    {"event": "composition:select", "data": {"task": "multi-agent research analysis"}}
+    
+    Load pattern details:
+    {"event": "composition:get", "data": {"name": "adaptive_research_pattern"}}
+    
+  examples:
+    - name: "Spawn research team"
+      description: "Create a coordinated research team"
+      code: |
+        {"event": "agent:spawn", "data": {"profile": "domain/research/research_lead", "prompt": "Coordinate literature review on transformers"}}
+        {"event": "agent:spawn", "data": {"profile": "domain/research/research_analyst", "prompt": "Analyze recent transformer papers"}}
+    
+    - name: "Coordinate parallel analysis"
+      description: "Coordinate multiple agents for parallel analysis"
+      code: |
+        {"event": "orchestration:coordinate", "data": {"type": "parallel", "agents": ["analyst_1", "analyst_2"], "task": "section_analysis"}}
+    
+    - name: "Track orchestration decisions"
+      description: "Log orchestration decisions for pattern optimization"
+      code: |
+        {"event": "orchestration:track", "data": {"type": "decision", "data": {"decision": "parallel_analysis", "rationale": "Task complexity requires multiple perspectives", "outcome": "improved_analysis_quality"}}}
+
+orchestration_patterns:
+  coordination_strategies:
+    - hierarchical
+    - peer_to_peer
+    - broadcast
+    - tournament
+    - pipeline
+  failure_handling:
+    agent_timeout: retry_once_then_skip
+    agent_error: document_and_continue
+    pattern_failure: fallback_to_simple
+  performance_optimization:
+    parallel_agent_limit: 10
+    default_timeout: 300
+    resource_monitoring: true
+
+validation:
+  required_permissions:
+    - agent:spawn
+    - orchestration:start
+  authority_level: orchestrator
+  spawn_validation: true
+
+compatibility:
+  provider_models:
+    - claude-3-*
+    - claude-4-*
+  minimum_version: "1.0.0"
+  requires_capabilities:
+    - base

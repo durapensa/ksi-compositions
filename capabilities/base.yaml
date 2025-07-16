@@ -1,0 +1,67 @@
+name: base
+type: capability
+version: 1.0.0
+description: "Base capability providing fundamental agent operations"
+author: ksi
+extends: null
+
+metadata:
+  tags:
+    - base
+    - fundamental
+    - core
+  category: system
+  priority: essential
+
+permissions:
+  events:
+    - state:get
+    - state:set
+    - monitor:get_events
+    - monitor:get_status
+  claude_tools: []
+  mcp_servers: []
+
+knowledge:
+  instructions: |
+    ## Base Agent Operations
+    
+    ### State Management
+    Get state data:
+    {"event": "state:get", "data": {"namespace": "your_namespace", "key": "your_key"}}
+    
+    Set state data:
+    {"event": "state:set", "data": {"namespace": "your_namespace", "key": "your_key", "value": "your_value"}}
+    
+    ### System Monitoring
+    Get recent events:
+    {"event": "monitor:get_events", "data": {"event_patterns": ["*"], "limit": 10}}
+    
+    Get system status:
+    {"event": "monitor:get_status", "data": {"include_agents": true}}
+    
+  examples:
+    - name: "Check own status"
+      description: "Monitor your own agent status"
+      code: |
+        {"event": "monitor:get_status", "data": {"include_agents": true}}
+    
+    - name: "Store working data"
+      description: "Store data for later retrieval"
+      code: |
+        {"event": "state:set", "data": {"namespace": "agent:{{agent_id}}", "key": "working_data", "value": {"task": "analysis", "progress": 0.5}}}
+
+validation:
+  required_fields:
+    - name
+    - type
+    - permissions
+  event_format: json
+  permission_validation: true
+
+compatibility:
+  provider_models:
+    - claude-3-*
+    - claude-4-*
+    - gpt-4-*
+  minimum_version: "1.0.0"

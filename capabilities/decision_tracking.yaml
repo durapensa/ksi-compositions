@@ -1,0 +1,110 @@
+name: decision_tracking
+type: capability
+version: 1.0.0
+description: "Decision tracking and orchestration analytics capabilities"
+author: ksi
+extends: base
+
+metadata:
+  tags:
+    - decision-tracking
+    - analytics
+    - orchestration
+    - optimization
+  category: system
+  priority: medium
+
+permissions:
+  events:
+    - orchestration:track
+    - composition:track_decision
+    - state:set
+    - state:get
+    - state:relationship:set
+    - state:relationship:query
+    - evaluation:prompt
+    - monitor:get_events
+  claude_tools: []
+  mcp_servers: []
+
+knowledge:
+  instructions: |
+    ## Decision Tracking and Analytics
+    
+    ### Decision Logging
+    Track orchestration decisions:
+    {"event": "orchestration:track", "data": {"type": "decision", "data": {"decision": "spawn_specialist", "rationale": "Task requires domain expertise", "context": {"complexity": "high", "domain": "ML"}}}}
+    
+    Track composition decisions:
+    {"event": "composition:track_decision", "data": {"pattern": "research_pattern", "decision": "parallel_analysis", "rationale": "Multiple perspectives needed", "outcome": "improved_quality"}}
+    
+    ### Decision Storage
+    Store decision data:
+    {"event": "state:set", "data": {"namespace": "decisions:{{agent_id}}", "key": "decision_{{timestamp}}", "value": {"type": "resource_allocation", "decision": "add_agent", "impact": "positive"}}}
+    
+    Get decision history:
+    {"event": "state:get", "data": {"namespace": "decisions:{{agent_id}}", "key": "decision_history"}}
+    
+    ### Decision Relationships
+    Link decisions to outcomes:
+    {"event": "state:relationship:set", "data": {"from": "decision_123", "to": "outcome_456", "type": "resulted_in"}}
+    
+    Query decision patterns:
+    {"event": "state:relationship:query", "data": {"from": "decision_type", "type": "similar_to"}}
+    
+    ### Performance Analysis
+    Evaluate decision effectiveness:
+    {"event": "evaluation:prompt", "data": {"composition": "decision_pattern", "test_suite": "decision_effectiveness"}}
+    
+    Monitor decision outcomes:
+    {"event": "monitor:get_events", "data": {"event_patterns": ["orchestration:track"], "filters": {"decision_type": "resource_allocation"}}}
+    
+  examples:
+    - name: "Track resource allocation decision"
+      description: "Log a decision about resource allocation with rationale"
+      code: |
+        {"event": "orchestration:track", "data": {"type": "decision", "data": {"decision": "allocate_additional_analyst", "rationale": "Current analysis bandwidth insufficient for deadline", "expected_impact": "30% faster completion", "resource_cost": "moderate"}}}
+    
+    - name: "Analyze decision patterns"
+      description: "Query similar decisions for pattern analysis"
+      code: |
+        {"event": "state:relationship:query", "data": {"from": "resource_allocation_decisions", "type": "similar_context"}}
+    
+    - name: "Evaluate decision effectiveness"
+      description: "Assess the effectiveness of past decisions"
+      code: |
+        {"event": "evaluation:prompt", "data": {"composition": "resource_allocation_pattern", "test_suite": "decision_effectiveness", "context": {"decision_type": "agent_spawning"}}}
+
+decision_analytics:
+  tracking_categories:
+    - resource_allocation
+    - pattern_selection
+    - agent_coordination
+    - workflow_optimization
+    - performance_tuning
+  analysis_dimensions:
+    - effectiveness
+    - efficiency
+    - resource_impact
+    - outcome_quality
+    - learning_value
+  optimization_strategies:
+    - pattern_recognition
+    - outcome_prediction
+    - resource_optimization
+    - adaptive_learning
+
+validation:
+  required_permissions:
+    - orchestration:track
+    - state:set
+  decision_validation: true
+  tracking_completeness: true
+
+compatibility:
+  provider_models:
+    - claude-3-*
+    - claude-4-*
+  minimum_version: "1.0.0"
+  requires_capabilities:
+    - base
