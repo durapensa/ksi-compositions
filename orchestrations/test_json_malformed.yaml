@@ -5,6 +5,14 @@ description: Test JSON extraction with both valid and malformed JSON
 author: claude
 
 agents:
+  orchestrator:
+    profile: "system/orchestrator"
+    vars:
+      pattern_name: "test_json_malformed"
+      prompt: |
+        You are orchestrating the test_json_malformed pattern.
+        Execute the orchestration logic to test JSON extraction.
+  
   json_malformed_tester:
     profile: json_test_agent
     vars:
