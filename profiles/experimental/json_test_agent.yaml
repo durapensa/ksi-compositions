@@ -27,8 +27,12 @@ components:
         
         REMEMBER: Include the actual JSON text, not descriptions of JSON!
 
+prompt: |
+  {{prompt}}
+
 variables:
   enable_tools: false
+  prompt: "Test JSON extraction"
 
 metadata:
   purpose: testing
