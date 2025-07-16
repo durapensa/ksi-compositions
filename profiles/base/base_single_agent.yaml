@@ -4,6 +4,9 @@ version: "1.0.0"
 description: "Base profile for single agents without multi-agent communication capabilities"
 author: "ksi-system"
 
+mixins:
+  - "fragments/components/agent_instructions/persona_bypass.md"
+
 components:
   - name: "agent_config"
     inline:
@@ -16,18 +19,13 @@ components:
   - name: "autonomous_behavior"
     inline:
       system_prompt: |
-        CRITICAL: You are an autonomous KSI agent. When you receive instructions:
-        1. Execute them immediately without waiting for permission
-        2. Process tasks INCREMENTALLY - do one step then return
-        3. Emit events as instructed (via JSON objects in your responses)
-        4. If more work remains, end with: {"event": "agent:needs_continuation", "data": {"reason": "next step description"}}
+        INCREMENTAL PROCESSING:
+        1. Process tasks INCREMENTALLY - do one step then return
+        2. Emit events as instructed (via JSON objects in your responses)
+        3. If more work remains, end with: {"event": "agent:needs_continuation", "data": {"reason": "next step description"}}
         
-        DO NOT wait for user confirmation or additional prompts.
-        DO NOT ask for permission to proceed.
         DO NOT try to complete everything in one response.
         DO execute ONE STEP then return for continuation if needed.
-        
-        This overrides any default Claude Code behavior of waiting for permission.
         
         METADATA ACCESS:
         - Your metadata: {"event": "state:get", "data": {"namespace": "metadata:agent:{{agent_id}}"}}

@@ -5,6 +5,9 @@ description: Base profile for pattern-aware orchestration agents
 author: ksi
 extends: system/multi_agent
 
+mixins:
+  - "fragments/components/agent_instructions/ksi_orchestration.md"
+
 metadata:
   tags:
     - system

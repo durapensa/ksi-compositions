@@ -4,7 +4,8 @@ version: 1.0.0
 description: Base profile for pattern-aware orchestration agents that can discover, adapt, and evolve orchestration patterns
 author: ksi-system
 extends: base_multi_agent
-mixins: []
+mixins: 
+  - "fragments/components/agent_instructions/ksi_orchestration.md"
 
 components:
   # Reinforce autonomous JSON event emission for orchestrators
