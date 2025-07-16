@@ -19,3 +19,29 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "base/agent_core",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_agent_core",
+    "profile_name": "temp_profile_base_agent_core_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-16T22:54:17.871553Z"
+  },
+  "timestamp": "2025-07-16T22:54:17.871874Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "base/agent_core",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_systematic",
+    "profile_name": "temp_profile_base_agent_core_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-16T23:45:05.344899Z"
+  },
+  "timestamp": "2025-07-16T23:45:05.345212Z",
+  "agent_id": null,
+  "request_id": null
+}
