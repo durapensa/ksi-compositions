@@ -1,0 +1,21 @@
+{
+  "component": "test/phase3/greeting_mixin",
+  "usage_context": "testing",
+  "metadata": "{\"test\": \"example\", \"user\": \"claude\"}",
+  "timestamp": "2025-07-16T22:07:25.050952Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "test/phase3/greeting_mixin",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_642e4239",
+    "profile_name": "temp_profile_test_phase3_greeting_mixin_10ec21b8",
+    "variables": "{\"name\": \"Test Agent\", \"mode\": \"professional\"}",
+    "spawn_timestamp": "2025-07-16T22:10:56.707929Z"
+  },
+  "timestamp": "2025-07-16T22:10:56.708027Z",
+  "agent_id": null,
+  "request_id": null
+}

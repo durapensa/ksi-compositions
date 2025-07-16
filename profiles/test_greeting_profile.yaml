@@ -1,0 +1,25 @@
+content: '## Greeting Section
+
+
+  Hello, Test User! Welcome to the KSI system.
+
+
+  Current mode: friendly
+
+
+  ### Additional Features
+
+  - Feature 1: Enabled
+
+  - Feature 2: Disabled'
+metadata:
+  component_metadata:
+    cache_keys:
+    - test/phase3/greeting_mixin#6b163bc42d25f6d0
+    cached_components: 1
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-16T21:54:41.887083Z'
+  source_component: test/phase3/greeting_mixin
+name: test_greeting_profile
+type: profile
+variables: '{"name": "Test User", "mode": "friendly"}'

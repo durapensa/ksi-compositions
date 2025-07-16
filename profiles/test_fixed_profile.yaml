@@ -1,0 +1,31 @@
+author: composition:component_to_profile
+components:
+- inline:
+    system_prompt: '## Greeting Section
+
+
+      Hello, Agent Smith! Welcome to the KSI system.
+
+
+      Current mode: professional
+
+
+      ### Additional Features
+
+      - Feature 1: Enabled
+
+      - Feature 2: Disabled'
+  name: generated_content
+description: Profile generated from component test/phase3/greeting_mixin
+metadata:
+  component_metadata:
+    cache_keys:
+    - test/phase3/greeting_mixin#479f526858285c54
+    cached_components: 1
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-16T22:02:36.511990Z'
+  source_component: test/phase3/greeting_mixin
+name: test_fixed_profile
+type: profile
+variables: '{"name": "Agent Smith", "mode": "professional"}'
+version: 1.0.0
