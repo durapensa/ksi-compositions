@@ -1,0 +1,14 @@
+name: test_auto_sync
+type: profile
+version: 1.0.0
+description: Testing auto-sync functionality
+extends: system/single_agent
+mixins: []
+components: []
+variables: {}
+metadata:
+  tags:
+  - test
+  - auto-sync
+  capabilities:
+  - testing
