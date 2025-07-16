@@ -1,0 +1,112 @@
+name: capability_injection_pattern
+type: pattern
+version: 1.0.0
+description: "Dynamic capability injection into agents using composition system"
+author: ksi_meta_orchestration
+category: meta_orchestration
+
+metadata:
+  tags:
+    - meta-orchestration
+    - capability-injection
+    - dynamic-enhancement
+  use_cases:
+    - "Enhancing agent capabilities on-demand"
+    - "Context-aware agent specialization"
+    - "Runtime capability composition"
+  required_events:
+    - composition:list
+    - composition:get
+    - agent:spawn
+    - state:set
+
+pattern_instructions: |
+  ## Dynamic Capability Injection Pattern
+  
+  Use this pattern to dynamically inject capabilities into agents by composing 
+  existing capability components with agent profiles.
+  
+  ### Core Pattern:
+  ```
+  1. Discover available capabilities
+  2. Compose capability with agent profile
+  3. Spawn enhanced agent
+  4. Track injection for lineage
+  ```
+  
+  ### Implementation:
+  
+  **Step 1: Discover Capabilities**
+  {"event": "composition:list", "data": {"category": "capabilities", "type": "component"}}
+  
+  **Step 2: Get Capability Details**
+  {"event": "composition:get", "data": {"name": "selected_capability"}}
+  
+  **Step 3: Spawn Enhanced Agent**
+  {"event": "agent:spawn", "data": {
+    "profile": "enhanced_profile_name",
+    "context": {
+      "injected_capabilities": ["capability_name"],
+      "enhancement_source": "dynamic_injection"
+    }
+  }}
+  
+  **Step 4: Track Injection**
+  {"event": "state:set", "data": {
+    "namespace": "capability_injection",
+    "key": "agent_{{agent_id}}_capabilities",
+    "value": {
+      "injected_at": "{{timestamp}}",
+      "capabilities": ["capability_name"],
+      "source_agent": "{{orchestrator_id}}"
+    }
+  }}
+  
+  ### Advanced Patterns:
+  
+  **Multi-Capability Injection:**
+  - Discover multiple capabilities
+  - Compose them into a single enhanced profile
+  - Spawn agent with combined capabilities
+  
+  **Conditional Injection:**
+  - Analyze agent performance first
+  - Inject capabilities only if needed
+  - Monitor improvement metrics
+  
+  **Capability Removal:**
+  - Monitor agent performance
+  - Remove capabilities that aren't being used
+  - Optimize agent resource usage
+
+examples:
+  - name: "Inject data analysis capability"
+    description: "Add data analysis capabilities to a basic agent"
+    implementation: |
+      # Discover data analysis capabilities
+      {"event": "composition:list", "data": {"category": "capabilities", "tags": ["data-analysis"]}}
+      
+      # Get the best data analysis capability
+      {"event": "composition:get", "data": {"name": "domain/analysis/data_scientist"}}
+      
+      # Spawn agent with enhanced capabilities
+      {"event": "agent:spawn", "data": {
+        "profile": "system/single_agent_enhanced",
+        "context": {
+          "base_profile": "system/single_agent",
+          "injected_capabilities": ["data_analysis"],
+          "specialization": "data_scientist"
+        }
+      }}
+
+  - name: "Runtime capability enhancement"
+    description: "Enhance running agent with new capabilities"
+    implementation: |
+      # This requires agent context modification - future enhancement
+      # For now, spawn new enhanced agent and migrate context
+      {"event": "agent:get_context", "data": {"agent_id": "target_agent"}}
+      {"event": "agent:spawn", "data": {
+        "profile": "enhanced_profile",
+        "context": "migrated_context_with_new_capabilities"
+      }}
+      {"event": "agent:terminate", "data": {"agent_id": "target_agent"}}

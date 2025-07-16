@@ -1,0 +1,208 @@
+name: self_modification_pattern
+type: pattern
+version: 1.0.0
+description: "Agents that analyze and improve their own profiles and behavior"
+author: ksi_meta_orchestration
+category: meta_orchestration
+
+metadata:
+  tags:
+    - meta-orchestration
+    - self-modification
+    - self-improvement
+    - recursive-intelligence
+  use_cases:
+    - "Agents that improve themselves"
+    - "Self-optimizing orchestration strategies"
+    - "Adaptive intelligence systems"
+  required_events:
+    - composition:get
+    - composition:fork
+    - composition:save
+    - monitor:get_events
+    - evaluation:prompt
+    - state:get
+    - state:set
+
+pattern_instructions: |
+  ## Self-Modification Pattern
+  
+  Use this pattern to create agents that can analyze their own performance 
+  and modify their profiles to improve effectiveness.
+  
+  ### Core Pattern:
+  ```
+  1. Monitor own performance
+  2. Analyze decision patterns
+  3. Fork own profile
+  4. Modify profile based on analysis
+  5. Test improvements
+  6. Deploy better version
+  ```
+  
+  ### Implementation:
+  
+  **Step 1: Monitor Own Performance**
+  {"event": "monitor:get_events", "data": {
+    "event_patterns": ["orchestration:*", "agent:*"],
+    "filters": {"agent_id": "{{self_agent_id}}"},
+    "limit": 100,
+    "include_analysis": true
+  }}
+  
+  **Step 2: Get Current Profile**
+  {"event": "composition:get", "data": {
+    "name": "{{self_profile_name}}",
+    "include_metadata": true
+  }}
+  
+  **Step 3: Analyze Performance Patterns**
+  {"event": "state:get", "data": {
+    "namespace": "agent_performance",
+    "key": "{{self_agent_id}}_metrics"
+  }}
+  
+  **Step 4: Fork Own Profile**
+  {"event": "composition:fork", "data": {
+    "parent": "{{self_profile_name}}",
+    "name": "{{self_profile_name}}_improved_{{timestamp}}",
+    "reason": "Self-improvement based on performance analysis"
+  }}
+  
+  **Step 5: Test Improved Profile**
+  {"event": "evaluation:prompt", "data": {
+    "composition": "{{self_profile_name}}_improved_{{timestamp}}",
+    "test_suite": "agent_effectiveness",
+    "variables": {"test_type": "self_improvement"}
+  }}
+  
+  **Step 6: Deploy if Better**
+  {"event": "composition:save", "data": {
+    "composition": "improved_profile_data",
+    "overwrite": true,
+    "git_message": "Self-improvement: {{improvement_description}}"
+  }}
+  
+  **Step 7: Track Self-Improvement**
+  {"event": "state:set", "data": {
+    "namespace": "self_modification",
+    "key": "{{self_agent_id}}_improvement_history",
+    "value": {
+      "improvement_timestamp": "{{timestamp}}",
+      "baseline_performance": "{{baseline_metrics}}",
+      "improved_performance": "{{improved_metrics}}",
+      "improvement_areas": ["{{improvement_areas}}"],
+      "success": "{{improvement_success}}"
+    }
+  }}
+  
+  ### Self-Modification Strategies:
+  
+  **Performance-Based Modification:**
+  - Monitor task completion rates
+  - Analyze failure patterns
+  - Modify strategies based on success patterns
+  
+  **Feedback-Driven Improvement:**
+  - Collect feedback from other agents
+  - Analyze collaboration effectiveness
+  - Improve communication patterns
+  
+  **Resource Optimization:**
+  - Monitor resource usage patterns
+  - Optimize for efficiency
+  - Reduce unnecessary operations
+  
+  **Adaptive Specialization:**
+  - Identify frequently performed tasks
+  - Develop specialized capabilities
+  - Optimize for common use cases
+  
+  ### Safety Mechanisms:
+  
+  **Rollback Capability:**
+  - Maintain version history
+  - Monitor post-modification performance
+  - Rollback if self-modification degrades performance
+  
+  **Bounded Modification:**
+  - Set limits on self-modification scope
+  - Require validation before major changes
+  - Maintain core identity and purpose
+  
+  **Peer Review:**
+  - Share modifications with other agents
+  - Get feedback before deployment
+  - Collaborative improvement process
+
+examples:
+  - name: "Orchestrator self-optimization"
+    description: "Orchestrator analyzes its own orchestration patterns and improves"
+    implementation: |
+      # Monitor own orchestration decisions
+      {"event": "monitor:get_events", "data": {
+        "event_patterns": ["orchestration:*"],
+        "filters": {"orchestrator_id": "{{self_id}}"},
+        "limit": 200
+      }}
+      
+      # Get current orchestration profile
+      {"event": "composition:get", "data": {
+        "name": "{{self_profile}}",
+        "include_components": true
+      }}
+      
+      # Analyze patterns (agent intelligence step)
+      # - Success rates of different orchestration strategies
+      # - Agent spawn patterns that work well
+      # - Communication patterns that are effective
+      
+      # Fork and improve profile
+      {"event": "composition:fork", "data": {
+        "parent": "{{self_profile}}",
+        "name": "{{self_profile}}_optimized_{{timestamp}}",
+        "reason": "Self-optimization of orchestration patterns"
+      }}
+
+  - name: "Agent communication improvement"
+    description: "Agent improves its communication patterns based on feedback"
+    implementation: |
+      # Monitor communication effectiveness
+      {"event": "monitor:get_events", "data": {
+        "event_patterns": ["agent:send_message", "agent:receive_message"],
+        "filters": {"agent_id": "{{self_id}}"},
+        "limit": 100
+      }}
+      
+      # Analyze communication patterns
+      # - Message clarity scores
+      # - Response times from other agents
+      # - Collaboration success rates
+      
+      # Modify communication components
+      {"event": "composition:fork", "data": {
+        "parent": "{{self_profile}}",
+        "name": "{{self_profile}}_better_communication",
+        "reason": "Improving communication effectiveness"
+      }}
+
+  - name: "Adaptive capability development"
+    description: "Agent develops new capabilities based on task patterns"
+    implementation: |
+      # Monitor task patterns
+      {"event": "state:get", "data": {
+        "namespace": "agent_tasks",
+        "key": "{{self_id}}_task_history"
+      }}
+      
+      # Identify frequent task types
+      # - Most common operations
+      # - Recurring problem patterns
+      # - Skill gaps in task execution
+      
+      # Develop specialized capabilities
+      {"event": "composition:fork", "data": {
+        "parent": "{{self_profile}}",
+        "name": "{{self_profile}}_specialized_{{timestamp}}",
+        "reason": "Developing specialized capabilities for common tasks"
+      }}
