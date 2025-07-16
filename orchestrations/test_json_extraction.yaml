@@ -6,9 +6,9 @@ author: claude
 
 agents:
   json_test:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     vars:
-      initial_prompt: |
+      prompt: |
         Please emit this exact JSON event in your response:
         
         {"event": "orchestration:track", "data": {"test": "success", "timestamp": "2025-07-16"}}

@@ -8,7 +8,7 @@ agents:
   json_malformed_tester:
     profile: json_test_agent
     vars:
-      initial_prompt: |
+      prompt: |
         Please test JSON extraction with various formats:
         
         1. First, emit a VALID event: {"event": "orchestration:track", "data": {"test": "valid", "number": 42}}

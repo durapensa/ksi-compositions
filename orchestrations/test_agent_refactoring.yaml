@@ -15,20 +15,20 @@ includes:
 # Test coordinator
 agents:
   test_coordinator:
-    profile: base_orchestrator
+    profile: system/orchestrator
     vars:
       pattern_name: test_agent_refactoring
-      initial_prompt: |
+      prompt: |
         You are testing the agent service refactoring.
         
         Execute these test steps:
         
         1. Basic agent spawn (no domain logic):
-           {"event": "agent:spawn", "data": {"profile": "base_single_agent", "agent_id": "test_basic_001"}}
+           {"event": "agent:spawn", "data": {"profile": "system/single_agent", "agent_id": "test_basic_001"}}
         
         2. Hierarchical spawn (using pattern):
            {"event": "agent:spawn", "data": {
-             "profile": "base_single_agent", 
+             "profile": "system/single_agent", 
              "agent_id": "test_child_001",
              "metadata": {
                "parent_id": "{{agent_id}}",

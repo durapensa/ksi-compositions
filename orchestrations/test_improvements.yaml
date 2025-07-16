@@ -13,11 +13,11 @@ extends: null
 # Define agents with valid profiles
 agents:
   coordinator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     initial_message: "test_coordinator_init"  # Will be created next
     
   worker:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     initial_message: "test_worker_init"       # Will be created next
 
 # Routing with default target

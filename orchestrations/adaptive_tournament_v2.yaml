@@ -45,7 +45,7 @@ metadata:
     - agent:spawn
     - composition:track_decision
     recommended_profiles:
-    - base_orchestrator
+    - system/orchestrator
     - evaluator_judge
   forks:
   - name: adaptive_tournament_ml

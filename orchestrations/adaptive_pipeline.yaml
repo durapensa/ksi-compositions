@@ -7,7 +7,7 @@ author: pipeline_orchestrator_3a2f
 # Agent topology for pipeline stages
 agents:
   pipeline_controller:
-    profile: base_orchestrator
+    profile: system/orchestrator
     prompt_template: pipeline_control
     vars:
       optimization_mode: throughput
@@ -15,7 +15,7 @@ agents:
   stage_agents:
     template: "stage_{n}"
     count: "dynamic"  # Determined by orchestrator
-    profile: base_single_agent
+    profile: system/single_agent
 
 # DSL for pipeline orchestration
 orchestration_logic:

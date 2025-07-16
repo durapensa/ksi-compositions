@@ -11,10 +11,10 @@ timestamp: 2025-07-16T08:00:00Z
 # Define orchestrator agent to interpret the MIPRO DSL
 agents:
   mipro_orchestrator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "mipro_bayesian_optimization"
-      initial_prompt: |
+      prompt: |
         You are an orchestration agent implementing MIPRO Bayesian prompt optimization.
         
         Follow the three-stage MIPRO algorithm:
@@ -66,11 +66,11 @@ orchestration_logic:
     
     # Spawn bootstrap evaluators
     SPAWN {
-      profile: "base_single_agent",
+      profile: "system/single_agent",
       count: num_bootstrap_runs,
       vars: {
         model: evaluator_model,
-        initial_prompt: |
+        prompt: |
           Evaluate this prompt for the task and provide a score (0-1):
           Task: {{task_description}}
           Prompt: {{base_prompt}}
@@ -106,10 +106,10 @@ orchestration_logic:
     
     # Spawn proposal generator
     SPAWN {
-      profile: "base_single_agent",
+      profile: "system/single_agent",
       vars: {
         model: proposer_model,
-        initial_prompt: |
+        prompt: |
           You are a prompt engineering expert implementing MIPRO optimization.
           
           Based on these high-quality execution traces, generate {{num_proposals}} 
@@ -151,10 +151,10 @@ orchestration_logic:
     
     # Initialize surrogate model tracker
     SPAWN {
-      profile: "base_single_agent",
+      profile: "system/single_agent",
       vars: {
         model: optimizer_model,
-        initial_prompt: |
+        prompt: |
           You are a Bayesian optimizer implementing Tree-structured Parzen Estimator (TPE).
           
           Your role:
@@ -191,11 +191,11 @@ orchestration_logic:
       
       # Spawn evaluators for minibatch
       SPAWN {
-        profile: "base_single_agent",
+        profile: "system/single_agent",
         count: minibatch_size,
         vars: {
           model: evaluator_model,
-          initial_prompt: |
+          prompt: |
             Evaluate prompt variant {{trial}}_{{index}}:
             {{suggestions.prompts[index]}}
             
@@ -269,10 +269,10 @@ orchestration_logic:
     
     # Spawn analyzer for final insights
     SPAWN {
-      profile: "base_single_agent",
+      profile: "system/single_agent",
       vars: {
         model: optimizer_model,
-        initial_prompt: |
+        prompt: |
           Analyze the MIPRO optimization results:
           
           Task: {{task_description}}
@@ -316,7 +316,7 @@ orchestration_logic:
     TRACK {
       phase: "complete",
       task: task_description,
-      initial_prompt: base_prompt,
+      prompt: base_prompt,
       optimized_prompt: best_prompt,
       improvement: best_score - INITIAL_SCORE,
       total_evaluations: LENGTH(optimization_history),

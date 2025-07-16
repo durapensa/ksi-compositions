@@ -8,10 +8,10 @@ author: stepwise_system
 
 agents:
   stepwise_evolver:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "stepwise_evolution_test"
-      initial_prompt: |
+      prompt: |
         You are a step-wise evolution orchestrator. Your agent_id is: {{agent_id}}
         
         Configuration:

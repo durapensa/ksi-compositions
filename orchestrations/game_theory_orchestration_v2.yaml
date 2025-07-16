@@ -11,10 +11,10 @@ extends: game_theory_orchestration
 # Define concrete agents that implement the game theory DSL
 agents:
   game_orchestrator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "game_theory_orchestration_v2"
-      initial_prompt: |
+      prompt: |
         You are the game theory orchestrator implementing strategic multi-agent coordination.
         
         Your agent_id is: {{agent_id}}
@@ -140,7 +140,7 @@ transformers:
     target: "agent:spawn"
     mapping:
       count: "{{num_players}}"
-      profile: "base_single_agent"
+      profile: "system/single_agent"
       name_pattern: "player_{{index}}"
       vars:
         role: "strategy_agent"

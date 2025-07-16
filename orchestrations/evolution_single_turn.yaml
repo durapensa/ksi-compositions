@@ -8,10 +8,10 @@ author: evolution_system
 
 agents:
   single_turn_evolver:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "evolution_single_turn"
-      initial_prompt: |
+      prompt: |
         You are running an evolution test that must complete in a SINGLE response.
         Your agent_id is: {{agent_id}}
         

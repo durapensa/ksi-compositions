@@ -54,7 +54,7 @@ pattern:
 
 agents:
   stress_coordinator:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     model: "sonnet"
     role: "assistant"
     capabilities: ["state_write", "event_emission"]
@@ -75,7 +75,7 @@ variables:
     default: 100
     description: "Milliseconds to pause between batches"
 
-initial_prompt: |
+prompt: |
   You are conducting a stress test of the decision tracking system. Your goal is to generate {{target_decisions}} decision events in batches of {{batch_size}} to test system performance and capacity.
 
   CRITICAL: Execute autonomously and emit JSON events exactly as specified.

@@ -10,9 +10,9 @@ timestamp: 2025-07-16T09:00:00Z
 # Single orchestrator to demonstrate the concept
 agents:
   mipro_demo:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     vars:
-      initial_prompt: |
+      prompt: |
         You are demonstrating a simplified MIPRO optimization process.
         
         Task: Optimize a prompt for "{{task}}"

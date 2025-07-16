@@ -7,10 +7,10 @@ author: test_system
 
 agents:
   event_tester:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "test_event_emission"
-      initial_prompt: |
+      prompt: |
         CRITICAL: Return ONLY the following JSON events, nothing else:
         
         {"event": "orchestration:track", "data": {"type": "test", "value": 1}}

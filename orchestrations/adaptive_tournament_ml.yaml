@@ -44,7 +44,7 @@ metadata:
     - agent:spawn
     - composition:track_decision
     recommended_profiles:
-    - base_orchestrator
+    - system/orchestrator
     - evaluator_judge
   lineage:
     parent: adaptive_tournament_v2@2.1.0

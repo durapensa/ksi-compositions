@@ -47,10 +47,10 @@ metadata:
 
 agents:
   async_coordinator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "async_optimization_pattern"
-      initial_prompt: |
+      prompt: |
         You are coordinating an optimized async execution pattern. Your agent_id is: {{agent_id}}
         
         This pattern implements the crystallized discovery:

@@ -8,9 +8,9 @@ author: test_system
 
 agents:
   simple_tester:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     vars:
-      initial_prompt: |
+      prompt: |
         Return EXACTLY this text, nothing more:
         
         {"event": "test:hello", "data": {"message": "Event emission working!"}}

@@ -8,10 +8,10 @@ timestamp: 2025-07-16T08:30:00Z
 # Define test orchestrator
 agents:
   test_orchestrator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "test_mipro_optimization"
-      initial_prompt: |
+      prompt: |
         You are a test orchestrator for the MIPRO optimization pattern.
         
         Your task:
@@ -24,7 +24,7 @@ agents:
 variables:
   # Test configuration
   optimization_task: "Write a haiku about coding"
-  initial_prompt: "Write a haiku about coding. Be creative and insightful."
+  prompt: "Write a haiku about coding. Be creative and insightful."
   evaluation_suite: "basic_effectiveness"
   
   # Reduced parameters for testing
@@ -45,9 +45,9 @@ orchestration_logic:
     
     # Spawn MIPRO orchestrator
     SPAWN {
-      profile: "base_orchestrator",
+      profile: "system/orchestrator",
       vars: {
-        initial_prompt: |
+        prompt: |
           You are orchestrating a MIPRO Bayesian optimization process.
           
           Follow the mipro_bayesian_optimization pattern to optimize this prompt:
@@ -100,7 +100,7 @@ orchestration_logic:
     TRACK {
       event: "test_completed",
       task: optimization_task,
-      initial_prompt: initial_prompt,
+      prompt: initial_prompt,
       optimized_prompt: completion.optimized_prompt,
       improvement: completion.improvement,
       total_duration: NOW() - START_TIME

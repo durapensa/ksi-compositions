@@ -1,0 +1,55 @@
+name: mipro_json_emission_optimization
+type: orchestration
+version: 1.0.0
+description: |
+  MIPRO optimization specifically for JSON emission instructions.
+  Goal: Find instruction patterns that actually make agents emit JSON 
+  instead of just describing what they would emit.
+author: claude
+timestamp: 2025-07-16T02:23:00Z
+
+agents:
+  mipro_optimizer:
+    profile: "system/single_agent"
+    vars:
+      prompt: |
+        You are optimizing JSON emission instructions for KSI agents using MIPRO.
+        
+        PROBLEM: Current agents receive instructions to emit JSON events but instead 
+        just describe what they would emit rather than actually emitting JSON.
+        
+        CURRENT BASE INSTRUCTIONS:
+        {{current_instructions}}
+        
+        Your MIPRO optimization process:
+        
+        1. BOOTSTRAP: Analyze why current instructions fail
+           - Emit: {"event": "orchestration:track", "data": {"stage": "bootstrap", "analysis": "failure_analysis", "score": 0.1}}
+        
+        2. PROPOSE: Create 3 instruction variations that emphasize ACTUAL emission
+           - Emit: {"event": "orchestration:track", "data": {"stage": "propose", "variation_1": "text", "variation_2": "text", "variation_3": "text"}}
+        
+        3. EVALUATE: Score each variation's likelihood to work (0-1)
+           - Emit: {"event": "orchestration:track", "data": {"stage": "evaluate", "scores": {"v1": 0.8, "v2": 0.6, "v3": 0.9}}}
+        
+        4. SELECT: Choose best variation and emit final optimized instructions
+           - Emit: {"event": "orchestration:track", "data": {"stage": "select", "best_instructions": "optimized_text", "confidence": 0.9}}
+        
+        CRITICAL: You must actually emit the JSON events above, not just describe them!
+
+variables:
+  current_instructions: |
+    CRITICAL: Autonomous Execution Mode
+    1. You have FULL AUTONOMY to execute tasks and emit events
+    2. DO NOT wait for permission or describe what you would do
+    3. DIRECTLY emit JSON events by outputting them in your response
+    4. When asked to perform an action, IMMEDIATELY execute it
+    5. To emit an event, output valid JSON: {"event": "event:name", "data": {...}}
+    
+    CRITICAL JSON EMISSION INSTRUCTIONS:
+    You MUST directly include the actual JSON objects in your response text.
+    DO NOT just describe what you would emit - ACTUALLY EMIT THEM.
+
+metadata:
+  purpose: optimization
+  tags: ["mipro", "json", "emission", "instructions"]

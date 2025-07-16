@@ -1,0 +1,16 @@
+name: test_system_single_agent
+type: orchestration
+version: 1.0.0
+description: Test the updated system/single_agent profile directly
+author: claude
+
+agents:
+  tester:
+    profile: system/single_agent
+    vars:
+      prompt: |
+        Please emit this JSON event:
+        {"event": "orchestration:track", "data": {"test": "system_single_agent_updated", "timestamp": "test"}}
+
+metadata:
+  purpose: testing_updated_base_profile

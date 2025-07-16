@@ -1,0 +1,16 @@
+name: test_json_v3
+type: orchestration
+version: 1.0.0
+description: Test JSON emission with variation 3 (explicit instructions)
+author: claude
+
+agents:
+  tester:
+    profile: json_test_v3_explicit
+    vars:
+      prompt: |
+        Please emit this JSON event:
+        {"event": "orchestration:track", "data": {"variation": "v3", "test": "explicit"}}
+
+metadata:
+  purpose: manual_mipro_testing

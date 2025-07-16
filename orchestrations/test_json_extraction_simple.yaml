@@ -8,7 +8,7 @@ agents:
   json_tester:
     profile: json_test_agent
     vars:
-      initial_prompt: |
+      prompt: |
         Please demonstrate JSON event emission by:
         
         1. First say "Testing JSON extraction"

@@ -1,0 +1,16 @@
+name: test_json_v2
+type: orchestration
+version: 1.0.0
+description: Test JSON emission with variation 2 (imperative instructions)
+author: claude
+
+agents:
+  tester:
+    profile: json_test_v2_imperative
+    vars:
+      prompt: |
+        Please emit this JSON event:
+        {"event": "orchestration:track", "data": {"variation": "v2", "test": "imperative"}}
+
+metadata:
+  purpose: manual_mipro_testing

@@ -11,10 +11,10 @@ extends: null
 # Define concrete agents that implement the game theory DSL
 agents:
   game_orchestrator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "game_theory_orchestration"
-      initial_prompt: |
+      prompt: |
         You are the game theory orchestrator implementing the pattern's DSL strategy.
         
         Your role is to:
@@ -34,11 +34,11 @@ agents:
   
   # Template for strategic agents spawned by orchestrator
   strategy_agent_template:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     template: true  # This is a template, not spawned directly
     vars:
       strategy_type: "{{strategy_type}}"
-      initial_prompt: |
+      prompt: |
         You are a {{strategy_type}} strategic agent in a game theory scenario.
         Your objective is to maximize your payoff while following your strategy:
         

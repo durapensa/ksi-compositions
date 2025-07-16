@@ -53,13 +53,13 @@ pattern:
 
 agents:
   scale_coordinator:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     model: "sonnet"
     role: "assistant"
     capabilities: ["agent_spawn", "multi_agent_coordination", "performance_monitoring"]
     
   worker_template:
-    profile: "base_single_agent"
+    profile: "system/single_agent"
     model: "sonnet"
     role: "assistant" 
     capabilities: ["decision_tracking", "pattern_execution"]
@@ -80,7 +80,7 @@ variables:
     default: true
     description: "Whether agents execute concurrently or sequentially"
 
-initial_prompt: |
+prompt: |
   You are coordinating a multi-agent scale test of the pattern evolution system.
 
   Your mission:

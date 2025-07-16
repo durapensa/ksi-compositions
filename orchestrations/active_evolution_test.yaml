@@ -8,10 +8,10 @@ author: evolution_test_system
 
 agents:
   active_evolver:
-    profile: "base_orchestrator"
+    profile: "system/orchestrator"
     vars:
       pattern_name: "active_evolution_test"
-      initial_prompt: |
+      prompt: |
         You are running an active evolution test. Your agent_id is: {{agent_id}}
         
         Configuration:

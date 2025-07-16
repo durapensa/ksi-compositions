@@ -10,14 +10,14 @@ extends: null
 # Test coordinator agent
 agents:
   test_coordinator:
-    profile: base_orchestrator
+    profile: system/orchestrator
     vars:
       pattern_name: test_agent_spawn_no_composed_prompt
-      initial_prompt: |
+      prompt: |
         You are testing that agents spawn without the composed_prompt field.
         
         Execute this test sequence:
-        1. Emit: {"event": "agent:spawn", "data": {"profile": "base_single_agent", "agent_id": "test_subject_001"}}
+        1. Emit: {"event": "agent:spawn", "data": {"profile": "system/single_agent", "agent_id": "test_subject_001"}}
         2. Wait 2 seconds for spawn to complete
         3. Emit: {"event": "agent:info", "data": {"agent_id": "test_subject_001"}}
         4. Check the response - it should NOT contain a "composed_prompt" field
@@ -51,7 +51,7 @@ orchestration_logic:
   strategy: |
     TEST agent_spawn_refactoring:
       SPAWN test_agent WITH:
-        profile: "base_single_agent"
+        profile: "system/single_agent"
         agent_id: "test_subject_{{run_id}}"
       
       WAIT 2 seconds  # Allow spawn to complete

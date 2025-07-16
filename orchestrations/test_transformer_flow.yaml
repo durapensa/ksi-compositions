@@ -7,7 +7,7 @@ author: claude-test
 # Simple orchestration for testing
 agents:
   test_agent:
-    profile: base_single_agent
+    profile: system/single_agent
     vars:
       role: tester
 
