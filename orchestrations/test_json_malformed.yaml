@@ -21,6 +21,15 @@ agents:
         
         Include all of these in your response to test the extraction and feedback system!
 
+orchestration_logic:
+  strategy: |
+    GIVEN json_malformed_tester agent
+    WHEN agent tests various JSON formats
+    THEN verify extraction and feedback
+    AWAIT json_malformed_tester completion
+    TRACK results
+    CLEANUP all agents
+
 metadata:
   purpose: testing
   tags: ["test", "json", "malformed", "feedback"]
