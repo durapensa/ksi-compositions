@@ -5,7 +5,7 @@ description: "Base profile for single agents without multi-agent communication c
 author: "ksi-system"
 
 mixins:
-  - "fragments/components/agent_instructions/persona_bypass.md"
+  - "components/agent_instructions/persona_bypass.md"
 
 components:
   - name: "agent_config"

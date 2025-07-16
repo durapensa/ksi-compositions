@@ -6,7 +6,7 @@ author: "ksi-system"
 extends: "base_single_agent"  # Inherit all single-agent capabilities
 
 mixins:
-  - "fragments/components/agent_instructions/json_messaging.md"
+  - "components/agent_instructions/json_messaging.md"
 
 components:
   - name: "agent_config"

@@ -5,7 +5,7 @@ description: Base profile for pattern-aware orchestration agents that can discov
 author: ksi-system
 extends: base_multi_agent
 mixins: 
-  - "fragments/components/agent_instructions/ksi_orchestration.md"
+  - "components/agent_instructions/ksi_orchestration.md"
 
 components:
   # Reinforce autonomous JSON event emission for orchestrators
