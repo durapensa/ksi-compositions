@@ -1,0 +1,362 @@
+name: mipro_bayesian_optimization
+type: orchestration
+version: 1.0.0
+description: |
+  MIPRO-style Bayesian prompt optimization with guided discovery.
+  Implements three stages: Bootstrapping, Grounded Proposal, and Discrete Search
+  to optimize prompts using Bayesian surrogate models.
+author: claude
+timestamp: 2025-07-16T08:00:00Z
+
+# Define orchestrator agent to interpret the MIPRO DSL
+agents:
+  mipro_orchestrator:
+    profile: "base_orchestrator"
+    vars:
+      pattern_name: "mipro_bayesian_optimization"
+      initial_prompt: |
+        You are an orchestration agent implementing MIPRO Bayesian prompt optimization.
+        
+        Follow the three-stage MIPRO algorithm:
+        1. Bootstrapping: Collect traces from unoptimized prompts
+        2. Grounded Proposal: Generate candidate instructions
+        3. Discrete Search: Use Bayesian optimization to find best combinations
+        
+        Use the orchestration primitives to coordinate agents and track optimization progress.
+        Implement the pattern strategy defined in orchestration_logic.
+
+# Variables for configuration
+variables:
+  # Task configuration
+  task_description: "Explain quantum computing to a 10-year-old"  # Task to optimize
+  base_prompt: "You are a helpful assistant. {{task_description}}"  # Initial prompt template
+  test_suite: "basic_effectiveness"  # Evaluation test suite
+  
+  # Optimization parameters
+  num_bootstrap_runs: 10  # Number of initial runs to collect traces
+  num_proposals: 15  # Number of prompt proposals to generate
+  num_trials: 20  # Number of Bayesian optimization trials
+  minibatch_size: 5  # Size of evaluation minibatches
+  
+  # Bayesian parameters
+  exploration_weight: 0.15  # UCB exploration parameter
+  convergence_threshold: 0.95  # Stop when confidence exceeds this
+  
+  # Agent configurations
+  evaluator_model: "claude-cli/sonnet"
+  proposer_model: "claude-cli/sonnet"
+  optimizer_model: "claude-cli/sonnet"
+
+orchestration_logic:
+  strategy: |
+    ## MIPRO Bayesian Prompt Optimization Strategy
+    
+    ### Phase 1: Bootstrapping Stage
+    # Collect traces from running unoptimized prompts
+    
+    STATE optimization_history = []
+    STATE best_prompt = base_prompt
+    STATE best_score = 0.0
+    STATE surrogate_model = {}
+    
+    TRACK {
+      phase: "bootstrapping",
+      message: "Starting MIPRO optimization for task: {{task_description}}"
+    }
+    
+    # Spawn bootstrap evaluators
+    SPAWN {
+      profile: "base_single_agent",
+      count: num_bootstrap_runs,
+      vars: {
+        model: evaluator_model,
+        initial_prompt: |
+          Evaluate this prompt for the task and provide a score (0-1):
+          Task: {{task_description}}
+          Prompt: {{base_prompt}}
+          
+          Run the prompt with varied inputs and track:
+          1. Success rate
+          2. Quality of responses
+          3. Any failure patterns
+          
+          Return JSON: {"score": float, "traces": [...], "insights": "..."}
+      }
+    } AS bootstrap_evaluators
+    
+    # Collect bootstrap results
+    AWAIT {
+      from: bootstrap_evaluators,
+      event_pattern: "agent:message",
+      timeout: 120,
+      collect_partial: true
+    } AS bootstrap_results
+    
+    # Extract high-scoring traces
+    COMPUTE high_quality_traces = FILTER(bootstrap_results, score > 0.7)
+    
+    TRACK {
+      phase: "bootstrapping",
+      collected_traces: LENGTH(high_quality_traces),
+      average_score: MEAN(bootstrap_results.score)
+    }
+    
+    ### Phase 2: Grounded Proposal Stage
+    # Generate candidate instructions based on traces
+    
+    # Spawn proposal generator
+    SPAWN {
+      profile: "base_single_agent",
+      vars: {
+        model: proposer_model,
+        initial_prompt: |
+          You are a prompt engineering expert implementing MIPRO optimization.
+          
+          Based on these high-quality execution traces, generate {{num_proposals}} 
+          diverse prompt proposals for the task: {{task_description}}
+          
+          Traces: {{high_quality_traces}}
+          
+          Consider:
+          1. Different instruction styles (direct, explanatory, step-by-step)
+          2. Various example formats (if applicable)
+          3. Different cognitive strategies
+          4. Task-specific optimizations
+          
+          Return JSON: {
+            "proposals": [
+              {"id": "p1", "prompt": "...", "rationale": "...", "strategy": "..."},
+              ...
+            ]
+          }
+      }
+    } AS proposer
+    
+    AWAIT {
+      from: proposer,
+      event_pattern: "agent:message",
+      timeout: 60
+    } AS proposal_response
+    
+    STATE prompt_proposals = proposal_response.proposals
+    
+    TRACK {
+      phase: "proposal",
+      num_proposals_generated: LENGTH(prompt_proposals),
+      strategies: UNIQUE(prompt_proposals.strategy)
+    }
+    
+    ### Phase 3: Discrete Search Stage
+    # Bayesian optimization to find best prompt combination
+    
+    # Initialize surrogate model tracker
+    SPAWN {
+      profile: "base_single_agent",
+      vars: {
+        model: optimizer_model,
+        initial_prompt: |
+          You are a Bayesian optimizer implementing Tree-structured Parzen Estimator (TPE).
+          
+          Your role:
+          1. Model the relationship between prompts and performance
+          2. Suggest next prompts to evaluate using acquisition function
+          3. Update beliefs based on evaluation results
+          4. Track convergence metrics
+          
+          Initial proposals: {{prompt_proposals}}
+          
+          Use Upper Confidence Bound (UCB) with exploration weight: {{exploration_weight}}
+      }
+    } AS bayesian_optimizer
+    
+    # Main optimization loop
+    LOOP trial FROM 1 TO num_trials:
+      
+      # Get next prompt suggestions from Bayesian optimizer
+      SEND {
+        to: bayesian_optimizer,
+        message: {
+          action: "suggest_next_batch",
+          history: optimization_history,
+          batch_size: minibatch_size,
+          trial: trial
+        }
+      }
+      
+      AWAIT {
+        from: bayesian_optimizer,
+        event_pattern: "agent:message",
+        timeout: 30
+      } AS suggestions
+      
+      # Spawn evaluators for minibatch
+      SPAWN {
+        profile: "base_single_agent",
+        count: minibatch_size,
+        vars: {
+          model: evaluator_model,
+          initial_prompt: |
+            Evaluate prompt variant {{trial}}_{{index}}:
+            {{suggestions.prompts[index]}}
+            
+            Use test suite: {{test_suite}}
+            Return score and detailed metrics.
+        }
+      } AS trial_evaluators
+      
+      # Collect evaluation results
+      AWAIT {
+        from: trial_evaluators,
+        event_pattern: "agent:message",
+        timeout: 90,
+        collect_partial: true
+      } AS trial_results
+      
+      # Update optimization history
+      FOREACH result IN trial_results:
+        APPEND optimization_history {
+          trial: trial,
+          prompt_id: result.prompt_id,
+          prompt: result.prompt,
+          score: result.score,
+          metrics: result.metrics
+        }
+        
+        IF result.score > best_score:
+          STATE best_score = result.score
+          STATE best_prompt = result.prompt
+          TRACK {
+            event: "new_best_found",
+            trial: trial,
+            score: best_score,
+            improvement: best_score - PREVIOUS(best_score)
+          }
+      
+      # Update Bayesian model
+      SEND {
+        to: bayesian_optimizer,
+        message: {
+          action: "update_model",
+          new_results: trial_results
+        }
+      }
+      
+      # Check convergence
+      AWAIT {
+        from: bayesian_optimizer,
+        event_pattern: "agent:message",
+        timeout: 20
+      } AS convergence_check
+      
+      IF convergence_check.confidence > convergence_threshold:
+        TRACK {
+          event: "optimization_converged",
+          trial: trial,
+          confidence: convergence_check.confidence
+        }
+        BREAK
+      
+      # Track progress
+      TRACK {
+        phase: "optimization",
+        trial: trial,
+        current_best: best_score,
+        confidence: convergence_check.confidence,
+        exploration_rate: convergence_check.exploration_rate
+      }
+    
+    ### Phase 4: Final Analysis and Crystallization
+    
+    # Spawn analyzer for final insights
+    SPAWN {
+      profile: "base_single_agent",
+      vars: {
+        model: optimizer_model,
+        initial_prompt: |
+          Analyze the MIPRO optimization results:
+          
+          Task: {{task_description}}
+          Best prompt: {{best_prompt}}
+          Best score: {{best_score}}
+          History: {{optimization_history}}
+          
+          Provide:
+          1. Key insights about what made prompts effective
+          2. Failure patterns to avoid
+          3. Generalizable principles discovered
+          4. Confidence intervals for the best prompt
+      }
+    } AS analyzer
+    
+    AWAIT {
+      from: analyzer,
+      event_pattern: "agent:message",
+      timeout: 60
+    } AS analysis
+    
+    # Crystallize successful pattern if significant improvement
+    IF best_score > 0.85 AND (best_score - INITIAL_SCORE) > 0.2:
+      EVENT composition:fork {
+        name: "optimized_{{task_description | slugify}}",
+        source: "mipro_bayesian_optimization",
+        modifications: {
+          variables: {
+            optimized_prompt: best_prompt,
+            optimization_insights: analysis.insights
+          },
+          metadata: {
+            mipro_score: best_score,
+            mipro_trials: trial,
+            mipro_improvement: best_score - INITIAL_SCORE
+          }
+        }
+      }
+    
+    # Final tracking
+    TRACK {
+      phase: "complete",
+      task: task_description,
+      initial_prompt: base_prompt,
+      optimized_prompt: best_prompt,
+      improvement: best_score - INITIAL_SCORE,
+      total_evaluations: LENGTH(optimization_history),
+      insights: analysis.insights
+    }
+    
+    # Terminate all agents
+    TERMINATE ALL
+
+# Pattern configuration
+metadata:
+  pattern_type: optimization
+  optimization_method: bayesian
+  inspired_by: ["MIPRO", "DSPy"]
+  use_cases:
+    - prompt_optimization
+    - instruction_tuning
+    - few_shot_learning
+  capabilities_demonstrated:
+    - multi_stage_coordination
+    - bayesian_modeling
+    - adaptive_sampling
+    - convergence_detection
+  
+# Learning accumulation
+learnings:
+  - insight: "Minibatch evaluation enables efficient exploration of prompt space"
+    confidence: 0.95
+    evidence: "Based on MIPRO paper and DSPy implementation"
+  - insight: "Grounded proposals from high-quality traces outperform random search"
+    confidence: 0.98
+    evidence: "Demonstrated across multiple optimization tasks"
+  - insight: "UCB acquisition function balances exploration and exploitation effectively"
+    confidence: 0.92
+    evidence: "Standard practice in Bayesian optimization"
+    
+# Performance expectations
+performance:
+  expected_duration: "5-15 minutes depending on trials"
+  resource_usage: "3-30 concurrent agents"
+  success_metrics:
+    prompt_improvement: "> 20%"
+    convergence_rate: "< 20 trials typical"

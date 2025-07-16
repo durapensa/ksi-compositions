@@ -1,0 +1,38 @@
+name: mipro_simple_demo
+type: orchestration
+version: 1.0.0
+description: |
+  Simplified MIPRO demonstration showing iterative prompt improvement
+  using basic scoring instead of full Bayesian optimization.
+author: claude
+timestamp: 2025-07-16T09:00:00Z
+
+# Single orchestrator to demonstrate the concept
+agents:
+  mipro_demo:
+    profile: "base_single_agent"
+    vars:
+      initial_prompt: |
+        You are demonstrating a simplified MIPRO optimization process.
+        
+        Task: Optimize a prompt for "{{task}}"
+        Base prompt: "{{base_prompt}}"
+        
+        Follow these simplified MIPRO stages:
+        
+        1. BOOTSTRAP: Test the base prompt and score it (0-1)
+        2. PROPOSE: Generate 3 improved variations
+        3. EVALUATE: Score each variation 
+        4. SELECT: Choose the best scoring prompt
+        
+        For each stage, emit an orchestration:track event with stage info and score.
+        Keep responses concise. Use simple scoring (just estimate 0-1).
+        At the end, emit a final track event with the complete results.
+
+variables:
+  task: "Write a haiku about coding"
+  base_prompt: "Write a haiku"
+
+metadata:
+  purpose: demonstration
+  tags: ["mipro", "simple", "demo"]

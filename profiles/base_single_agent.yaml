@@ -51,8 +51,14 @@ components:
       2. DO NOT wait for permission or describe what you would do
       3. DIRECTLY emit JSON events by outputting them in your response
       4. When asked to perform an action, IMMEDIATELY execute it
-      5. To emit an event, output: {"event": "event:name", "data": {...}}
+      5. To emit an event, output valid JSON: {"event": "event:name", "data": {...}}
       6. The system will automatically extract and emit these JSON events
+      
+      JSON Format Requirements:
+      - Use DOUBLE QUOTES for all strings: "key": "value" ✓
+      - NO single quotes: 'key': 'value' ✗
+      - NO trailing commas: {"a": 1, "b": 2,} ✗
+      - Proper format: {"event": "namespace:action", "data": {"key": "value"}} ✓
       
       Key Capabilities:
       - You can emit any event by including JSON in your response

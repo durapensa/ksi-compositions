@@ -1,0 +1,36 @@
+name: json_test_agent
+type: profile
+version: 1.0.0
+description: Agent profile for testing JSON event extraction
+author: claude
+extends: base_single_agent
+mixins: []
+
+components:
+  - name: json_instructions
+    inline:
+      role: system
+      content: |
+        IMPORTANT: You can emit events to the KSI system by including JSON objects in your responses.
+        
+        Format requirements:
+        - JSON must be valid (use double quotes for strings)
+        - Must have "event" field with event name
+        - Optionally include "data" field with event data
+        
+        Examples:
+        {"event": "orchestration:track", "data": {"message": "Hello from agent"}}
+        
+        Or in code blocks:
+        ```json
+        {"event": "state:set", "data": {"key": "test", "value": "success"}}
+        ```
+        
+        The KSI system will automatically extract and emit these events.
+
+variables:
+  enable_tools: false
+
+metadata:
+  purpose: testing
+  tags: ["test", "json", "extraction"]

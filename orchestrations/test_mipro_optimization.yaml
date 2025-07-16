@@ -1,0 +1,113 @@
+name: test_mipro_optimization
+type: orchestration
+version: 1.0.0
+description: Test orchestration for MIPRO Bayesian optimization
+author: claude
+timestamp: 2025-07-16T08:30:00Z
+
+# Define test orchestrator
+agents:
+  test_orchestrator:
+    profile: "base_orchestrator"
+    vars:
+      pattern_name: "test_mipro_optimization"
+      initial_prompt: |
+        You are a test orchestrator for the MIPRO optimization pattern.
+        
+        Your task:
+        1. Spawn a MIPRO orchestrator with test parameters
+        2. Monitor its progress
+        3. Collect and report results
+        
+        Follow the test strategy in orchestration_logic.
+
+variables:
+  # Test configuration
+  optimization_task: "Write a haiku about coding"
+  initial_prompt: "Write a haiku about coding. Be creative and insightful."
+  evaluation_suite: "basic_effectiveness"
+  
+  # Reduced parameters for testing
+  bootstrap_runs: 3
+  proposal_count: 5
+  optimization_trials: 5
+  batch_size: 2
+
+orchestration_logic:
+  strategy: |
+    ## Test MIPRO Optimization
+    
+    TRACK {
+      event: "test_started",
+      task: optimization_task,
+      timestamp: NOW()
+    }
+    
+    # Spawn MIPRO orchestrator
+    SPAWN {
+      profile: "base_orchestrator",
+      vars: {
+        initial_prompt: |
+          You are orchestrating a MIPRO Bayesian optimization process.
+          
+          Follow the mipro_bayesian_optimization pattern to optimize this prompt:
+          Task: {{optimization_task}}
+          Initial prompt: {{initial_prompt}}
+          
+          Use these reduced parameters for testing:
+          - Bootstrap runs: {{bootstrap_runs}}
+          - Proposals: {{proposal_count}}
+          - Trials: {{optimization_trials}}
+          - Batch size: {{batch_size}}
+          
+          Emit events to track progress:
+          - orchestration:track for phase transitions
+          - state:set for storing optimization state
+          - evaluation:prompt for testing prompts
+        },
+        pattern: "mipro_bayesian_optimization",
+        pattern_vars: {
+          task_description: optimization_task,
+          base_prompt: initial_prompt,
+          test_suite: evaluation_suite,
+          num_bootstrap_runs: bootstrap_runs,
+          num_proposals: proposal_count,
+          num_trials: optimization_trials,
+          minibatch_size: batch_size
+        }
+      }
+    } AS mipro_orchestrator
+    
+    # Monitor optimization progress
+    SUBSCRIBE {
+      patterns: ["orchestration:track", "evaluation:*", "agent:message"],
+      from: mipro_orchestrator
+    }
+    
+    # Wait for completion with generous timeout
+    AWAIT {
+      from: mipro_orchestrator,
+      event_pattern: "orchestration:track",
+      filter: "data.phase == 'complete'",
+      timeout: 600  # 10 minutes
+    } AS completion
+    
+    # Retrieve final results
+    EVENT state:get {
+      key: "mipro_optimization_{{optimization_task | slugify}}"
+    } AS final_state
+    
+    TRACK {
+      event: "test_completed",
+      task: optimization_task,
+      initial_prompt: initial_prompt,
+      optimized_prompt: completion.optimized_prompt,
+      improvement: completion.improvement,
+      total_duration: NOW() - START_TIME
+    }
+    
+    TERMINATE mipro_orchestrator
+
+metadata:
+  purpose: testing
+  tests: ["mipro_bayesian_optimization"]

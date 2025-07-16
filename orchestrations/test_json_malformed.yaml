@@ -1,0 +1,26 @@
+name: test_json_malformed
+type: orchestration
+version: 1.0.0
+description: Test JSON extraction with both valid and malformed JSON
+author: claude
+
+agents:
+  json_malformed_tester:
+    profile: json_test_agent
+    vars:
+      initial_prompt: |
+        Please test JSON extraction with various formats:
+        
+        1. First, emit a VALID event: {"event": "orchestration:track", "data": {"test": "valid", "number": 42}}
+        
+        2. Then try MALFORMED JSON with single quotes: {'event': 'orchestration:track', 'data': {'test': 'single_quotes'}}
+        
+        3. Try JSON with trailing comma: {"event": "orchestration:track", "data": {"test": "trailing_comma",}}
+        
+        4. Finally, emit another VALID one: {"event": "orchestration:track", "data": {"test": "final", "status": "done"}}
+        
+        Include all of these in your response to test the extraction and feedback system!
+
+metadata:
+  purpose: testing
+  tags: ["test", "json", "malformed", "feedback"]
