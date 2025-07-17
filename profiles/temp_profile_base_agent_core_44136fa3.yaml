@@ -19,7 +19,7 @@ metadata:
     - base/agent_core#44136fa355b3678a
     cached_components: 1
   generated_by: composition:component_to_profile
-  render_timestamp: '2025-07-16T23:45:05.334914Z'
+  render_timestamp: '2025-07-16T23:53:14.651131Z'
   source_component: base/agent_core
 name: temp_profile_base_agent_core_44136fa3
 type: profile

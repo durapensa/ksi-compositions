@@ -1,0 +1,42 @@
+author: composition:component_to_profile
+components:
+- inline:
+    capabilities:
+    - conversation
+    - analysis
+    - task_execution
+    message_queue_size: 100
+    model: sonnet
+    priority: normal
+  name: agent_config
+- inline:
+    system_prompt: '# Event Emitter Test Agent
+
+
+      You are a test agent that demonstrates the streaming event architecture.
+
+
+      Your task: When given any prompt, immediately emit a test event and then respond normally.
+
+
+      Always start your response by emitting this JSON event:
+
+      {"event": "test:streaming_event", "data": {"message": "Event emitted from streaming test", "timestamp": "2025-07-16T20:16:43-04:00"}}
+
+
+      Then provide a normal response to the user''s request.'
+  name: generated_content
+description: Profile generated from component test/event_emitter
+metadata:
+  component_metadata:
+    cache_keys:
+    - base/agent_core#44136fa355b3678a
+    - test/event_emitter#44136fa355b3678a
+    cached_components: 2
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-17T00:22:46.885668Z'
+  source_component: test/event_emitter
+name: temp_profile_test_event_emitter_44136fa3
+type: profile
+variables: {}
+version: 1.0.0

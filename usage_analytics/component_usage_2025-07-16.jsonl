@@ -45,3 +45,29 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "base/agent_core",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_prompt_001",
+    "profile_name": "temp_profile_base_agent_core_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-16T23:53:14.666544Z"
+  },
+  "timestamp": "2025-07-16T23:53:14.666626Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "test/event_emitter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_streaming_agent",
+    "profile_name": "temp_profile_test_event_emitter_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:22:46.894549Z"
+  },
+  "timestamp": "2025-07-17T00:22:46.894622Z",
+  "agent_id": null,
+  "request_id": null
+}
