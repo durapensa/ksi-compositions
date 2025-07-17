@@ -162,3 +162,29 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "components/personas/universal/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_persona_analyst",
+    "profile_name": "temp_profile_components_personas_universal_data_analyst_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T01:43:56.085299Z"
+  },
+  "timestamp": "2025-07-17T01:43:56.085385Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/agents/ksi_aware_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_ksi_analyst",
+    "profile_name": "temp_profile_components_agents_ksi_aware_analyst_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T01:45:40.673231Z"
+  },
+  "timestamp": "2025-07-17T01:45:40.673351Z",
+  "agent_id": null,
+  "request_id": null
+}

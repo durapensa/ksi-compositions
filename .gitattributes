@@ -1,0 +1,22 @@
+# KSI Component Compatibility Metadata
+# Format: path pattern=compatibility_attributes
+
+# Universal components (model-agnostic)
+components/personas/universal/*.md model=claude-* system=claude-code-1.0+ performance=balanced
+
+# Opus-optimized components (deep reasoning, long context)
+components/personas/claude_opus/*.md model=claude-opus-4 performance=reasoning context=long system=claude-code-1.0.54+
+
+# Sonnet-optimized components (efficiency, speed) 
+components/personas/claude_sonnet/*.md model=claude-sonnet-4 performance=speed context=medium system=claude-code-1.0.54+
+
+# KSI capability components by system version
+components/capabilities/claude_code_1.0.x/*.md system=claude-code-1.0+ model=claude-*
+components/capabilities/claude_code_1.1.x/*.md system=claude-code-1.1+ model=claude-*
+
+# Base system components
+components/base/*.md model=claude-* system=claude-code-1.0+ performance=baseline
+
+# Test and experimental components
+components/test/*.md model=claude-* system=claude-code-1.0+ performance=experimental
+components/stress_test/*.md model=claude-* system=claude-code-1.0+ performance=testing
