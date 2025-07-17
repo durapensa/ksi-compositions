@@ -2,4 +2,4 @@
 
 This is a test component for cache invalidation.
 
-Initial content: Version 1.0
+Updated content: Version 2.0 - Cache should be cleared!
