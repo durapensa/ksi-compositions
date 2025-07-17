@@ -71,3 +71,94 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "stress_test/base_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "stress_orchestrator_001",
+    "profile_name": "temp_profile_stress_test_base_orchestrator_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:29:48.634986Z"
+  },
+  "timestamp": "2025-07-17T00:29:48.635061Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "stress_test/worker_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "stress_worker_001",
+    "profile_name": "temp_profile_stress_test_worker_agent_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:34:36.653656Z"
+  },
+  "timestamp": "2025-07-17T00:34:36.653734Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "stress_test/worker_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_fixed_worker",
+    "profile_name": "temp_profile_stress_test_worker_agent_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:41:34.958101Z"
+  },
+  "timestamp": "2025-07-17T00:41:34.958188Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "stress_test/worker_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_fixed_worker_v2",
+    "profile_name": "temp_profile_stress_test_worker_agent_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:42:12.512005Z"
+  },
+  "timestamp": "2025-07-17T00:42:12.512120Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "stress_test/worker_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_cache_fixed",
+    "profile_name": "temp_profile_stress_test_worker_agent_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:50:44.769882Z"
+  },
+  "timestamp": "2025-07-17T00:50:44.769984Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "stress_test/worker_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "streaming_test_simple",
+    "profile_name": "temp_profile_stress_test_worker_agent_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T00:55:07.253259Z"
+  },
+  "timestamp": "2025-07-17T00:55:07.253346Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "stress_test/worker_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "debug_test_agent",
+    "profile_name": "temp_profile_stress_test_worker_agent_44136fa3",
+    "variables": {},
+    "spawn_timestamp": "2025-07-17T01:13:12.086549Z"
+  },
+  "timestamp": "2025-07-17T01:13:12.086657Z",
+  "agent_id": null,
+  "request_id": null
+}

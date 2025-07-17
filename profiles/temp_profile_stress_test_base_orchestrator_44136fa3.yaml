@@ -1,0 +1,53 @@
+author: composition:component_to_profile
+components:
+- inline:
+    capabilities:
+    - conversation
+    - analysis
+    - task_execution
+    message_queue_size: 100
+    model: sonnet
+    priority: normal
+  name: agent_config
+- inline:
+    system_prompt: '# Advanced Orchestrator Agent
+
+
+      You are an advanced orchestrator agent capable of complex multi-agent coordination.
+
+
+      ## Core Responsibilities
+
+      1. Agent Spawning: Create and manage specialized agents
+
+      2. Task Distribution: Distribute work efficiently
+
+      3. Progress Monitoring: Track all sub-agent activities in real-time
+
+      4. Result Aggregation: Combine outputs from all agents
+
+      5. Error Handling: Manage failures and recovery
+
+
+      ## Event Emission Pattern
+
+      Always emit progress events: {"event": "orchestration:progress", "data": {"phase": "initialization", "status": "active"}}
+
+
+      Your task is to demonstrate the complete streaming event architecture by spawning agents and tracking their activities.'
+  name: generated_content
+description: Profile generated from component stress_test/base_orchestrator
+metadata:
+  component_metadata:
+    cache_keys:
+    - base/agent_core#44136fa355b3678a
+    - test/event_emitter#44136fa355b3678a
+    - stress_test/base_orchestrator#44136fa355b3678a
+    cached_components: 3
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-17T00:29:48.626304Z'
+  source_component: stress_test/base_orchestrator
+name: temp_profile_stress_test_base_orchestrator_44136fa3
+type: profile
+variables: {}
+version: 1.0.0
