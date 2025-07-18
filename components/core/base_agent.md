@@ -1,0 +1,2 @@
+---
+component_type: core

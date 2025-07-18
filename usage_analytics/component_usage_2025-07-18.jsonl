@@ -1,0 +1,15 @@
+{
+  "component": "personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_c833b0a8",
+    "profile_name": "temp_profile_personas_analysts_data_analyst_dc52762a",
+    "variables": {
+      "agent_id": "agent_c833b0a8"
+    },
+    "spawn_timestamp": "2025-07-18T18:24:36.342851Z"
+  },
+  "timestamp": "2025-07-18T18:24:36.343231Z",
+  "agent_id": null,
+  "request_id": null
+}

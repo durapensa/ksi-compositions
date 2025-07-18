@@ -1,0 +1,385 @@
+name: mipro_game_theory_optimization
+type: orchestration
+version: 1.0.0
+description: |
+  MIPRO-style optimization for game theory components using multi-stage optimization.
+  Implements bootstrapping, grounded proposal, and discrete search phases
+  specifically tailored for game theory scenarios.
+author: optimization_service
+timestamp: 2025-01-18T10:00:00Z
+
+# Define orchestration agents
+agents:
+  mipro_coordinator:
+    profile: "personas/systematic_thinker"
+    vars:
+      prompt: |
+        You coordinate MIPRO optimization for {{component_name}} in {{game_type}} scenarios with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "mipro_coordinator_initialized", "component": "{{component_name}}", "game_type": "{{game_type}}"}}
+        ```
+        
+        Track:
+        1. Performance history across trials
+        2. Best performing variations  
+        3. Exploration vs exploitation balance
+        4. Convergence indicators
+        
+        Use Bayesian optimization principles to guide the search.
+        
+        ## MANDATORY: Report each phase transition:
+        ```json
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"phase": "bootstrapping|proposal|search|complete", "progress": 0.25}}}
+        ```
+
+  instruction_proposer:
+    profile: "personas/creative_thinker"
+    vars:
+      prompt: |
+        Generate instruction variations for {{component_name}} with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "proposer_initialized", "component": "{{component_name}}"}}
+        ```
+        
+        Consider:
+        1. Current best instructions and their scores
+        2. Failed approaches to avoid
+        3. Untested directions worth exploring
+        4. Game theory principles for {{game_type}}
+        
+        Balance creativity with grounded improvements.
+        
+        ## MANDATORY: Report each proposal:
+        ```json
+        {"event": "state:entity:create", "data": {"type": "prompt_proposal", "id": "proposal_{{index}}", "properties": {"variant": "text", "strategy": "type"}}}
+        ```
+
+  bootstrap_manager:
+    profile: "personas/data_analyst"
+    vars:
+      prompt: |
+        Manage few-shot examples for the optimization with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "bootstrap_manager_initialized"}}
+        ```
+        
+        Tasks:
+        1. Collect high-scoring examples from trials
+        2. Filter for diversity and quality
+        3. Format examples for instruction context
+        4. Track which examples correlate with success
+        
+        ## MANDATORY: Report example updates:
+        ```json
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_examples", "properties": {"high_quality_count": 5, "diversity_score": 0.8}}}
+        ```
+
+  game_evaluator:
+    profile: "evaluations/game_theory_quality"
+    vars:
+      prompt: |
+        Evaluate {{component_name}} variations in {{game_type}} scenarios with MANDATORY reporting.
+        
+        ## MANDATORY: Start with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "evaluator_initialized", "game_type": "{{game_type}}"}}
+        ```
+        
+        Use comprehensive game theory metrics:
+        - Nash equilibrium proximity
+        - Pareto efficiency
+        - Fairness index
+        - Strategic robustness
+        
+        ## MANDATORY: Report evaluation results:
+        ```json
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_evaluation", "properties": {"composite_score": 0.82, "nash_proximity": 0.90, "pareto_efficiency": 0.85}}}
+        ```
+
+# Variables for configuration
+variables:
+  component_name: "{{component_name}}"
+  game_type: "{{game_type|default:'negotiation'}}"
+  num_trials: "{{num_trials|default:20}}"
+  exploration_rate: "{{exploration_rate|default:0.3}}"
+  convergence_threshold: 0.02  # Stop when improvement < 2%
+  
+  # Agent models
+  coordinator_model: "claude-cli/sonnet"
+  proposer_model: "claude-cli/sonnet"
+  evaluator_model: "claude-cli/sonnet"
+
+orchestration_logic:
+  strategy: |
+    ## MIPRO Game Theory Component Optimization Strategy
+    
+    ### Phase 1: Initialization
+    STATE optimization_history = []
+    STATE best_component = null
+    STATE best_score = 0.0
+    STATE current_phase = "initialization"
+    
+    TRACK {
+      phase: "initialization",
+      component: "{{component_name}}",
+      game_type: "{{game_type}}",
+      num_trials: {{num_trials}}
+    }
+    
+    # Load target component
+    EVENT composition:get_component {
+      name: "{{component_name}}"
+    } AS base_component
+    
+    ### Phase 2: Bootstrapping
+    STATE current_phase = "bootstrapping"
+    
+    TRACK {
+      phase: "bootstrapping",
+      message: "Generating initial variations and collecting baseline performance"
+    }
+    
+    # Generate initial instruction candidates
+    SEND {
+      to: instruction_proposer,
+      message: {
+        action: "generate_initial",
+        base_component: base_component,
+        count: 5,
+        game_type: "{{game_type}}"
+      }
+    }
+    
+    AWAIT {
+      from: instruction_proposer,
+      event_pattern: "agent:message",
+      timeout: 60
+    } AS initial_proposals
+    
+    # Bootstrap initial examples from baseline runs
+    FOREACH proposal IN initial_proposals.variations:
+      SEND {
+        to: game_evaluator,
+        message: {
+          action: "evaluate",
+          component: proposal,
+          game_type: "{{game_type}}",
+          scenarios: ["cooperation", "competition", "mixed"]
+        }
+      }
+    
+    AWAIT {
+      from: game_evaluator,
+      event_pattern: "agent:message",
+      timeout: 120,
+      collect_all: true
+    } AS bootstrap_results
+    
+    # Update bootstrap manager with results
+    SEND {
+      to: bootstrap_manager,
+      message: {
+        action: "update_examples",
+        results: bootstrap_results,
+        filter_threshold: 0.7
+      }
+    }
+    
+    ### Phase 3: Optimization Loop
+    STATE current_phase = "optimization"
+    STATE trials_without_improvement = 0
+    
+    LOOP trial FROM 1 TO {{num_trials}}:
+      
+      TRACK {
+        phase: "optimization",
+        trial: trial,
+        current_best: best_score
+      }
+      
+      # Request new instruction based on history
+      SEND {
+        to: mipro_coordinator,
+        message: {
+          action: "propose_next",
+          history: optimization_history,
+          exploration_rate: {{exploration_rate}},
+          trial: trial
+        }
+      }
+      
+      AWAIT {
+        from: mipro_coordinator,
+        timeout: 30
+      } AS coordination_decision
+      
+      # Generate new proposal based on coordinator guidance
+      SEND {
+        to: instruction_proposer,
+        message: {
+          action: "generate_variation",
+          strategy: coordination_decision.strategy,
+          base: coordination_decision.base_variant,
+          examples: bootstrap_manager.current_examples
+        }
+      }
+      
+      AWAIT {
+        from: instruction_proposer,
+        timeout: 60
+      } AS new_proposal
+      
+      # Evaluate the new proposal
+      SEND {
+        to: game_evaluator,
+        message: {
+          action: "evaluate",
+          component: new_proposal.component,
+          game_type: "{{game_type}}",
+          detailed: true
+        }
+      }
+      
+      AWAIT {
+        from: game_evaluator,
+        timeout: 90
+      } AS evaluation_result
+      
+      # Update history
+      APPEND optimization_history {
+        trial: trial,
+        component: new_proposal.component,
+        score: evaluation_result.composite_score,
+        metrics: evaluation_result.breakdown,
+        strategy: coordination_decision.strategy
+      }
+      
+      # Check for improvement
+      IF evaluation_result.composite_score > best_score:
+        STATE improvement = evaluation_result.composite_score - best_score
+        STATE best_score = evaluation_result.composite_score
+        STATE best_component = new_proposal.component
+        STATE trials_without_improvement = 0
+        
+        TRACK {
+          event: "new_best_found",
+          trial: trial,
+          score: best_score,
+          improvement: improvement,
+          metrics: evaluation_result.breakdown
+        }
+        
+        # Update bootstrap examples
+        SEND {
+          to: bootstrap_manager,
+          message: {
+            action: "add_high_scorer",
+            result: evaluation_result
+          }
+        }
+      ELSE:
+        STATE trials_without_improvement = trials_without_improvement + 1
+      
+      # Check convergence
+      IF trials_without_improvement >= 5 OR improvement < {{convergence_threshold}}:
+        TRACK {
+          event: "convergence_detected",
+          trial: trial,
+          reason: "no_improvement",
+          final_score: best_score
+        }
+        BREAK
+      
+      # Bayesian optimization guidance
+      SEND {
+        to: mipro_coordinator,
+        message: {
+          action: "update_beliefs",
+          new_result: evaluation_result,
+          trial: trial
+        }
+      }
+    
+    ### Phase 4: Finalization
+    STATE current_phase = "finalization"
+    
+    TRACK {
+      phase: "finalization",
+      total_trials: LENGTH(optimization_history),
+      best_score: best_score,
+      improvement: best_score - bootstrap_results[0].score
+    }
+    
+    # Create optimized component
+    IF best_score > 0.85:
+      EVENT composition:create_component {
+        name: "{{component_name}}_optimized",
+        content: best_component.content,
+        metadata: {
+          mipro_optimized: true,
+          original_component: "{{component_name}}",
+          optimization_score: best_score,
+          game_type: "{{game_type}}",
+          trials: LENGTH(optimization_history)
+        }
+      }
+    
+    # Generate improvement report
+    EVENT optimization:get_git_info {
+      action: "tag_experiment",
+      tag_name: "mipro_{{component_name}}_{{game_type}}_{{best_score}}",
+      metadata: {
+        component: "{{component_name}}",
+        game_type: "{{game_type}}",
+        best_score: best_score,
+        trials: LENGTH(optimization_history),
+        improvement: best_score - bootstrap_results[0].score
+      }
+    }
+    
+    TRACK {
+      phase: "complete",
+      component: "{{component_name}}",
+      game_type: "{{game_type}}",
+      initial_score: bootstrap_results[0].score,
+      final_score: best_score,
+      improvement: best_score - bootstrap_results[0].score,
+      total_evaluations: LENGTH(optimization_history),
+      convergence_trial: trial
+    }
+    
+    # Request termination
+    EVENT orchestration:request_termination {
+      reason: "MIPRO optimization complete",
+      results: {
+        best_score: best_score,
+        improvement: best_score - bootstrap_results[0].score,
+        optimized_component: "{{component_name}}_optimized"
+      }
+    }
+
+# Pattern metadata
+metadata:
+  pattern_type: optimization
+  optimization_method: mipro_bayesian
+  domain: game_theory
+  capabilities_demonstrated:
+    - multi_stage_optimization
+    - bayesian_search
+    - component_improvement
+    - game_theory_evaluation
+  tags: ["mipro", "optimization", "game_theory"]
+
+# Performance expectations
+performance:
+  expected_duration: "10-30 minutes"
+  resource_usage: "4-8 concurrent agents"
+  success_metrics:
+    score_improvement: "> 15%"
+    convergence_trials: "< 20"
