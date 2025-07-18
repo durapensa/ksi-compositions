@@ -1,0 +1,321 @@
+name: prisoners_dilemma_judge_evaluation
+type: orchestration
+version: 1.0.0
+description: |
+  Focused Prisoner's Dilemma implementation for testing judge-based evaluation.
+  Uses pairwise comparison judges to evaluate strategy quality through relative ranking.
+author: ksi_system
+timestamp: 2025-01-18T12:00:00Z
+
+# Define agents
+agents:
+  # Two game players with different strategies
+  player_a:
+    profile: "personas/game_players/adaptive_cooperator"
+    vars:
+      agent_id: "player_a_{{session_id}}"
+      strategy_description: "Start cooperative, adapt based on opponent"
+      prompt: |
+        You are Player A in an iterated Prisoner's Dilemma game.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "player_initialized", "strategy": "adaptive_cooperator"}}
+        
+        Your strategy: Start by cooperating, then adapt based on opponent behavior.
+        - If opponent cooperates consistently, continue cooperating
+        - If opponent defects, retaliate but be willing to forgive
+        - Look for patterns in opponent's play
+        
+        Game payoffs:
+        - Both cooperate: 3 points each
+        - You defect, they cooperate: 5 points for you, 0 for them
+        - Both defect: 1 point each
+        - You cooperate, they defect: 0 points for you, 5 for them
+        
+        ## MANDATORY: For each move, emit:
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_move", "properties": {"round": N, "action": "cooperate|defect", "reasoning": "explanation"}}}
+
+  player_b:
+    profile: "personas/game_players/tit_for_tat"
+    vars:
+      agent_id: "player_b_{{session_id}}"
+      strategy_description: "Classic tit-for-tat with forgiveness"
+      prompt: |
+        You are Player B in an iterated Prisoner's Dilemma game.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "player_initialized", "strategy": "tit_for_tat_forgiving"}}
+        
+        Your strategy: Tit-for-tat with occasional forgiveness.
+        - Start by cooperating
+        - Copy opponent's last move
+        - Occasionally (10% chance) forgive defection and cooperate anyway
+        - Explain your reasoning for each decision
+        
+        Game payoffs: [Same as Player A]
+        
+        ## MANDATORY: For each move, emit:
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_move", "properties": {"round": N, "action": "cooperate|defect", "reasoning": "explanation"}}}
+
+  # Pairwise comparison judge
+  strategy_judge:
+    profile: "personas/judges/game_theory_pairwise_judge"
+    vars:
+      agent_id: "judge_{{session_id}}"
+      comparison_id: "pd_comparison_{{session_id}}"
+      prompt_suffix: |
+        
+        You will receive two game transcripts to compare.
+        Focus on:
+        - Strategic sophistication and adaptation
+        - Quality of reasoning about opponent behavior
+        - Long-term vs short-term thinking
+        - Recovery from defection spirals
+
+# Configuration
+variables:
+  num_rounds: "{{num_rounds|default:20}}"
+  session_id: "{{session_id}}"
+  
+  # Models for different roles
+  player_model: "claude-cli/sonnet"
+  judge_model: "claude-cli/sonnet"
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Initialize Game
+    STATE game_history = []
+    STATE player_a_score = 0
+    STATE player_b_score = 0
+    STATE round_number = 0
+    
+    TRACK {
+      phase: "initialization",
+      event: "game_started",
+      players: ["player_a", "player_b"],
+      judge: "strategy_judge",
+      rounds: {{num_rounds}}
+    }
+    
+    # Spawn players
+    EVENT agent:spawn {
+      agent_id: "player_a_{{session_id}}",
+      profile: "personas/game_players/adaptive_cooperator",
+      model: "{{player_model}}"
+    }
+    
+    EVENT agent:spawn {
+      agent_id: "player_b_{{session_id}}",
+      profile: "personas/game_players/tit_for_tat",
+      model: "{{player_model}}"
+    }
+    
+    # Wait for initialization
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: "player_initialized"},
+      count: 2,
+      timeout: 30
+    }
+    
+    ## Phase 2: Play Game
+    LOOP round FROM 1 TO {{num_rounds}}:
+      STATE round_number = round
+      
+      TRACK {
+        phase: "playing",
+        round: round,
+        scores: {a: player_a_score, b: player_b_score}
+      }
+      
+      # Players make simultaneous decisions
+      SEND {
+        to: [player_a, player_b],
+        message: {
+          action: "make_move",
+          round: round,
+          history: game_history,
+          your_score: CONDITIONAL(agent_id == "player_a", player_a_score, player_b_score),
+          opponent_score: CONDITIONAL(agent_id == "player_a", player_b_score, player_a_score)
+        }
+      }
+      
+      # Collect moves
+      AWAIT {
+        event_pattern: "state:entity:update",
+        filter: {id_pattern: "*_move"},
+        count: 2,
+        timeout: 45
+      } AS moves
+      
+      # Process round results
+      STATE move_a = EXTRACT(moves, agent_id == "player_a_{{session_id}}")
+      STATE move_b = EXTRACT(moves, agent_id == "player_b_{{session_id}}")
+      
+      # Calculate scores
+      IF move_a.action == "cooperate" AND move_b.action == "cooperate":
+        STATE player_a_score += 3
+        STATE player_b_score += 3
+        STATE outcome = "mutual_cooperation"
+      ELIF move_a.action == "defect" AND move_b.action == "cooperate":
+        STATE player_a_score += 5
+        STATE player_b_score += 0
+        STATE outcome = "a_exploits_b"
+      ELIF move_a.action == "cooperate" AND move_b.action == "defect":
+        STATE player_a_score += 0
+        STATE player_b_score += 5
+        STATE outcome = "b_exploits_a"
+      ELSE:
+        STATE player_a_score += 1
+        STATE player_b_score += 1
+        STATE outcome = "mutual_defection"
+      
+      # Record history
+      APPEND game_history {
+        round: round,
+        player_a: {
+          action: move_a.action,
+          reasoning: move_a.reasoning
+        },
+        player_b: {
+          action: move_b.action,
+          reasoning: move_b.reasoning
+        },
+        outcome: outcome,
+        scores: {a: player_a_score, b: player_b_score}
+      }
+      
+      TRACK {
+        event: "round_complete",
+        round: round,
+        moves: {a: move_a.action, b: move_b.action},
+        outcome: outcome,
+        cumulative_scores: {a: player_a_score, b: player_b_score}
+      }
+    
+    ## Phase 3: Judge Evaluation
+    TRACK {
+      phase: "evaluation",
+      final_scores: {a: player_a_score, b: player_b_score},
+      cooperation_rate: CALCULATE_COOPERATION_RATE(game_history)
+    }
+    
+    # Spawn judge
+    EVENT agent:spawn {
+      agent_id: "judge_{{session_id}}",
+      profile: "personas/judges/game_theory_pairwise_judge",
+      model: "{{judge_model}}"
+    }
+    
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: "judge_initialized"},
+      timeout: 30
+    }
+    
+    # Send game transcripts for comparison
+    SEND {
+      to: strategy_judge,
+      message: {
+        action: "compare_strategies",
+        strategy_a: {
+          name: "adaptive_cooperator",
+          transcript: EXTRACT_PLAYER_TRANSCRIPT(game_history, "player_a"),
+          final_score: player_a_score,
+          cooperation_rate: CALCULATE_PLAYER_COOPERATION(game_history, "player_a")
+        },
+        strategy_b: {
+          name: "tit_for_tat_forgiving",
+          transcript: EXTRACT_PLAYER_TRANSCRIPT(game_history, "player_b"),
+          final_score: player_b_score,
+          cooperation_rate: CALCULATE_PLAYER_COOPERATION(game_history, "player_b")
+        },
+        game_summary: {
+          total_rounds: {{num_rounds}},
+          mutual_cooperation_rounds: COUNT_OUTCOMES(game_history, "mutual_cooperation"),
+          mutual_defection_rounds: COUNT_OUTCOMES(game_history, "mutual_defection"),
+          exploitation_rounds: COUNT_OUTCOMES(game_history, ["a_exploits_b", "b_exploits_a"])
+        }
+      }
+    }
+    
+    # Wait for comparison result
+    AWAIT {
+      event_pattern: "state:entity:create",
+      filter: {type: "pairwise_comparison"},
+      timeout: 90
+    } AS comparison_result
+    
+    # Wait for improvement suggestions
+    AWAIT {
+      event_pattern: "state:entity:update",
+      filter: {id: "comparison_{{session_id}}"},
+      timeout: 30
+    } AS improvement_suggestions
+    
+    ## Phase 4: Results Summary
+    TRACK {
+      phase: "complete",
+      game_results: {
+        final_scores: {a: player_a_score, b: player_b_score},
+        score_winner: IF(player_a_score > player_b_score, "player_a", "player_b"),
+        cooperation_rates: {
+          overall: CALCULATE_COOPERATION_RATE(game_history),
+          player_a: CALCULATE_PLAYER_COOPERATION(game_history, "player_a"),
+          player_b: CALCULATE_PLAYER_COOPERATION(game_history, "player_b")
+        }
+      },
+      judge_evaluation: {
+        strategy_winner: comparison_result.properties.winner,
+        confidence: comparison_result.properties.confidence,
+        margin: comparison_result.properties.margin,
+        key_factors: comparison_result.properties.key_factors
+      },
+      insights: improvement_suggestions.properties.improvement_suggestions
+    }
+    
+    # Clean up agents
+    EVENT orchestration:request_termination {
+      reason: "Prisoner's Dilemma evaluation complete",
+      results: {
+        game_winner: IF(player_a_score > player_b_score, "player_a", "player_b"),
+        judge_winner: comparison_result.properties.winner,
+        agreement: (game_winner == judge_winner),
+        key_insights: improvement_suggestions.properties
+      }
+    }
+
+# Helper function definitions (pseudo-code)
+helpers:
+  CALCULATE_COOPERATION_RATE: |
+    total_cooperations / (total_rounds * 2)
+  
+  CALCULATE_PLAYER_COOPERATION: |
+    player_cooperations / total_rounds
+  
+  EXTRACT_PLAYER_TRANSCRIPT: |
+    [{round, action, reasoning} for each round where player = specified]
+  
+  COUNT_OUTCOMES: |
+    count of rounds where outcome matches pattern
+
+# Metadata
+metadata:
+  pattern_type: evaluation
+  evaluation_method: pairwise_comparison
+  domain: game_theory
+  capabilities_demonstrated:
+    - judge_based_evaluation
+    - relative_ranking
+    - strategy_comparison
+    - improvement_generation
+  tags: ["prisoner_dilemma", "pairwise_judge", "strategy_evaluation"]
+
+# Performance expectations
+performance:
+  expected_duration: "5-10 minutes"
+  resource_usage: "3 concurrent agents max"
+  success_metrics:
+    judge_agreement: "Judge verdict aligns with score winner"
+    insight_quality: "Actionable improvement suggestions"
+    explanation_depth: "Rich strategic reasoning captured"

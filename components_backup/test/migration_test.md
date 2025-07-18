@@ -1,1 +1,0 @@
-# Migration Test\n\nThis component tests the migration from fragments to components.

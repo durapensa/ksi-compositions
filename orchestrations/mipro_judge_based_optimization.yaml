@@ -1,0 +1,396 @@
+name: mipro_judge_based_optimization
+type: orchestration
+version: 1.0.0
+description: |
+  MIPRO optimization for game theory prompts using LLM-as-Judge evaluation.
+  Implements the co-evolutionary bootstrap system where judges and strategies improve together.
+author: ksi_system
+timestamp: 2025-01-18T13:00:00Z
+
+# Define agents
+agents:
+  # MIPRO Optimization Coordinator
+  optimization_coordinator:
+    profile: "components/core/system_orchestrator"
+    vars:
+      agent_id: "mipro_coordinator_{{session_id}}"
+      prompt: |
+        You coordinate MIPRO optimization using judge-based evaluation.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordinator_initialized", "optimization_target": "{{target_component}}"}}
+        
+        Your role:
+        1. Manage optimization phases (bootstrap, proposal, search)
+        2. Track performance using relative rankings from judges
+        3. Build Elo-style ratings from pairwise comparisons
+        4. Guide search based on judge feedback patterns
+        
+        ## MANDATORY: Track optimization state:
+        {"event": "state:entity:create", "data": {"type": "optimization_state", "id": "{{agent_id}}_state", "properties": {"phase": "bootstrap", "iterations": 0, "best_variant": null}}}
+
+  # Prompt Variant Generator
+  prompt_generator:
+    profile: "components/personas/creative_thinker" 
+    vars:
+      agent_id: "prompt_gen_{{session_id}}"
+      prompt_suffix: |
+        
+        Generate strategic prompt variations for game theory agents.
+        Focus on:
+        - Strategic sophistication and multi-level thinking
+        - Clear explanation of reasoning
+        - Adaptive behavior patterns
+        - Theory of mind capabilities
+
+  # Tournament Runner
+  tournament_runner:
+    profile: "components/core/system_orchestrator"
+    vars:
+      agent_id: "tournament_{{session_id}}"
+      prompt: |
+        You run game tournaments and collect transcripts for judge evaluation.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "tournament_initialized"}}
+        
+        For each matchup:
+        1. Spawn two game agents with different prompt variants
+        2. Run the game (simplified, 10 rounds)
+        3. Collect reasoning transcripts
+        4. Package for judge comparison
+
+  # Judge Ensemble Coordinator
+  judge_coordinator:
+    profile: "components/core/system_orchestrator"
+    vars:
+      agent_id: "judge_coord_{{session_id}}"
+      prompt: |
+        You coordinate multiple specialized judges for comprehensive evaluation.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "judge_coordinator_initialized"}}
+        
+        Manage:
+        1. Strategic Depth Judge - evaluates reasoning sophistication
+        2. Adaptation Judge - scores learning and flexibility
+        3. Explanation Judge - rates clarity of strategic thinking
+        4. Meta Judge - aggregates and resolves disagreements
+
+# Configuration
+variables:
+  session_id: "{{session_id}}"
+  target_component: "{{target_component|default:'components/personas/game_players/strategic_reasoner'}}"
+  num_iterations: "{{num_iterations|default:10}}"
+  variants_per_iteration: "{{variants_per_iteration|default:4}}"
+  games_per_variant: "{{games_per_variant|default:3}}"
+  
+  # Models
+  coordinator_model: "claude-cli/sonnet"
+  generator_model: "claude-cli/sonnet"
+  player_model: "claude-cli/sonnet"
+  judge_model: "claude-cli/sonnet"
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Initialize Optimization
+    STATE elo_ratings = {}  # Track relative performance
+    STATE prompt_variants = []
+    STATE comparison_history = []
+    STATE current_iteration = 0
+    STATE convergence_threshold = 0.02
+    
+    TRACK {
+      phase: "initialization",
+      target: "{{target_component}}",
+      optimization_method: "mipro_with_judges",
+      iterations_planned: {{num_iterations}}
+    }
+    
+    # Load base component
+    EVENT composition:get_component {
+      name: "{{target_component}}"
+    } AS base_component
+    
+    # Initialize with base variant
+    APPEND prompt_variants {
+      id: "base",
+      content: base_component.content,
+      elo_rating: 1500,
+      games_played: 0,
+      comparison_wins: 0
+    }
+    
+    ## Phase 2: Bootstrap with Initial Variants
+    TRACK {phase: "bootstrap", message: "Generating initial prompt variants"}
+    
+    # Generate initial variants
+    SEND {
+      to: prompt_generator,
+      message: {
+        action: "generate_variants",
+        base_prompt: base_component.content,
+        count: {{variants_per_iteration}},
+        focus_areas: ["strategic_reasoning", "adaptation", "explanation_quality"],
+        variation_strategies: ["emphasize_different_aspects", "restructure_instructions", "add_examples"]
+      }
+    }
+    
+    AWAIT {
+      from: prompt_generator,
+      timeout: 60
+    } AS initial_variants
+    
+    # Add variants to pool
+    FOREACH variant IN initial_variants.variants:
+      APPEND prompt_variants {
+        id: "variant_{{LENGTH(prompt_variants)}}",
+        content: variant.content,
+        elo_rating: 1500,
+        games_played: 0,
+        comparison_wins: 0,
+        generation: 0,
+        strategy: variant.strategy
+      }
+    
+    ## Phase 3: Optimization Loop
+    LOOP iteration FROM 1 TO {{num_iterations}}:
+      STATE current_iteration = iteration
+      
+      TRACK {
+        phase: "optimization",
+        iteration: iteration,
+        active_variants: LENGTH(prompt_variants),
+        top_elo: MAX(prompt_variants, v.elo_rating)
+      }
+      
+      # Select variants for tournament (top performers + exploration)
+      STATE tournament_variants = SELECT_FOR_TOURNAMENT(prompt_variants, 4)
+      
+      # Run pairwise comparisons
+      STATE comparisons_this_round = []
+      
+      FOREACH pair IN COMBINATIONS(tournament_variants, 2):
+        TRACK {
+          event: "running_comparison",
+          variant_a: pair[0].id,
+          variant_b: pair[1].id
+        }
+        
+        # Run game between variants
+        SEND {
+          to: tournament_runner,
+          message: {
+            action: "run_game",
+            variant_a: pair[0],
+            variant_b: pair[1],
+            game_type: "prisoners_dilemma",
+            rounds: 10
+          }
+        }
+        
+        AWAIT {
+          from: tournament_runner,
+          timeout: 120
+        } AS game_result
+        
+        # Judge comparison
+        SEND {
+          to: judge_coordinator,
+          message: {
+            action: "compare_strategies",
+            transcript_a: game_result.transcript_a,
+            transcript_b: game_result.transcript_b,
+            judges: ["strategic_depth", "adaptation", "explanation"],
+            aggregation: "majority_vote"
+          }
+        }
+        
+        AWAIT {
+          from: judge_coordinator,
+          timeout: 90
+        } AS judge_verdict
+        
+        # Update Elo ratings
+        STATE winner_idx = IF(judge_verdict.winner == "strategy_a", 0, 1)
+        STATE loser_idx = 1 - winner_idx
+        
+        STATE new_ratings = UPDATE_ELO(
+          pair[winner_idx].elo_rating,
+          pair[loser_idx].elo_rating,
+          k_factor=32
+        )
+        
+        UPDATE prompt_variants WHERE id == pair[winner_idx].id:
+          elo_rating = new_ratings.winner
+          games_played += 1
+          comparison_wins += 1
+        
+        UPDATE prompt_variants WHERE id == pair[loser_idx].id:
+          elo_rating = new_ratings.loser
+          games_played += 1
+        
+        APPEND comparisons_this_round {
+          winner: pair[winner_idx].id,
+          loser: pair[loser_idx].id,
+          confidence: judge_verdict.confidence,
+          key_factors: judge_verdict.key_factors,
+          improvement_insights: judge_verdict.improvements
+        }
+      
+      # Analyze round results
+      STATE round_insights = ANALYZE_COMPARISONS(comparisons_this_round)
+      
+      # Generate new variants based on insights
+      STATE top_variants = SELECT_TOP(prompt_variants, 2, by="elo_rating")
+      
+      SEND {
+        to: prompt_generator,
+        message: {
+          action: "generate_improved",
+          base_variants: top_variants,
+          insights: round_insights,
+          losing_patterns: EXTRACT_LOSING_PATTERNS(comparisons_this_round),
+          winning_patterns: EXTRACT_WINNING_PATTERNS(comparisons_this_round),
+          generation: iteration
+        }
+      }
+      
+      AWAIT {
+        from: prompt_generator,
+        timeout: 60
+      } AS new_variants
+      
+      # Add new variants
+      FOREACH variant IN new_variants.variants:
+        APPEND prompt_variants {
+          id: "variant_{{LENGTH(prompt_variants)}}",
+          content: variant.content,
+          elo_rating: 1500,  # Start at baseline
+          games_played: 0,
+          comparison_wins: 0,
+          generation: iteration,
+          strategy: variant.strategy,
+          parent: variant.parent_id
+        }
+      
+      # Prune poor performers (keep pool manageable)
+      IF LENGTH(prompt_variants) > 10:
+        STATE sorted_variants = SORT(prompt_variants, by="elo_rating", descending=true)
+        STATE prompt_variants = SLICE(sorted_variants, 0, 8)  # Keep top 8
+      
+      # Check convergence
+      STATE rating_variance = VARIANCE(prompt_variants, v.elo_rating)
+      IF rating_variance < convergence_threshold:
+        TRACK {
+          event: "convergence_detected",
+          iteration: iteration,
+          reason: "rating_stability",
+          top_rating: MAX(prompt_variants, v.elo_rating)
+        }
+        BREAK
+    
+    ## Phase 4: Final Evaluation and Selection
+    TRACK {phase: "finalization", message: "Selecting best variant"}
+    
+    # Run final tournament with top 3
+    STATE finalists = SELECT_TOP(prompt_variants, 3, by="elo_rating")
+    
+    # Comprehensive evaluation
+    SEND {
+      to: judge_coordinator,
+      message: {
+        action: "final_evaluation",
+        variants: finalists,
+        evaluation_depth: "comprehensive",
+        include_meta_judge: true
+      }
+    }
+    
+    AWAIT {
+      from: judge_coordinator,
+      timeout: 180
+    } AS final_evaluation
+    
+    STATE best_variant = SELECT_BEST(finalists, final_evaluation)
+    
+    # Create optimized component
+    EVENT composition:create_component {
+      name: "{{target_component}}_judge_optimized",
+      content: best_variant.content,
+      metadata: {
+        optimization_method: "mipro_judge_based",
+        original_component: "{{target_component}}",
+        final_elo: best_variant.elo_rating,
+        games_played: best_variant.games_played,
+        win_rate: best_variant.comparison_wins / best_variant.games_played,
+        iterations: current_iteration,
+        key_improvements: final_evaluation.improvement_summary
+      }
+    }
+    
+    # Generate optimization report
+    STATE optimization_summary = {
+      method: "MIPRO with LLM-as-Judge",
+      iterations: current_iteration,
+      variants_tested: LENGTH(comparison_history),
+      final_elo_spread: MAX(finalists, f.elo_rating) - MIN(finalists, f.elo_rating),
+      winning_patterns: EXTRACT_WINNING_PATTERNS(comparison_history),
+      convergence_achieved: rating_variance < convergence_threshold
+    }
+    
+    TRACK {
+      phase: "complete",
+      optimization_summary: optimization_summary,
+      best_variant_id: best_variant.id,
+      improvement_over_base: best_variant.elo_rating - 1500
+    }
+    
+    # Request termination
+    EVENT orchestration:request_termination {
+      reason: "MIPRO judge-based optimization complete",
+      results: optimization_summary
+    }
+
+# Helper functions
+helpers:
+  SELECT_FOR_TOURNAMENT: |
+    # Select top performers + some exploration
+    # 75% top by Elo, 25% random for diversity
+    
+  UPDATE_ELO: |
+    # Standard Elo rating update
+    # K-factor of 32 for rapid adaptation
+    
+  ANALYZE_COMPARISONS: |
+    # Extract patterns from judge feedback
+    # Identify what separates winners from losers
+    
+  EXTRACT_WINNING_PATTERNS: |
+    # Common factors in winning strategies
+    
+  EXTRACT_LOSING_PATTERNS: |
+    # Common weaknesses to avoid
+
+# Metadata
+metadata:
+  pattern_type: optimization
+  optimization_method: mipro_judge_based
+  evaluation_approach: pairwise_comparison
+  domain: game_theory
+  capabilities_demonstrated:
+    - llm_as_judge_evaluation
+    - elo_rating_system
+    - co_evolutionary_optimization
+    - pattern_extraction
+    - convergence_detection
+  tags: ["mipro", "optimization", "judge_based", "game_theory", "elo_rating"]
+
+# Performance expectations
+performance:
+  expected_duration: "20-40 minutes"
+  resource_usage: "4-6 concurrent agents"
+  success_metrics:
+    convergence_rate: "< 10 iterations typical"
+    elo_spread: "> 100 points between best and base"
+    pattern_discovery: "Clear winning strategies identified"

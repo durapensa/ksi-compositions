@@ -13,3 +13,33 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_854cc519",
+    "profile_name": "temp_profile_personas_analysts_data_analyst_019d4e16",
+    "variables": {
+      "agent_id": "agent_854cc519"
+    },
+    "spawn_timestamp": "2025-07-18T18:27:53.431067Z"
+  },
+  "timestamp": "2025-07-18T18:27:53.431398Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "personas/analysts/business_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_fc060efe",
+    "profile_name": "temp_profile_personas_analysts_business_analyst_13a6cae5",
+    "variables": {
+      "agent_id": "agent_fc060efe"
+    },
+    "spawn_timestamp": "2025-07-18T18:35:55.688407Z"
+  },
+  "timestamp": "2025-07-18T18:35:55.688837Z",
+  "agent_id": null,
+  "request_id": null
+}
