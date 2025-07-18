@@ -11,33 +11,63 @@ extends: game_theory_orchestration
 # Define concrete agents that implement the game theory DSL
 agents:
   game_orchestrator:
-    profile: "system/orchestrator"
+    profile: "base/agent_core"
     vars:
       pattern_name: "game_theory_orchestration_v2"
+      role: "game_theory_orchestrator"
+      expertise: "strategic_coordination"
       prompt: |
-        You are the game theory orchestrator implementing strategic multi-agent coordination.
+        You are a game theory orchestrator implementing strategic multi-agent coordination with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start EVERY orchestration with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "orchestrator_initialized", "expertise": "game_theory"}}
+        ```
         
         Your agent_id is: {{agent_id}}
         
         Your responsibilities:
         1. Initialize game environment using variables: game_type={{game_type}}, num_players={{num_players}}, max_rounds={{max_rounds}}
-        2. Spawn strategy agents based on game requirements
+        2. Spawn strategy agents based on game requirements  
         3. Coordinate game rounds and track progress toward equilibrium
         4. Calculate payoffs and identify Nash equilibria
-        5. Emit events to track decisions and crystallize patterns
+        5. Emit MANDATORY KSI events to track decisions and crystallize patterns
         
         Game Types:
         - cooperative: Enable coalition formation, Shapley values, Pareto optimization
         - competitive: Focus on Nash equilibrium, minimax strategies
         - mixed: Adaptive weights between cooperation and competition
         
+        ## MANDATORY Event Emission Pattern
+        
+        ### Initialization (MANDATORY)
+        "Initializing game environment. {"event": "state:entity:create", "data": {"type": "game_environment", "id": "{{agent_id}}_game", "properties": {"game_type": "{{game_type}}", "num_players": {{num_players}}, "max_rounds": {{max_rounds}}}}}
+        
+        Creating game state tracker... {"event": "state:entity:create", "data": {"type": "game_state", "id": "{{agent_id}}_state", "properties": {"current_round": 0, "nash_distance": 1.0, "social_welfare": 0}}}"
+        
+        ### Agent Spawning (MANDATORY)  
+        "Spawning strategy agents. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_game", "properties": {"phase": "agent_spawning", "agents_created": 0}}}
+        
+        Creating rational maximizer... {"event": "agent:spawn", "data": {"profile": "base/agent_core", "agent_id": "rational_{{agent_id}}", "vars": {"role": "rational_maximizer", "strategy": "maximize_utility"}}}
+        
+        Creating adaptive learner... {"event": "agent:spawn", "data": {"profile": "base/agent_core", "agent_id": "adaptive_{{agent_id}}", "vars": {"role": "adaptive_learner", "strategy": "evolve_strategy"}}}"
+        
+        ### Game Rounds (MANDATORY)
+        "Starting game round. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_state", "properties": {"current_round": 1, "phase": "strategy_collection"}}}
+        
+        Requesting strategies from agents... {"event": "message:send", "data": {"from": "{{agent_id}}", "to": "all_players", "content": "Submit your strategy for round 1"}}
+        
+        Calculating payoffs... {"event": "state:entity:update", "data": {"id": "{{agent_id}}_state", "properties": {"payoffs_calculated": true, "nash_distance": 0.3}}}
+        
+        Analyzing equilibrium convergence... {"event": "state:entity:update", "data": {"id": "{{agent_id}}_state", "properties": {"equilibrium_analysis": "converging", "convergence_rate": 0.7}}}"
+        
+        ### Completion (MANDATORY)
+        "Game theory analysis complete. {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "analysis_complete", "equilibrium_found": true, "social_welfare": 87.5}}
+        
+        Requesting orchestration termination... {"event": "orchestration:request_termination", "data": {"agent_id": "{{agent_id}}", "reason": "Game theory orchestration completed successfully"}}"
+        
         Use the DSL strategy from orchestration_logic as your guide.
-        Emit JSON events like: {"event": "game:round_complete", "data": {...}}
-        
-        When orchestration is complete, emit:
-        {"event": "orchestration:request_termination", "data": {"agent_id": "<use your actual agent_id from environment>", "reason": "Game completed successfully"}}
-        
-        IMPORTANT: Use your actual agent_id ({{agent_id}}) in the data field, not a placeholder.
+        IMPORTANT: Use your actual agent_id ({{agent_id}}) in all event data fields.
 
 metadata:
   tags:
@@ -113,66 +143,84 @@ orchestration_logic:
         reason: "Game theory orchestration completed successfully"
       }
 
-# Routing rules for game flow
+# Routing rules for game flow - Updated to use legitimate KSI events
 routing_rules:
-  # Strategy requests go to specific agents
-  - event: "game:request_strategy"
+  # Strategy coordination through message system
+  - event: "message:send"
+    condition: "content.includes('strategy')"
     to:
       agent_id: "{{target_agent}}"
     forward: true
   
-  # Game state broadcasts to all players
-  - event: "game:state_update"
+  # Game state broadcasts to all strategy agents
+  - event: "state:entity:update"
+    condition: "type == 'game_state'"
     to:
-      pattern: "orch_*_player_*"
+      pattern: "strategy_*_{{agent_id}}"
     broadcast: true
   
-  # Results go back to orchestrator
-  - event: "game:strategy_response"
+  # Strategy responses back to orchestrator
+  - event: "agent:status"
+    condition: "status.includes('strategy')"
     to:
       agent_id: "game_orchestrator"
     forward: true
 
-# Event transformers
+# Event transformers - Updated to use legitimate KSI events
 transformers:
-  # Transform initialization into agent spawning
-  - source: "game:spawn_players"
-    target: "agent:spawn"
+  # Transform state updates into agent spawning for strategy agents
+  - source: "state:entity:update"
+    target: "agent:spawn_from_component"
+    condition: "type == 'game_environment' AND phase == 'agent_spawning'"
     mapping:
-      count: "{{num_players}}"
-      profile: "system/single_agent"
-      name_pattern: "player_{{index}}"
-      vars:
+      component: "base/agent_core"
+      agent_id: "strategy_{{index}}_{{agent_id}}"
+      variables:
         role: "strategy_agent"
         strategy_type: "{{strategy_types[index]}}"
+        game_context: "{{game_type}}"
   
-  # Async equilibrium analysis
-  - source: "game:analyze_equilibrium"
+  # Async equilibrium analysis using completion service
+  - source: "state:entity:update"
     target: "completion:async"
+    condition: "id.endsWith('_state') AND properties.equilibrium_analysis"
     async: true
     mapping:
       prompt: |
         Analyze game state for Nash equilibrium:
-        Strategies: {{current_strategies}}
-        Payoffs: {{payoff_history}}
-        Identify equilibrium properties and distance.
-      model: "claude-cli/claude-sonnet-4-20250514"
-      request_id: "{{transform_id}}"
+        Current Strategies: {{current_strategies}}
+        Payoff History: {{payoff_history}}
+        Game Type: {{game_type}}
+        
+        Calculate:
+        1. Distance to Nash equilibrium
+        2. Social welfare metrics
+        3. Strategy stability analysis
+        4. Convergence predictions
+        
+        Return analysis with confidence scores.
+      model: "claude-cli/sonnet"
+      agent_id: "{{agent_id}}"
+      request_id: "equilibrium_{{timestamp}}"
     response_route:
       from: "completion:result"
-      to: "game:equilibrium_analyzed"
-      filter: "request_id == {{transform_id}}"
+      to: "state:entity:update"
+      mapping:
+        id: "{{agent_id}}_equilibrium_analysis"
+        properties: "{{analysis_results}}"
   
-  # Aggregate strategies using game theory methods
-  - source: "game:aggregate_strategies"
+  # Strategy aggregation through orchestration patterns
+  - source: "message:send"
     target: "orchestration:aggregate"
+    condition: "content.includes('strategy')"
     mapping:
-      responses: "{{strategy_responses}}"
-      method: "custom"
+      responses: "{{collected_strategies}}"
+      method: "consensus"
       options:
         aggregation_function: "game_theoretic_consensus"
         consider_payoffs: true
         weight_by_reputation: true
+        timeout_seconds: 30
 
 # Performance metrics
 performance:

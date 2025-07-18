@@ -11,16 +11,45 @@ timestamp: 2025-07-16T08:00:00Z
 # Define orchestrator agent to interpret the MIPRO DSL
 agents:
   mipro_orchestrator:
-    profile: "system/orchestrator"
+    profile: "base/agent_core"
     vars:
       pattern_name: "mipro_bayesian_optimization"
+      role: "mipro_orchestrator"
+      expertise: "bayesian_optimization"
       prompt: |
-        You are an orchestration agent implementing MIPRO Bayesian prompt optimization.
+        You are a MIPRO Bayesian prompt optimization orchestrator with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start EVERY optimization with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "mipro_initialized", "expertise": "bayesian_optimization"}}
+        ```
         
         Follow the three-stage MIPRO algorithm:
         1. Bootstrapping: Collect traces from unoptimized prompts
         2. Grounded Proposal: Generate candidate instructions
         3. Discrete Search: Use Bayesian optimization to find best combinations
+        
+        ## MANDATORY Event Emission Pattern
+        
+        ### Phase 1: Bootstrapping (MANDATORY)
+        "Starting MIPRO bootstrapping phase. {"event": "state:entity:create", "data": {"type": "mipro_session", "id": "{{agent_id}}_optimization", "properties": {"phase": "bootstrapping", "task": "{{task_description}}", "base_prompt": "{{base_prompt}}"}}}
+        
+        Spawning bootstrap evaluators... {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"bootstrap_agents": {{num_bootstrap_runs}}, "status": "collecting_traces"}}}"
+        
+        ### Phase 2: Grounded Proposal (MANDATORY)
+        "Entering grounded proposal phase. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"phase": "proposal", "high_quality_traces": 8, "proposal_target": {{num_proposals}}}}}
+        
+        Generating prompt proposals... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "proposer_{{agent_id}}", "variables": {"role": "prompt_proposer", "task": "generate_proposals"}}}"
+        
+        ### Phase 3: Bayesian Search (MANDATORY)
+        "Starting Bayesian optimization phase. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"phase": "bayesian_search", "proposals_ready": {{num_proposals}}, "trials_planned": {{num_trials}}}}}
+        
+        Spawning Bayesian optimizer... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "optimizer_{{agent_id}}", "variables": {"role": "bayesian_optimizer", "method": "TPE"}}}"
+        
+        ### Completion (MANDATORY)
+        "MIPRO optimization complete. {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_complete", "best_score": 0.92, "improvement": 0.35}}
+        
+        Finalizing optimization results... {"event": "orchestration:request_termination", "data": {"agent_id": "{{agent_id}}", "reason": "MIPRO Bayesian optimization completed successfully"}}"
         
         Use the orchestration primitives to coordinate agents and track optimization progress.
         Implement the pattern strategy defined in orchestration_logic.
@@ -64,25 +93,40 @@ orchestration_logic:
       message: "Starting MIPRO optimization for task: {{task_description}}"
     }
     
-    # Spawn bootstrap evaluators
-    SPAWN {
-      profile: "system/single_agent",
-      count: num_bootstrap_runs,
-      vars: {
+    # Spawn bootstrap evaluators using legitimate KSI events
+    EMIT "agent:spawn_from_component" FOR i IN 1..num_bootstrap_runs {
+      component: "base/agent_core",
+      agent_id: "bootstrap_{{i}}_{{agent_id}}",
+      variables: {
+        role: "prompt_evaluator",
         model: evaluator_model,
+        evaluation_task: task_description,
+        base_prompt: base_prompt,
         prompt: |
+          You are a prompt evaluator with MANDATORY KSI event reporting.
+          
+          ## MANDATORY: Start with:
+          ```json
+          {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "evaluator_initialized", "task": "{{evaluation_task}}"}}
+          ```
+          
           Evaluate this prompt for the task and provide a score (0-1):
-          Task: {{task_description}}
+          Task: {{evaluation_task}}
           Prompt: {{base_prompt}}
           
           Run the prompt with varied inputs and track:
           1. Success rate
-          2. Quality of responses
+          2. Quality of responses  
           3. Any failure patterns
           
-          Return JSON: {"score": float, "traces": [...], "insights": "..."}
+          ## MANDATORY: Report results with:
+          ```json
+          {"event": "state:entity:update", "data": {"id": "{{agent_id}}_evaluation", "properties": {"score": 0.75, "traces": [...], "insights": "detailed analysis"}}}
+          ```
+          
+          Return evaluation with MANDATORY event emission.
       }
-    } AS bootstrap_evaluators
+    }
     
     # Collect bootstrap results
     AWAIT {
@@ -104,13 +148,20 @@ orchestration_logic:
     ### Phase 2: Grounded Proposal Stage
     # Generate candidate instructions based on traces
     
-    # Spawn proposal generator
-    SPAWN {
-      profile: "system/single_agent",
-      vars: {
+    # Spawn proposal generator using legitimate KSI events  
+    EMIT "agent:spawn_from_component" {
+      component: "base/agent_core",
+      agent_id: "proposer_{{agent_id}}",
+      variables: {
+        role: "prompt_proposal_generator",
         model: proposer_model,
         prompt: |
-          You are a prompt engineering expert implementing MIPRO optimization.
+          You are a prompt engineering expert implementing MIPRO optimization with MANDATORY KSI event reporting.
+          
+          ## MANDATORY: Start with:
+          ```json
+          {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "proposer_initialized", "task": "prompt_generation"}}
+          ```
           
           Based on these high-quality execution traces, generate {{num_proposals}} 
           diverse prompt proposals for the task: {{task_description}}
@@ -123,14 +174,14 @@ orchestration_logic:
           3. Different cognitive strategies
           4. Task-specific optimizations
           
-          Return JSON: {
-            "proposals": [
-              {"id": "p1", "prompt": "...", "rationale": "...", "strategy": "..."},
-              ...
-            ]
-          }
+          ## MANDATORY: Report progress with:
+          ```json
+          {"event": "state:entity:update", "data": {"id": "{{agent_id}}_proposals", "properties": {"proposals_generated": 15, "strategies_covered": ["direct", "explanatory", "step_by_step"]}}}
+          ```
+          
+          Return JSON proposals with MANDATORY event emission.
       }
-    } AS proposer
+    }
     
     AWAIT {
       from: proposer,

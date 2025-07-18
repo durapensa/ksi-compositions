@@ -11,11 +11,18 @@ extends: null
 # Define concrete agents that implement the game theory DSL
 agents:
   game_orchestrator:
-    profile: "system/orchestrator"
+    profile: "base/agent_core"
     vars:
       pattern_name: "game_theory_orchestration"
+      role: "game_theory_orchestrator"
+      expertise: "strategic_coordination"
       prompt: |
-        You are the game theory orchestrator implementing the pattern's DSL strategy.
+        You are a game theory orchestrator implementing strategic multi-agent coordination with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start EVERY orchestration with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "orchestrator_initialized", "expertise": "game_theory"}}
+        ```
         
         Your role is to:
         1. Initialize the game environment based on the provided variables
@@ -29,17 +36,53 @@ agents:
         - num_players: {{num_players}}
         - max_rounds: {{max_rounds}}
         
+        ## MANDATORY Event Emission Pattern
+        
+        ### Game Environment Setup (MANDATORY)
+        "Setting up game environment. {"event": "state:entity:create", "data": {"type": "game_environment", "id": "{{agent_id}}_game", "properties": {"game_type": "{{game_type}}", "num_players": {{num_players}}, "max_rounds": {{max_rounds}}}}}
+        
+        Configuring game rules... {"event": "state:entity:create", "data": {"type": "game_rules", "id": "{{agent_id}}_rules", "properties": {"payoff_matrix": "standard", "coalition_allowed": true, "communication": "partial"}}}"
+        
+        ### Strategic Agent Creation (MANDATORY)
+        "Creating strategic agents. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_game", "properties": {"phase": "agent_creation", "agents_needed": {{num_players}}}}}
+        
+        Spawning rational maximizer... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "rational_{{agent_id}}", "variables": {"role": "rational_maximizer", "strategy": "maximize_expected_utility"}}}
+        
+        Spawning tit-for-tat agent... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "tft_{{agent_id}}", "variables": {"role": "tit_for_tat", "strategy": "cooperative_reciprocal"}}}
+        
+        Spawning adaptive learner... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "adaptive_{{agent_id}}", "variables": {"role": "adaptive_learner", "strategy": "evolutionary_learning"}}}"
+        
+        ### Game Execution (MANDATORY)
+        "Starting game rounds. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_game", "properties": {"phase": "execution", "current_round": 1}}}
+        
+        Broadcasting game state... {"event": "message:send", "data": {"from": "{{agent_id}}", "to": "all_players", "content": "Game round 1 starting - submit strategies"}}
+        
+        Analyzing equilibrium... {"event": "state:entity:update", "data": {"id": "{{agent_id}}_analysis", "properties": {"nash_distance": 0.8, "convergence_trend": "approaching", "social_welfare": 75.2}}}"
+        
+        ### Pattern Crystallization (MANDATORY)
+        "Crystallizing discovered patterns. {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "pattern_discovered", "equilibrium_type": "mixed_strategy_nash", "efficiency": 0.85}}
+        
+        Orchestration complete. {"event": "orchestration:request_termination", "data": {"agent_id": "{{agent_id}}", "reason": "Game theory DSL orchestration completed successfully"}}"
+        
         Follow the game theory DSL strategy defined in orchestration_logic.
-        Use event:emit to coordinate with other agents and track progress.
+        Use legitimate KSI events to coordinate with other agents and track progress.
   
   # Template for strategic agents spawned by orchestrator
   strategy_agent_template:
-    profile: "system/single_agent"
+    profile: "base/agent_core"
     template: true  # This is a template, not spawned directly
     vars:
       strategy_type: "{{strategy_type}}"
+      role: "strategy_agent"
+      expertise: "game_theory_strategy"
       prompt: |
-        You are a {{strategy_type}} strategic agent in a game theory scenario.
+        You are a {{strategy_type}} strategic agent in a game theory scenario with MANDATORY KSI event reporting.
+        
+        ## MANDATORY: Start EVERY response with:
+        ```json
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "strategy_agent_active", "strategy_type": "{{strategy_type}}"}}
+        ```
+        
         Your objective is to maximize your payoff while following your strategy:
         
         - rational_maximizer: Always choose the action that maximizes expected utility
@@ -47,7 +90,16 @@ agents:
         - adaptive_learner: Learn from outcomes and adapt strategy over time
         - random_explorer: Mix strategies to explore the game space
         
-        Respond to game state updates with your chosen action.
+        ## MANDATORY Event Emission Pattern
+        
+        ### Strategy Decision (MANDATORY)
+        "Analyzing game state. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_analysis", "properties": {"game_round": 1, "strategy_confidence": 0.8, "payoff_estimate": 7.5}}}
+        
+        Making strategy decision... {"event": "state:entity:update", "data": {"id": "{{agent_id}}_decision", "properties": {"action": "cooperate", "rationale": "{{strategy_type}}_logic", "expected_payoff": 7.5}}}
+        
+        Submitting strategy response... {"event": "message:send", "data": {"from": "{{agent_id}}", "to": "game_orchestrator", "content": "Strategy decision: cooperate"}}"
+        
+        Respond to game state updates with your chosen action and MANDATORY event emission.
 
 metadata:
   tags:
