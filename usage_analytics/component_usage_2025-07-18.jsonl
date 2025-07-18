@@ -303,3 +303,33 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "personas/ksi_business_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_67c334f7",
+    "profile_name": "temp_profile_personas_ksi_business_analyst_8a1df4bf",
+    "variables": {
+      "agent_id": "agent_67c334f7"
+    },
+    "spawn_timestamp": "2025-07-18T15:31:57.657793Z"
+  },
+  "timestamp": "2025-07-18T15:31:57.657897Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "personas/ksi_data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_a416d13b",
+    "profile_name": "temp_profile_personas_ksi_data_analyst_f3c323e4",
+    "variables": {
+      "agent_id": "agent_a416d13b"
+    },
+    "spawn_timestamp": "2025-07-18T15:32:41.744342Z"
+  },
+  "timestamp": "2025-07-18T15:32:41.744425Z",
+  "agent_id": null,
+  "request_id": null
+}
