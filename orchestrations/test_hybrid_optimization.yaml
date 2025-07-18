@@ -1,0 +1,257 @@
+name: test_hybrid_optimization
+type: orchestration
+version: 1.0.0
+description: |
+  Simple test of hybrid optimization combining DSPy structured search with judge evaluation.
+  Demonstrates how programmatic optimization and LLM-as-Judge can work together.
+author: ksi_system
+timestamp: 2025-01-18T14:30:00Z
+
+agents:
+  # Hybrid Coordinator
+  coordinator:
+    profile: "components/core/system_orchestrator"
+    vars:
+      agent_id: "hybrid_coord_{{session_id}}"
+      prompt: |
+        You coordinate a hybrid optimization approach.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "hybrid_coordinator_initialized"}}
+        
+        Your strategy:
+        1. Use DSPy events for structured variant generation
+        2. Use judges for nuanced evaluation
+        3. Combine insights from both approaches
+        4. Track which aspects each technique handles best
+
+  # Variant Generator (using DSPy principles)
+  variant_generator:
+    profile: "components/core/system_single_agent"
+    vars:
+      agent_id: "var_gen_{{session_id}}"
+      prompt: |
+        Generate prompt variants using structured approaches.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "generator_initialized"}}
+        
+        Apply systematic variation strategies:
+        1. Parameter substitution (temperature, style, focus)
+        2. Structural reorganization
+        3. Instruction emphasis shifting
+        4. Example augmentation
+        
+        ## MANDATORY: Report each variant:
+        {"event": "state:entity:create", "data": {"type": "prompt_variant", "id": "variant_{{index}}", "properties": {"content": "...", "strategy": "...", "parameters": {...}}}}
+
+  # Quality Judge
+  quality_judge:
+    profile: "components/personas/judges/game_theory_pairwise_judge"
+    vars:
+      agent_id: "judge_{{session_id}}"
+      comparison_focus: "strategic_reasoning_quality"
+
+variables:
+  session_id: "{{session_id}}"
+  target_component: "{{target_component|default:'components/personas/game_players/strategic_reasoner'}}"
+  num_variants: "{{num_variants|default:4}}"
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Setup
+    STATE variants = []
+    STATE evaluations = {}
+    STATE dspy_metrics = {}
+    STATE judge_rankings = {}
+    
+    TRACK {
+      phase: "initialization",
+      target: "{{target_component}}",
+      approach: "hybrid_dspy_judge"
+    }
+    
+    # Load target
+    EVENT composition:get_component {
+      name: "{{target_component}}"
+    } AS base_component
+    
+    ## Phase 2: Structured Generation (DSPy-style)
+    TRACK {phase: "structured_generation", message: "Using DSPy principles for variant creation"}
+    
+    # First, use optimization service to validate setup
+    EVENT optimization:validate_setup {
+      framework: "dspy",
+      component_type: base_component.frontmatter.component_type
+    } AS validation
+    
+    # Generate variants systematically
+    SEND {
+      to: variant_generator,
+      message: {
+        action: "generate_structured",
+        base: base_component,
+        strategies: [
+          {name: "parameter_sweep", params: ["formality", "detail_level", "example_count"]},
+          {name: "instruction_reorder", focus: ["critical_first", "context_first", "examples_first"]},
+          {name: "emphasis_shift", aspects: ["reasoning", "adaptation", "explanation"]}
+        ],
+        count: {{num_variants}}
+      }
+    }
+    
+    AWAIT {
+      from: variant_generator,
+      timeout: 60
+    } AS generated_variants
+    
+    # Format for DSPy-style evaluation
+    EVENT optimization:format_examples {
+      data: generated_variants.variants,
+      format: "dspy_compatible"
+    } AS formatted_data
+    
+    ## Phase 3: Programmatic Evaluation (DSPy-style metrics)
+    TRACK {phase: "programmatic_eval", message: "Computing structured metrics"}
+    
+    FOREACH variant IN generated_variants.variants:
+      # Simulate DSPy-style metrics
+      STATE metrics = {
+        instruction_clarity: COMPUTE_CLARITY_SCORE(variant.content),
+        parameter_coverage: ASSESS_PARAMETER_USAGE(variant.parameters),
+        structural_coherence: MEASURE_STRUCTURE(variant.content),
+        example_quality: EVALUATE_EXAMPLES(variant.content)
+      }
+      
+      STORE dspy_metrics[variant.id] = metrics
+      
+      TRACK {
+        event: "dspy_metrics",
+        variant: variant.id,
+        scores: metrics
+      }
+    
+    ## Phase 4: Judge-Based Evaluation
+    TRACK {phase: "judge_evaluation", message: "Getting nuanced quality assessment"}
+    
+    # Pairwise comparisons for relative ranking
+    FOREACH pair IN COMBINATIONS(generated_variants.variants, 2):
+      SEND {
+        to: quality_judge,
+        message: {
+          action: "compare",
+          variant_a: pair[0],
+          variant_b: pair[1],
+          focus: "optimization_quality",
+          context: "Which variant would lead to better strategic reasoning?"
+        }
+      }
+      
+      AWAIT {
+        from: quality_judge,
+        timeout: 60
+      } AS comparison
+      
+      # Update rankings
+      UPDATE judge_rankings WITH comparison.winner
+    
+    ## Phase 5: Hybrid Insight Integration
+    TRACK {phase: "hybrid_integration", message: "Combining insights from both approaches"}
+    
+    # Identify convergence and divergence
+    STATE dspy_top = SELECT_TOP_BY_METRICS(variants, dspy_metrics, 2)
+    STATE judge_top = SELECT_TOP_BY_RANKING(variants, judge_rankings, 2)
+    
+    STATE convergence = INTERSECTION(dspy_top, judge_top)
+    STATE divergence = {
+      dspy_only: DIFFERENCE(dspy_top, judge_top),
+      judge_only: DIFFERENCE(judge_top, dspy_top)
+    }
+    
+    TRACK {
+      event: "hybrid_insights",
+      convergent_winners: convergence,
+      divergent_choices: divergence,
+      insight: "Both methods agree on: " + convergence + ", disagree on: " + divergence
+    }
+    
+    # Meta-learning: Why do they differ?
+    IF LENGTH(divergence.dspy_only) > 0:
+      SEND {
+        to: coordinator,
+        message: {
+          action: "analyze_divergence",
+          dspy_preferred: divergence.dspy_only,
+          judge_rejected_because: judge_rankings[divergence.dspy_only[0]].feedback,
+          hypothesis: "DSPy values structural properties judges miss"
+        }
+      }
+    
+    IF LENGTH(divergence.judge_only) > 0:
+      SEND {
+        to: coordinator,
+        message: {
+          action: "analyze_divergence",
+          judge_preferred: divergence.judge_only,
+          dspy_rejected_because: dspy_metrics[divergence.judge_only[0]],
+          hypothesis: "Judges detect nuanced quality DSPy metrics miss"
+        }
+      }
+    
+    ## Phase 6: Results and Learning
+    STATE best_variant = convergence[0] OR judge_top[0]  # Prefer consensus, else trust judges
+    
+    STATE optimization_insights = {
+      technique_agreement: LENGTH(convergence) / {{num_variants}},
+      dspy_strengths: EXTRACT_PATTERNS(dspy_top, dspy_metrics),
+      judge_strengths: EXTRACT_PATTERNS(judge_top, judge_rankings),
+      hybrid_value: "High" IF LENGTH(divergence) > 0 ELSE "Low",
+      recommendation: GENERATE_RECOMMENDATION(convergence, divergence)
+    }
+    
+    TRACK {
+      phase: "complete",
+      best_variant: best_variant.id,
+      optimization_method: "hybrid_dspy_judge",
+      insights: optimization_insights
+    }
+    
+    # Create optimized component
+    EVENT composition:create_component {
+      name: "{{target_component}}_hybrid_test",
+      content: best_variant.content,
+      metadata: {
+        optimization_method: "hybrid_test",
+        dspy_metrics: dspy_metrics[best_variant.id],
+        judge_ranking: judge_rankings[best_variant.id],
+        technique_agreement: optimization_insights.technique_agreement,
+        key_insight: optimization_insights.recommendation
+      }
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Hybrid optimization test complete",
+      results: optimization_insights
+    }
+
+# Helper pseudo-functions
+helpers:
+  COMPUTE_CLARITY_SCORE: "Analyze instruction clarity and structure"
+  ASSESS_PARAMETER_USAGE: "Check parameter variety and coverage"
+  SELECT_TOP_BY_METRICS: "Rank by aggregate metric scores"
+  SELECT_TOP_BY_RANKING: "Extract from pairwise comparison results"
+  EXTRACT_PATTERNS: "Identify what makes winners succeed"
+
+metadata:
+  pattern_type: hybrid_optimization
+  optimization_methods: ["dspy_structured", "llm_judge", "hybrid"]
+  evaluation_approach: dual_evaluation
+  tags: ["hybrid", "test", "dspy", "judge", "optimization"]
+
+performance:
+  expected_duration: "10-15 minutes"
+  resource_usage: "3-4 concurrent agents"
+  insights_expected:
+    - "When DSPy and judges agree/disagree"
+    - "Unique strengths of each approach"
+    - "Value of hybrid optimization"
