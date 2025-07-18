@@ -106,7 +106,7 @@ orchestration_logic:
           from: sender_agent_id
           content: message_content
           filters:
-            profile: "worker"
+            role: "worker"
             status: "ready"
 
     reply_to_sender:

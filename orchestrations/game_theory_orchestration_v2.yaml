@@ -11,7 +11,7 @@ extends: game_theory_orchestration
 # Define concrete agents that implement the game theory DSL
 agents:
   game_orchestrator:
-    profile: "base/agent_core"
+    component: "components/core/base_agent"
     vars:
       pattern_name: "game_theory_orchestration_v2"
       role: "game_theory_orchestrator"

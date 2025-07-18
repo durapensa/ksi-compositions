@@ -7,7 +7,7 @@ author: test_system
 
 agents:
   event_tester:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       pattern_name: "test_event_emission"
       prompt: |

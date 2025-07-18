@@ -6,7 +6,7 @@ author: claude
 
 agents:
   tester:
-    profile: json_test_v3_explicit
+    component: components/behaviors/testing/json_test_v3_explicit
     vars:
       prompt: |
         Please emit this JSON event:

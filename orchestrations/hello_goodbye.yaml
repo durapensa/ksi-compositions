@@ -6,13 +6,13 @@ author: "ksi-system"
 
 agents:
   hello:
-    profile: "hello_agent"
+    component: "components/personas/conversationalists/hello_agent"
     prompt_template: "simple_hello_goodbye"
     vars:
       role: "initiator"
   
   goodbye:
-    profile: "goodbye_agent"
+    component: "components/personas/conversationalists/goodbye_agent"
     prompt_template: "simple_hello_goodbye"
     vars:
       role: "responder"

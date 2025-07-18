@@ -8,7 +8,7 @@ timestamp: 2025-07-16T08:30:00Z
 # Define test orchestrator
 agents:
   test_orchestrator:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       pattern_name: "test_mipro_optimization"
       prompt: |
@@ -45,7 +45,7 @@ orchestration_logic:
     
     # Spawn MIPRO orchestrator
     SPAWN {
-      profile: "system/orchestrator",
+      component: "components/core/system_orchestrator",
       vars: {
         prompt: |
           You are orchestrating a MIPRO Bayesian optimization process.

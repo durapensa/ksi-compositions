@@ -43,3 +43,78 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "components/personas/conversationalists/hello_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_f976d2cb_hello",
+    "profile_name": "temp_profile_components_personas_conversationalists_hello_agent_9e6d2060",
+    "variables": {
+      "agent_id": "orch_f976d2cb_hello"
+    },
+    "spawn_timestamp": "2025-07-18T22:29:45.517838Z"
+  },
+  "timestamp": "2025-07-18T22:29:45.518152Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/goodbye_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_f976d2cb_goodbye",
+    "profile_name": "temp_profile_components_personas_conversationalists_goodbye_agent_fd8660ee",
+    "variables": {
+      "agent_id": "orch_f976d2cb_goodbye"
+    },
+    "spawn_timestamp": "2025-07-18T22:29:45.525017Z"
+  },
+  "timestamp": "2025-07-18T22:29:45.525315Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/game_players/adaptive_cooperator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6ce1d83a_player_a",
+    "profile_name": "temp_profile_components_personas_game_players_adaptive_cooperator_897f8db0",
+    "variables": {
+      "agent_id": "orch_6ce1d83a_player_a"
+    },
+    "spawn_timestamp": "2025-07-18T22:30:00.429542Z"
+  },
+  "timestamp": "2025-07-18T22:30:00.429887Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/game_players/tit_for_tat",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6ce1d83a_player_b",
+    "profile_name": "temp_profile_components_personas_game_players_tit_for_tat_27dde3fa",
+    "variables": {
+      "agent_id": "orch_6ce1d83a_player_b"
+    },
+    "spawn_timestamp": "2025-07-18T22:30:00.436642Z"
+  },
+  "timestamp": "2025-07-18T22:30:00.436927Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/judges/game_theory_pairwise_judge",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6ce1d83a_strategy_judge",
+    "profile_name": "temp_profile_components_personas_judges_game_theory_pairwise_judge_0f6977c3",
+    "variables": {
+      "agent_id": "orch_6ce1d83a_strategy_judge"
+    },
+    "spawn_timestamp": "2025-07-18T22:30:00.444168Z"
+  },
+  "timestamp": "2025-07-18T22:30:00.444476Z",
+  "agent_id": null,
+  "request_id": null
+}

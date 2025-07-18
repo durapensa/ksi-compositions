@@ -1,6 +1,6 @@
 agents:
   main_agent:
-    profile: base_single_agent
+    component: components/core/base_single_agent
     vars:
       initial_prompt: '## Greeting Section
 

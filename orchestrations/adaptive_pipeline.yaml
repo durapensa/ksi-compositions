@@ -7,7 +7,7 @@ author: pipeline_orchestrator_3a2f
 # Agent topology for pipeline stages
 agents:
   pipeline_controller:
-    profile: system/orchestrator
+    component: "components/core/system_orchestrator"
     prompt_template: pipeline_control
     vars:
       optimization_mode: throughput
@@ -15,7 +15,7 @@ agents:
   stage_agents:
     template: "stage_{n}"
     count: "dynamic"  # Determined by orchestrator
-    profile: system/single_agent
+    component: "components/core/single_agent"
 
 # DSL for pipeline orchestration
 orchestration_logic:
@@ -40,7 +40,7 @@ orchestration_logic:
       IF data.size > threshold:
         ENABLE parallel_processing WITH batch_size = optimal_chunks(data)
       
-      SPAWN stage_1_agent WITH profile: data_cleaner
+      SPAWN stage_1_agent WITH component: components/personas/processors/data_cleaner
       PROCESS data THROUGH stage_1_agent
       
       CHECKPOINT results AS cleaned_data

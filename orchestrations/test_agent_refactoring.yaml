@@ -15,7 +15,7 @@ includes:
 # Test coordinator
 agents:
   test_coordinator:
-    profile: system/orchestrator
+    component: components/core/system_orchestrator
     vars:
       pattern_name: test_agent_refactoring
       prompt: |

@@ -6,7 +6,7 @@ author: claude
 
 agents:
   tester:
-    profile: json_test_v5_persona_aware
+    component: components/behaviors/testing/json_test_v5_persona_aware
     vars:
       prompt: |
         Please emit this JSON event:

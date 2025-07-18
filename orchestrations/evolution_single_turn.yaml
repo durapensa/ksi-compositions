@@ -8,7 +8,7 @@ author: evolution_system
 
 agents:
   single_turn_evolver:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       pattern_name: "evolution_single_turn"
       prompt: |

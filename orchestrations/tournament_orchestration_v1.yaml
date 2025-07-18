@@ -71,7 +71,7 @@ orchestration_logic:
       # Spawn tournament coordinator if needed
       IF not has_coordinator:
         SPAWN {
-          profile: "tournament_coordinator",
+          component: "components/personas/coordinators/tournament_coordinator",
           count: 1,
           purpose: "Manage tournament logistics",
           pattern: "tournament_orchestration_v1"

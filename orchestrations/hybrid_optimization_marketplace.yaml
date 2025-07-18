@@ -12,7 +12,7 @@ timestamp: 2025-01-18T14:00:00Z
 agents:
   # Meta-Optimization Coordinator
   meta_coordinator:
-    profile: "components/core/system_orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       agent_id: "meta_opt_{{session_id}}"
       prompt: |
@@ -32,7 +32,7 @@ agents:
 
   # DSPy Optimization Agent
   dspy_optimizer:
-    profile: "components/core/system_single_agent"
+    component: "components/core/system_single_agent"
     vars:
       agent_id: "dspy_opt_{{session_id}}"
       prompt: |
@@ -53,7 +53,7 @@ agents:
 
   # Judge-Based Optimizer
   judge_optimizer:
-    profile: "components/core/system_orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       agent_id: "judge_opt_{{session_id}}"
       prompt: |
@@ -70,7 +70,7 @@ agents:
 
   # Hybrid Optimizer
   hybrid_optimizer:
-    profile: "components/core/system_orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       agent_id: "hybrid_opt_{{session_id}}"
       prompt: |
@@ -87,7 +87,7 @@ agents:
 
   # Technique Evaluator
   technique_evaluator:
-    profile: "components/personas/judges/optimization_technique_judge"
+    component: "components/personas/judges/optimization_technique_judge"
     vars:
       agent_id: "tech_eval_{{session_id}}"
       prompt_suffix: |

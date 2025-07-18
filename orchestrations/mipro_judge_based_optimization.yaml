@@ -11,7 +11,7 @@ timestamp: 2025-01-18T13:00:00Z
 agents:
   # MIPRO Optimization Coordinator
   optimization_coordinator:
-    profile: "components/core/system_orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       agent_id: "mipro_coordinator_{{session_id}}"
       prompt: |
@@ -31,7 +31,7 @@ agents:
 
   # Prompt Variant Generator
   prompt_generator:
-    profile: "components/personas/creative_thinker" 
+    component: "components/personas/creative_thinker" 
     vars:
       agent_id: "prompt_gen_{{session_id}}"
       prompt_suffix: |
@@ -45,7 +45,7 @@ agents:
 
   # Tournament Runner
   tournament_runner:
-    profile: "components/core/system_orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       agent_id: "tournament_{{session_id}}"
       prompt: |
@@ -62,7 +62,7 @@ agents:
 
   # Judge Ensemble Coordinator
   judge_coordinator:
-    profile: "components/core/system_orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       agent_id: "judge_coord_{{session_id}}"
       prompt: |

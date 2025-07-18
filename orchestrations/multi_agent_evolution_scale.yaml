@@ -22,10 +22,12 @@ pattern:
       
     SPAWN_PHASE:
       FOR agent_index IN RANGE(1, agent_count):
-        SPAWN agent_worker WITH profile:
-          name: "scale_worker_" + agent_index
-          variant: pattern_variants[agent_index - 1]
-          target_decisions: decisions_per_agent
+        SPAWN agent_worker WITH:
+          component: "components/core/base_agent"
+          agent_id: "scale_worker_" + agent_index
+          vars:
+            variant: pattern_variants[agent_index - 1]
+            target_decisions: decisions_per_agent
           
     COORDINATION_PHASE:
       COORDINATE agents to generate decisions concurrently:
@@ -53,13 +55,13 @@ pattern:
 
 agents:
   scale_coordinator:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     model: "sonnet"
     role: "assistant"
     capabilities: ["agent_spawn", "multi_agent_coordination", "performance_monitoring"]
     
   worker_template:
-    profile: "system/single_agent"
+    component: "components/core/system_single_agent"
     model: "sonnet"
     role: "assistant" 
     capabilities: ["decision_tracking", "pattern_execution"]

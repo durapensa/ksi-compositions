@@ -6,7 +6,7 @@ author: claude
 
 agents:
   orchestrator:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       pattern_name: "test_json_malformed"
       prompt: |
@@ -14,7 +14,7 @@ agents:
         Execute the orchestration logic to test JSON extraction.
   
   json_malformed_tester:
-    profile: json_test_agent
+    component: components/behaviors/testing/json_test_agent
     vars:
       prompt: |
         Please test JSON extraction with various formats:

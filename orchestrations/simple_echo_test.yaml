@@ -10,7 +10,7 @@ extends: null
 # Define orchestrator agent to interpret the DSL
 agents:
   orchestrator:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       pattern_name: "simple_echo_test"
       prompt: |
@@ -50,7 +50,7 @@ orchestration_logic:
       
       IF message CONTAINS "spawn":
         SPAWN single_agent WITH:
-          profile: "system/single_agent"
+          component: "components/core/system_single_agent"
           prompt: "You are a simple echo agent. Respond with 'ECHO: [message]' for any input."
         
         SEND to spawned_agent: "Hello from orchestrator"

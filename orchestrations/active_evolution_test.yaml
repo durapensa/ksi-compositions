@@ -8,7 +8,7 @@ author: evolution_test_system
 
 agents:
   active_evolver:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     vars:
       pattern_name: "active_evolution_test"
       prompt: |

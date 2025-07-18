@@ -11,7 +11,7 @@ timestamp: 2025-01-18T10:00:00Z
 # Define orchestration agents
 agents:
   mipro_coordinator:
-    profile: "personas/systematic_thinker"
+    component: "components/personas/systematic_thinker"
     vars:
       prompt: |
         You coordinate MIPRO optimization for {{component_name}} in {{game_type}} scenarios with MANDATORY KSI event reporting.
@@ -35,7 +35,7 @@ agents:
         ```
 
   instruction_proposer:
-    profile: "personas/creative_thinker"
+    component: "components/personas/creative_thinker"
     vars:
       prompt: |
         Generate instruction variations for {{component_name}} with MANDATORY KSI event reporting.
@@ -59,7 +59,7 @@ agents:
         ```
 
   bootstrap_manager:
-    profile: "personas/data_analyst"
+    component: "components/personas/analysts/data_analyst"
     vars:
       prompt: |
         Manage few-shot examples for the optimization with MANDATORY KSI event reporting.
@@ -81,7 +81,7 @@ agents:
         ```
 
   game_evaluator:
-    profile: "evaluations/game_theory_quality"
+    component: "components/evaluations/quality/game_theory_quality"
     vars:
       prompt: |
         Evaluate {{component_name}} variations in {{game_type}} scenarios with MANDATORY reporting.

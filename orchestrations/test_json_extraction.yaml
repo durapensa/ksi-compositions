@@ -6,7 +6,7 @@ author: claude
 
 agents:
   json_test:
-    profile: "system/single_agent"
+    component: "components/core/system_single_agent"
     vars:
       prompt: |
         Please emit this exact JSON event in your response:

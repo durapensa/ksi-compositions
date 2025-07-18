@@ -11,7 +11,7 @@ extends: null
 # Define concrete agents that implement the game theory DSL
 agents:
   game_orchestrator:
-    profile: "base/agent_core"
+    component: "components/core/base_agent"
     vars:
       pattern_name: "game_theory_orchestration"
       role: "game_theory_orchestrator"
@@ -69,7 +69,7 @@ agents:
   
   # Template for strategic agents spawned by orchestrator
   strategy_agent_template:
-    profile: "base/agent_core"
+    component: "components/core/base_agent"
     template: true  # This is a template, not spawned directly
     vars:
       strategy_type: "{{strategy_type}}"

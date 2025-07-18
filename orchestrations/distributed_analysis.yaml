@@ -65,7 +65,7 @@ orchestration_logic:
       
       # Spawn analyzer agents with orchestration context
       SPAWN {
-        profile: "document_analyzer",
+        component: "components/personas/analysts/document_analyzer",
         count: worker_count,
         purpose: "Distributed document analysis",
         pattern: "distributed_analysis"
@@ -130,7 +130,7 @@ orchestration_logic:
         IF avg(response_times) > threshold * 2:
           # System overloaded - spawn helpers
           SPAWN {
-            profile: "document_analyzer",
+            component: "components/personas/analysts/document_analyzer",
             count: 2,
             purpose: "Overflow handling"
           } AS helpers

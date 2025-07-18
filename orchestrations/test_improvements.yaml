@@ -13,11 +13,11 @@ extends: null
 # Define agents with valid profiles
 agents:
   coordinator:
-    profile: "system/orchestrator"
+    component: "components/core/system_orchestrator"
     initial_message: "test_coordinator_init"  # Will be created next
     
   worker:
-    profile: "system/single_agent"
+    component: "components/core/system_single_agent"
     initial_message: "test_worker_init"       # Will be created next
 
 # Routing with default target

@@ -11,7 +11,7 @@ timestamp: 2025-01-18T12:00:00Z
 agents:
   # Two game players with different strategies
   player_a:
-    profile: "personas/game_players/adaptive_cooperator"
+    component: "components/personas/game_players/adaptive_cooperator"
     vars:
       agent_id: "player_a_{{session_id}}"
       strategy_description: "Start cooperative, adapt based on opponent"
@@ -36,7 +36,7 @@ agents:
         {"event": "state:entity:update", "data": {"id": "{{agent_id}}_move", "properties": {"round": N, "action": "cooperate|defect", "reasoning": "explanation"}}}
 
   player_b:
-    profile: "personas/game_players/tit_for_tat"
+    component: "components/personas/game_players/tit_for_tat"
     vars:
       agent_id: "player_b_{{session_id}}"
       strategy_description: "Classic tit-for-tat with forgiveness"
@@ -59,7 +59,7 @@ agents:
 
   # Pairwise comparison judge
   strategy_judge:
-    profile: "personas/judges/game_theory_pairwise_judge"
+    component: "components/personas/judges/game_theory_pairwise_judge"
     vars:
       agent_id: "judge_{{session_id}}"
       comparison_id: "pd_comparison_{{session_id}}"
@@ -100,13 +100,13 @@ orchestration_logic:
     # Spawn players
     EVENT agent:spawn {
       agent_id: "player_a_{{session_id}}",
-      profile: "personas/game_players/adaptive_cooperator",
+      component: "components/personas/game_players/adaptive_cooperator",
       model: "{{player_model}}"
     }
     
     EVENT agent:spawn {
       agent_id: "player_b_{{session_id}}",
-      profile: "personas/game_players/tit_for_tat",
+      component: "components/personas/game_players/tit_for_tat",
       model: "{{player_model}}"
     }
     
@@ -203,7 +203,7 @@ orchestration_logic:
     # Spawn judge
     EVENT agent:spawn {
       agent_id: "judge_{{session_id}}",
-      profile: "personas/judges/game_theory_pairwise_judge",
+      component: "components/personas/judges/game_theory_pairwise_judge",
       model: "{{judge_model}}"
     }
     

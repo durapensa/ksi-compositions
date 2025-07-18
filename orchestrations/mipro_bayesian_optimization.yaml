@@ -11,7 +11,7 @@ timestamp: 2025-07-16T08:00:00Z
 # Define orchestrator agent to interpret the MIPRO DSL
 agents:
   mipro_orchestrator:
-    profile: "base/agent_core"
+    component: "components/core/base_agent"
     vars:
       pattern_name: "mipro_bayesian_optimization"
       role: "mipro_orchestrator"
@@ -202,7 +202,7 @@ orchestration_logic:
     
     # Initialize surrogate model tracker
     SPAWN {
-      profile: "system/single_agent",
+      component: "components/core/system_single_agent",
       vars: {
         model: optimizer_model,
         prompt: |
@@ -242,7 +242,7 @@ orchestration_logic:
       
       # Spawn evaluators for minibatch
       SPAWN {
-        profile: "system/single_agent",
+        component: "components/core/system_single_agent",
         count: minibatch_size,
         vars: {
           model: evaluator_model,
@@ -320,7 +320,7 @@ orchestration_logic:
     
     # Spawn analyzer for final insights
     SPAWN {
-      profile: "system/single_agent",
+      component: "components/core/system_single_agent",
       vars: {
         model: optimizer_model,
         prompt: |
