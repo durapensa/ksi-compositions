@@ -44,17 +44,17 @@ initialization:
     
     **COORDINATOR**: Your job is delegation and coordination:
     1. IMMEDIATELY emit: {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordinating"}}
-    2. Send a simple task to the worker using: {"event": "task:assign", "data": {"task": "emit_three_status_updates"}}
+    2. Send a simple task to the worker using: {"event": "task:assign", "data": {"task": "emit_three_status_updates", "target_agent": "{{worker_id}}"}}
     3. Monitor for worker status events
     4. After worker completes, emit: {"event": "workflow:complete", "data": {"summary": "delegation test complete"}}
     
-    **WORKER**: Your job is task execution with status updates:
-    1. IMMEDIATELY emit: {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "ready"}}
+    **WORKER ({{worker_id}})**: Your job is task execution with status updates:
+    1. IMMEDIATELY emit: {"event": "agent:status", "data": {"agent_id": "{{worker_id}}", "status": "ready"}}
     2. Wait for task assignment
     3. When you receive task:assign, emit status updates every few seconds:
-       - {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "working", "progress": "33%"}}
-       - {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "working", "progress": "66%"}}
-       - {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "complete"}}
+       - {"event": "agent:status", "data": {"agent_id": "{{worker_id}}", "status": "working", "progress": "33%"}}
+       - {"event": "agent:status", "data": {"agent_id": "{{worker_id}}", "status": "working", "progress": "66%"}}
+       - {"event": "agent:status", "data": {"agent_id": "{{worker_id}}", "status": "complete"}}
     
     All events will bubble up to Claude Code as the orchestrator. Keep responses SHORT.
 
