@@ -1,18 +1,21 @@
 # KSI Compositions Repository
 
-This repository contains reusable compositions for the KSI (Knowledge Systems Integration) platform, including agent profiles, orchestration patterns, prompts, and reusable fragments.
+This repository contains reusable compositions for the KSI (Knowledge Systems Integration) platform, including components, orchestration patterns, prompts, and capabilities.
 
 ## Repository Structure
 
 ```
 ksi-compositions/
-├── profiles/            # Agent profiles
-│   ├── base/           # Foundation profiles
-│   ├── agents/         # Specialized agent profiles
-│   └── fragments/      # Reusable profile components
+├── components/          # Unified component system
+│   ├── core/           # Essential building blocks
+│   ├── personas/       # Domain expertise & personalities
+│   ├── behaviors/      # Reusable mixins
+│   ├── evaluations/    # Quality assessments
+│   ├── tools/          # External integrations
+│   └── examples/       # Example components
 ├── orchestrations/      # Orchestration patterns
 ├── prompts/            # Prompt library
-├── fragments/          # Cross-cutting components
+├── capabilities/       # System capabilities
 ├── patterns/           # Messaging and hierarchy patterns
 └── schemas/            # Validation schemas
 ```
@@ -34,21 +37,24 @@ Components can be used independently in any system that supports YAML-based conf
 ```python
 import yaml
 
-# Load a profile
-with open('profiles/base/base_single_agent.yaml') as f:
-    profile = yaml.safe_load(f)
+# Load a component
+with open('components/core/base_agent.md') as f:
+    component = f.read()
 
-# Use profile in your system
-agent = create_agent(profile)
+# Parse frontmatter and content
+# Use component in your system
+agent = create_agent(component)
 ```
 
 ## Component Types
 
-### Profiles
-Agent profiles define the behavior, capabilities, and configuration of AI agents:
-- **Base profiles**: Foundation profiles for different agent types
-- **Specialized profiles**: Task-specific agent configurations
-- **Dynamic profiles**: Runtime-generated agent configurations
+### Components
+The unified component system includes:
+- **Core**: Essential building blocks (base_agent, multi_agent, etc.)
+- **Personas**: Domain expertise & personalities (analysts, developers, thinkers)
+- **Behaviors**: Reusable mixins (communication, coordination, integration)
+- **Evaluations**: Quality assessments (judges, metrics, test suites)
+- **Tools**: External integrations (MCP, Git, APIs)
 
 ### Orchestrations
 Orchestration patterns define multi-agent workflows and coordination:
@@ -83,15 +89,18 @@ Modular components that can be mixed into other compositions:
 All components should follow this structure:
 
 ```yaml
+---
+component_type: persona  # Required: core|persona|behavior|orchestration|evaluation|tool
 name: component_name
-type: profile|orchestration|prompt|fragment
 version: 1.0.0
 description: "Brief description of component"
 author: "Your Name"
-metadata:
-  tags: [tag1, tag2]
-  use_cases: [use_case1, use_case2]
-# Component-specific content
+dependencies:
+  - core/base_agent
+capabilities:
+  - capability_name
+---
+# Component content in Markdown
 ```
 
 ### Testing
@@ -99,11 +108,11 @@ metadata:
 Components should be tested before submission:
 
 ```bash
-# Validate YAML syntax
-yamllint profiles/new_profile.yaml
+# Validate component structure
+ksi send composition:validate_component --component "components/personas/my_persona.md"
 
 # Test component loading
-python -c "import yaml; print(yaml.safe_load(open('profiles/new_profile.yaml')))"
+ksi send agent:spawn_from_component --component "components/personas/my_persona" --agent-id "test_agent"
 ```
 
 ## License

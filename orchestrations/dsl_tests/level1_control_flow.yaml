@@ -1,0 +1,121 @@
+name: level1_control_flow
+type: orchestration
+version: 1.0.0
+description: |
+  Level 1 test: Atomic DSL control flow commands.
+  Tests interpretation of IF/ELSE, LOOP, and FOREACH primitives.
+  Compares lean vs verbose interpretation approaches.
+author: ksi_system
+timestamp: 2025-01-18T00:00:00Z
+
+agents:
+  # Lean interpreter
+  lean_executor:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "lean_executor"
+      prompt: |
+        You execute DSL control flow using your intelligence.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "lean_executor_ready"}}
+        
+        Trust your understanding of:
+        - What IF/ELSE means
+        - How loops work
+        - Natural control flow
+        
+        No detailed instructions needed - the DSL should be obvious.
+
+  # Test validator
+  validator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "validator"
+      prompt: |
+        You validate control flow execution.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "validator_ready"}}
+        
+        Check:
+        1. Were conditions evaluated correctly?
+        2. Did loops execute the right number of times?
+        3. Was the flow logical and complete?
+        
+        ## MANDATORY: Report validation:
+        {"event": "state:entity:create", "data": {"type": "flow_validation", "id": "control_flow_result", "properties": {"test_name": "...", "passed": true/false, "execution_trace": [...]}}}
+
+variables:
+  test_name: "DSL Control Flow"
+  test_level: 1
+
+# Test cases
+orchestration_logic:
+  # Basic IF/ELSE test
+  conditional_test: |
+    STATE value = 10
+    STATE result = ""
+    
+    IF value > 5:
+      STATE result = "high"
+      TRACK {message: "Value is high"}
+    ELSE:
+      STATE result = "low"
+      TRACK {message: "Value is low"}
+    
+    TRACK {final_result: result}
+  
+  # Loop test
+  loop_test: |
+    STATE sum = 0
+    STATE iterations = []
+    
+    LOOP i FROM 1 TO 5:
+      STATE sum = sum + i
+      APPEND iterations i
+      TRACK {iteration: i, running_sum: sum}
+    
+    TRACK {final_sum: sum, total_iterations: LENGTH(iterations)}
+  
+  # FOREACH test
+  foreach_test: |
+    STATE fruits = ["apple", "banana", "orange"]
+    STATE lengths = []
+    
+    FOREACH fruit IN fruits:
+      STATE len = LENGTH(fruit)
+      APPEND lengths len
+      TRACK {fruit: fruit, length: len}
+    
+    TRACK {all_lengths: lengths}
+  
+  # Nested control flow
+  nested_test: |
+    STATE results = []
+    
+    LOOP i FROM 1 TO 3:
+      IF i % 2 == 0:
+        APPEND results "even"
+      ELSE:
+        APPEND results "odd"
+    
+    TRACK {pattern: results}
+
+expected_results:
+  conditional: {result: "high"}
+  loop: {sum: 15, iterations: 5}
+  foreach: {lengths: [5, 6, 6]}
+  nested: {pattern: ["odd", "even", "odd"]}
+
+metadata:
+  test_category: atomic_dsl_primitives
+  dsl_constructs_tested:
+    - IF/ELSE
+    - LOOP
+    - FOREACH
+    - nested_control
+  evaluation_criteria:
+    - correct_branching
+    - accurate_iteration
+    - proper_nesting

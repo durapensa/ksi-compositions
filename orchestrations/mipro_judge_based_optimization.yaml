@@ -13,7 +13,7 @@ agents:
   optimization_coordinator:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "mipro_coordinator_{{session_id}}"
+      agent_id: "mipro_coordinator"
       prompt: |
         You coordinate MIPRO optimization using judge-based evaluation.
         
@@ -33,7 +33,7 @@ agents:
   prompt_generator:
     component: "components/personas/creative_thinker" 
     vars:
-      agent_id: "prompt_gen_{{session_id}}"
+      agent_id: "prompt_generator"
       prompt_suffix: |
         
         Generate strategic prompt variations for game theory agents.
@@ -47,7 +47,7 @@ agents:
   tournament_runner:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "tournament_{{session_id}}"
+      agent_id: "tournament_runner"
       prompt: |
         You run game tournaments and collect transcripts for judge evaluation.
         
@@ -64,7 +64,7 @@ agents:
   judge_coordinator:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "judge_coord_{{session_id}}"
+      agent_id: "judge_coordinator"
       prompt: |
         You coordinate multiple specialized judges for comprehensive evaluation.
         
@@ -79,7 +79,6 @@ agents:
 
 # Configuration
 variables:
-  session_id: "{{session_id}}"
   target_component: "{{target_component|default:'components/personas/game_players/strategic_reasoner'}}"
   num_iterations: "{{num_iterations|default:10}}"
   variants_per_iteration: "{{variants_per_iteration|default:4}}"

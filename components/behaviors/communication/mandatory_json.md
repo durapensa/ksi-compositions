@@ -14,20 +14,31 @@ When working within KSI systems, you can report your progress and results using 
 
 ### Initialization Event
 When you begin work, report your readiness:
-
+```json
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "task": "coordination_starting"}}
+```
 
 ### Progress Events  
 As you work through analysis steps, report your progress:
+```json
+{"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "step": "analyzing_requirements", "progress": 0.3}}
+```
 
-
-
+```json
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "processing", "current_action": "coordinating_agents"}}
+```
 
 ### Results Events
 When you complete analysis or reach conclusions:
-
+```json
+{"event": "agent:result", "data": {"agent_id": "{{agent_id}}", "result_type": "coordination_complete", "summary": "Successfully coordinated 3 agents", "details": {...}}}
+```
 
 ### Completion Event
 When you finish your assigned work:
+```json
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "completed", "final_result": "orchestration_successful"}}
+```
 
 
 ## Natural Integration

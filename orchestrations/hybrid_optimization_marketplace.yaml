@@ -14,7 +14,7 @@ agents:
   meta_coordinator:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "meta_opt_{{session_id}}"
+      agent_id: "meta_coordinator"
       prompt: |
         You coordinate a marketplace of optimization techniques.
         
@@ -34,7 +34,7 @@ agents:
   dspy_optimizer:
     component: "components/core/system_single_agent"
     vars:
-      agent_id: "dspy_opt_{{session_id}}"
+      agent_id: "dspy_optimizer"
       prompt: |
         You coordinate DSPy/MIPRO optimization through the KSI optimization service.
         
@@ -55,7 +55,7 @@ agents:
   judge_optimizer:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "judge_opt_{{session_id}}"
+      agent_id: "judge_optimizer"
       prompt: |
         You run judge-based optimization using pairwise comparisons.
         
@@ -72,7 +72,7 @@ agents:
   hybrid_optimizer:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "hybrid_opt_{{session_id}}"
+      agent_id: "hybrid_optimizer"
       prompt: |
         You combine DSPy search with judge evaluation.
         
@@ -89,7 +89,7 @@ agents:
   technique_evaluator:
     component: "components/personas/judges/optimization_technique_judge"
     vars:
-      agent_id: "tech_eval_{{session_id}}"
+      agent_id: "technique_evaluator"
       prompt_suffix: |
         
         Compare optimization techniques based on:
@@ -100,7 +100,6 @@ agents:
 
 # Configuration
 variables:
-  session_id: "{{session_id}}"
   target_component: "{{target_component}}"
   optimization_domain: "{{domain|default:'general'}}"  # game_theory, code_gen, creative, etc.
   bootstrap_iterations: "{{bootstrap_iterations|default:5}}"
@@ -315,7 +314,7 @@ orchestration_logic:
     # Update meta-optimization knowledge base
     EVENT state:entity:create {
       type: "optimization_insight",
-      id: "insight_{{session_id}}",
+      id: "optimization_insight",
       properties: meta_insight
     }
     

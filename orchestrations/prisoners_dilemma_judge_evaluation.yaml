@@ -13,7 +13,7 @@ agents:
   player_a:
     component: "components/personas/game_players/adaptive_cooperator"
     vars:
-      agent_id: "player_a_{{session_id}}"
+      agent_id: "player_a"
       strategy_description: "Start cooperative, adapt based on opponent"
       prompt: |
         You are Player A in an iterated Prisoner's Dilemma game.
@@ -38,7 +38,7 @@ agents:
   player_b:
     component: "components/personas/game_players/tit_for_tat"
     vars:
-      agent_id: "player_b_{{session_id}}"
+      agent_id: "player_b"
       strategy_description: "Classic tit-for-tat with forgiveness"
       prompt: |
         You are Player B in an iterated Prisoner's Dilemma game.
@@ -61,8 +61,8 @@ agents:
   strategy_judge:
     component: "components/personas/judges/game_theory_pairwise_judge"
     vars:
-      agent_id: "judge_{{session_id}}"
-      comparison_id: "pd_comparison_{{session_id}}"
+      agent_id: "strategy_judge"
+      comparison_id: "pd_comparison"
       prompt_suffix: |
         
         You will receive two game transcripts to compare.
@@ -75,7 +75,6 @@ agents:
 # Configuration
 variables:
   num_rounds: "{{num_rounds|default:20}}"
-  session_id: "{{session_id}}"
   
   # Models for different roles
   player_model: "claude-cli/sonnet"
@@ -99,13 +98,13 @@ orchestration_logic:
     
     # Spawn players
     EVENT agent:spawn {
-      agent_id: "player_a_{{session_id}}",
+      agent_id: "player_a",
       component: "components/personas/game_players/adaptive_cooperator",
       model: "{{player_model}}"
     }
     
     EVENT agent:spawn {
-      agent_id: "player_b_{{session_id}}",
+      agent_id: "player_b",
       component: "components/personas/game_players/tit_for_tat",
       model: "{{player_model}}"
     }
@@ -149,8 +148,8 @@ orchestration_logic:
       } AS moves
       
       # Process round results
-      STATE move_a = EXTRACT(moves, agent_id == "player_a_{{session_id}}")
-      STATE move_b = EXTRACT(moves, agent_id == "player_b_{{session_id}}")
+      STATE move_a = EXTRACT(moves, agent_id == "player_a")
+      STATE move_b = EXTRACT(moves, agent_id == "player_b")
       
       # Calculate scores
       IF move_a.action == "cooperate" AND move_b.action == "cooperate":
@@ -202,7 +201,7 @@ orchestration_logic:
     
     # Spawn judge
     EVENT agent:spawn {
-      agent_id: "judge_{{session_id}}",
+      agent_id: "strategy_judge",
       component: "components/personas/judges/game_theory_pairwise_judge",
       model: "{{judge_model}}"
     }
@@ -249,7 +248,7 @@ orchestration_logic:
     # Wait for improvement suggestions
     AWAIT {
       event_pattern: "state:entity:update",
-      filter: {id: "comparison_{{session_id}}"},
+      filter: {id: "pd_comparison"},
       timeout: 30
     } AS improvement_suggestions
     

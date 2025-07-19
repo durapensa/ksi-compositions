@@ -13,7 +13,7 @@ agents:
   hybrid_optimizer:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "hybrid_opt_{{session_id}}"
+      agent_id: "hybrid_optimizer"
       prompt: |
         You optimize prompts by blending natural language with DSL elements.
         
@@ -37,7 +37,7 @@ agents:
   prompt_dsl_mixer:
     component: "components/personas/creative_thinker"
     vars:
-      agent_id: "mixer_{{session_id}}"
+      agent_id: "pattern_mixer"
       prompt_suffix: |
         
         Create prompt variants that blend natural language with DSL elements.
@@ -55,7 +55,7 @@ agents:
   prompt_tester:
     component: "components/core/base_agent"
     vars:
-      agent_id: "tester_{{session_id}}"
+      agent_id: "pattern_tester"
       prompt: |
         You test prompt variants on specific tasks.
         
@@ -76,7 +76,7 @@ agents:
   pattern_judge:
     component: "components/personas/judges/optimization_technique_judge"
     vars:
-      agent_id: "pattern_judge_{{session_id}}"
+      agent_id: "pattern_judge"
       prompt_suffix: |
         
         Evaluate prompt+DSL hybrid patterns based on:
@@ -88,7 +88,6 @@ agents:
 
 # Configuration
 variables:
-  session_id: "{{session_id}}"
   domain: "{{domain|default:task_decomposition}}"  # task_decomposition, decision_making, data_analysis, etc.
   base_prompt: "{{base_prompt}}"
   num_iterations: "{{num_iterations|default:10}}"
@@ -381,7 +380,7 @@ dsl_elements:
   
   output_structure:
     - "EMIT '[event_name]' WITH: {...}"
-    - "{"event": "[name]", "data": {...}}"
+    - '{"event": "[name]", "data": {...}}'
 
 # Metadata
 metadata:

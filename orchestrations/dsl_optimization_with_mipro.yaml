@@ -13,7 +13,7 @@ agents:
   dsl_optimizer:
     component: "components/core/system_orchestrator"
     vars:
-      agent_id: "dsl_opt_{{session_id}}"
+      agent_id: "dsl_optimizer"
       prompt: |
         You coordinate optimization of the KSI orchestration DSL using MIPRO principles.
         
@@ -37,7 +37,7 @@ agents:
   dsl_variant_creator:
     component: "components/personas/creative_thinker"
     vars:
-      agent_id: "dsl_creator_{{session_id}}"
+      agent_id: "dsl_variant_creator"
       prompt_suffix: |
         
         Generate variations of orchestration DSL constructs.
@@ -54,7 +54,7 @@ agents:
   dsl_interpreter:
     component: "components/core/base_agent"
     vars:
-      agent_id: "dsl_interpreter_{{session_id}}"
+      agent_id: "dsl_interpreter"
       prompt: |
         You interpret orchestration DSL snippets and explain what they do.
         
@@ -75,7 +75,7 @@ agents:
   dsl_judge:
     component: "components/personas/judges/optimization_technique_judge"
     vars:
-      agent_id: "dsl_judge_{{session_id}}"
+      agent_id: "dsl_judge"
       prompt_suffix: |
         
         Compare DSL variants based on:
@@ -87,7 +87,6 @@ agents:
 
 # Configuration
 variables:
-  session_id: "{{session_id}}"
   target_construct: "{{target_construct|default:control_flow}}"  # control_flow, state_management, agent_ops, etc.
   num_iterations: "{{num_iterations|default:8}}"
   variants_per_iteration: "{{variants_per_iteration|default:3}}"

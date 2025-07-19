@@ -1,0 +1,166 @@
+name: level1_agent_operations
+type: orchestration
+version: 1.0.0
+description: |
+  Level 1 test: Atomic DSL agent operations.
+  Tests interpretation of SEND, TRACK, EMIT, and basic coordination commands.
+  Validates that agents understand coordination patterns naturally.
+author: ksi_system
+timestamp: 2025-01-18T00:00:00Z
+
+agents:
+  # DSL coordinator
+  coordinator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "coordinator"
+      prompt: |
+        You execute DSL agent operations using your KSI knowledge.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordinator_ready"}}
+        
+        The operations should be self-evident:
+        - SEND means message an agent
+        - TRACK means log information
+        - EMIT means create an event
+        
+        Trust your understanding of agent coordination.
+
+  # Worker agent
+  worker:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "worker"
+      prompt: |
+        You are a worker that responds to tasks.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "worker_ready"}}
+        
+        When you receive a task:
+        1. Acknowledge it
+        2. Process it
+        3. Report completion
+        
+        ## MANDATORY: Report task completion:
+        {"event": "state:entity:update", "data": {"id": "task_{{task_id}}", "properties": {"status": "completed", "result": "..."}}}
+
+  # Operations validator
+  validator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "operations_validator"
+      prompt: |
+        You validate agent operations.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "validator_ready"}}
+        
+        Monitor:
+        1. Message delivery accuracy
+        2. Event emission correctness
+        3. Coordination flow
+        4. Command interpretation
+        
+        ## MANDATORY: Report validation:
+        {"event": "state:entity:create", "data": {"type": "operations_validation", "id": "agent_ops_result", "properties": {"operations_tested": N, "success_rate": N, "interpretation_quality": "..."}}}
+
+variables:
+  test_name: "DSL Agent Operations"
+  test_level: 1
+
+# Test execution patterns
+orchestration_logic:
+  # Basic messaging test
+  messaging_test: |
+    TRACK {phase: "start", test: "messaging"}
+    
+    SEND {
+      to: worker,
+      message: {
+        task_id: "msg_001",
+        action: "process_data",
+        data: [1, 2, 3, 4, 5]
+      }
+    }
+    
+    TRACK {phase: "sent", recipient: "worker"}
+  
+  # Event emission test
+  event_test: |
+    TRACK {phase: "start", test: "events"}
+    
+    EMIT "workflow:started" WITH {
+      coordinator: "{{agent_id}}",
+      timestamp: "{{current_time}}"
+    }
+    
+    STATE counter = 0
+    LOOP i FROM 1 TO 3:
+      STATE counter = counter + 1
+      EMIT "workflow:progress" WITH {
+        step: i,
+        total_steps: 3,
+        counter: counter
+      }
+    
+    EMIT "workflow:completed" WITH {
+      total_steps: counter
+    }
+  
+  # Complex coordination test
+  coordination_test: |
+    TRACK {phase: "coordination_start"}
+    
+    STATE tasks = ["analyze", "transform", "validate"]
+    STATE results = []
+    
+    FOREACH task IN tasks:
+      TRACK {sending_task: task}
+      
+      SEND {
+        to: worker,
+        message: {
+          task_id: task,
+          action: task,
+          priority: "high"
+        }
+      }
+      
+      # Simulate waiting for response
+      TRACK {awaiting_response: task}
+      
+      APPEND results task
+    
+    TRACK {coordination_complete: true, tasks_sent: LENGTH(results)}
+
+expected_behaviors:
+  messaging:
+    - message_delivered: true
+    - worker_acknowledges: true
+    - task_processed: true
+  events:
+    - workflow_started_emitted: true
+    - progress_events: 3
+    - workflow_completed_emitted: true
+  coordination:
+    - all_tasks_sent: true
+    - proper_tracking: true
+    - coordination_flow: "logical"
+
+metadata:
+  test_category: atomic_dsl_primitives
+  dsl_constructs_tested:
+    - SEND
+    - TRACK
+    - EMIT
+    - agent_coordination
+  validation_focus:
+    - message_accuracy
+    - event_emission
+    - coordination_logic
+  success_criteria:
+    - correct_ksi_events_generated
+    - natural_interpretation
+    - effective_coordination

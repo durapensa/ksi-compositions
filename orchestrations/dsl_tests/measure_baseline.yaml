@@ -1,0 +1,280 @@
+name: measure_baseline
+type: orchestration
+version: 1.0.0
+description: |
+  Baseline measurement orchestration that runs the complete DSL testing ladder.
+  Systematically measures DSL interpretability from Level 0 (natural language) 
+  through Level 1 (atomic primitives), providing empirical foundation for optimization.
+author: ksi_system
+timestamp: 2025-01-18T00:00:00Z
+
+agents:
+  # Test coordinator
+  test_coordinator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "test_coordinator"
+      prompt: |
+        You coordinate the complete DSL testing ladder.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "test_coordinator_ready"}}
+        
+        Your responsibilities:
+        1. Run tests in sequence: Level 0 → Level 1
+        2. Collect results from each test
+        3. Coordinate with the evaluator
+        4. Ensure proper measurement
+        
+        ## MANDATORY: Track test progress:
+        {"event": "orchestration:track", "data": {"phase": "...", "test": "...", "status": "..."}}
+
+  # DSL evaluator
+  evaluator:
+    component: "components/evaluations/suites/dsl_interpretability"
+    vars:
+      agent_id: "dsl_evaluator"
+      evaluation_mode: "comprehensive"
+
+  # Results aggregator
+  aggregator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "results_aggregator"
+      prompt: |
+        You aggregate and analyze test results across all levels.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "aggregator_ready"}}
+        
+        Collect results from:
+        - Level 0 tests (natural language baseline)
+        - Level 1 tests (atomic DSL primitives)
+        
+        Generate insights about:
+        - Interpretation patterns
+        - Success rates by level
+        - Token efficiency gains
+        - Areas needing improvement
+        
+        ## MANDATORY: Generate final report:
+        {"event": "state:entity:create", "data": {"type": "baseline_report", "id": "dsl_baseline_2025", "properties": {...}}}
+
+variables:
+  test_name: "DSL Bootstrap Ladder Baseline"
+  measurement_date: "2025-01-18"
+  
+  # Test configuration
+  test_sequence:
+    level_0:
+      - "level0_simple_coordination"
+      - "level0_state_management" 
+      - "level0_message_passing"
+    level_1:
+      - "level1_state_commands"
+      - "level1_control_flow"
+      - "level1_agent_operations"
+      - "level1_data_operations"
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Initialize Testing Environment
+    TRACK {phase: "initialization", message: "Starting DSL testing ladder"}
+    
+    STATE test_results = {}
+    STATE level_summaries = {}
+    STATE insights = []
+    
+    ## Phase 2: Level 0 - Natural Language Baseline
+    TRACK {phase: "level_0_start", message: "Testing natural language coordination"}
+    
+    STATE level_0_results = []
+    
+    FOREACH test IN {{test_sequence.level_0}}:
+      TRACK {executing_test: test, level: 0}
+      
+      # Run the test orchestration
+      EVENT orchestration:run {
+        name: test,
+        wait_for_completion: true,
+        collect_events: true
+      } AS test_execution
+      
+      # Evaluate the results
+      SEND {
+        to: evaluator,
+        message: {
+          action: "evaluate_test",
+          test_name: test,
+          level: 0,
+          execution_data: test_execution,
+          focus: "natural_language_baseline"
+        }
+      }
+      
+      AWAIT {
+        from: evaluator,
+        timeout: 180
+      } AS evaluation_result
+      
+      APPEND level_0_results {
+        test: test,
+        execution: test_execution,
+        evaluation: evaluation_result
+      }
+      
+      TRACK {test_complete: test, level: 0, success: evaluation_result.success}
+    
+    # Summarize Level 0
+    STATE level_0_summary = {
+      tests_completed: LENGTH(level_0_results),
+      average_success_rate: AVERAGE(level_0_results, r.evaluation.success_rate),
+      baseline_token_usage: SUM(level_0_results, r.evaluation.token_count),
+      coordination_quality: AVERAGE(level_0_results, r.evaluation.coordination_score)
+    }
+    
+    SET level_summaries["level_0"] = level_0_summary
+    
+    TRACK {phase: "level_0_complete", summary: level_0_summary}
+    
+    ## Phase 3: Level 1 - Atomic DSL Primitives
+    TRACK {phase: "level_1_start", message: "Testing atomic DSL primitives"}
+    
+    STATE level_1_results = []
+    
+    FOREACH test IN {{test_sequence.level_1}}:
+      TRACK {executing_test: test, level: 1}
+      
+      # Run the DSL test
+      EVENT orchestration:run {
+        name: test,
+        wait_for_completion: true,
+        collect_events: true
+      } AS dsl_execution
+      
+      # Evaluate DSL interpretation
+      SEND {
+        to: evaluator,
+        message: {
+          action: "evaluate_dsl_test",
+          test_name: test,
+          level: 1,
+          execution_data: dsl_execution,
+          focus: "dsl_interpretation_accuracy"
+        }
+      }
+      
+      AWAIT {
+        from: evaluator,
+        timeout: 180
+      } AS dsl_evaluation
+      
+      APPEND level_1_results {
+        test: test,
+        execution: dsl_execution,
+        evaluation: dsl_evaluation
+      }
+      
+      TRACK {test_complete: test, level: 1, interpretation_score: dsl_evaluation.interpretation_accuracy}
+    
+    # Summarize Level 1
+    STATE level_1_summary = {
+      tests_completed: LENGTH(level_1_results),
+      dsl_interpretation_rate: AVERAGE(level_1_results, r.evaluation.interpretation_accuracy),
+      dsl_execution_rate: AVERAGE(level_1_results, r.evaluation.execution_accuracy),
+      token_efficiency: AVERAGE(level_1_results, r.evaluation.token_efficiency),
+      constructs_working: EXTRACT(level_1_results, r.evaluation.successful_constructs)
+    }
+    
+    SET level_summaries["level_1"] = level_1_summary
+    
+    TRACK {phase: "level_1_complete", summary: level_1_summary}
+    
+    ## Phase 4: Cross-Level Analysis
+    TRACK {phase: "analysis", message: "Analyzing results across levels"}
+    
+    # Compare DSL vs Natural Language
+    STATE comparison_analysis = {
+      dsl_vs_natural_success: level_1_summary.dsl_execution_rate / level_0_summary.average_success_rate,
+      token_savings: (level_0_summary.baseline_token_usage - AVERAGE_TOKEN_USAGE(level_1_results)) / level_0_summary.baseline_token_usage,
+      interpretation_overhead: MEASURE_INTERPRETATION_COMPLEXITY(level_1_results),
+      readiness_for_optimization: level_1_summary.dsl_interpretation_rate > 0.8
+    }
+    
+    # Identify optimization targets
+    STATE optimization_priorities = {
+      high_priority: FILTER(level_1_results, r.evaluation.interpretation_accuracy < 0.7),
+      working_well: FILTER(level_1_results, r.evaluation.interpretation_accuracy > 0.9),
+      token_efficient: FILTER(level_1_results, r.evaluation.token_efficiency > 0.3),
+      needs_improvement: EXTRACT(level_1_results WHERE interpretation_accuracy < 0.8, test)
+    }
+    
+    APPEND insights {
+      type: "readiness_assessment",
+      ready_for_dspy: comparison_analysis.readiness_for_optimization,
+      baseline_quality: level_0_summary.average_success_rate,
+      dsl_potential: level_1_summary.dsl_interpretation_rate
+    }
+    
+    ## Phase 5: Generate Comprehensive Report
+    SEND {
+      to: aggregator,
+      message: {
+        action: "generate_baseline_report",
+        level_0_results: level_0_results,
+        level_1_results: level_1_results,
+        level_summaries: level_summaries,
+        comparison_analysis: comparison_analysis,
+        optimization_priorities: optimization_priorities,
+        insights: insights
+      }
+    }
+    
+    AWAIT {
+      from: aggregator,
+      timeout: 240
+    } AS final_report
+    
+    ## Phase 6: Document Findings
+    EVENT composition:create_component {
+      name: "evaluations/results/dsl_baseline_{{measurement_date}}",
+      content: final_report.content,
+      metadata: {
+        test_date: "{{measurement_date}}",
+        level_0_success: level_0_summary.average_success_rate,
+        level_1_success: level_1_summary.dsl_interpretation_rate,
+        ready_for_optimization: comparison_analysis.readiness_for_optimization,
+        next_steps: optimization_priorities
+      }
+    }
+    
+    TRACK {
+      phase: "complete",
+      baseline_established: true,
+      next_phase: comparison_analysis.readiness_for_optimization ? "dspy_optimization" : "dsl_improvement",
+      key_insight: final_report.key_insight
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Baseline measurement complete",
+      results: {
+        baseline_quality: level_0_summary.average_success_rate,
+        dsl_readiness: level_1_summary.dsl_interpretation_rate,
+        optimization_ready: comparison_analysis.readiness_for_optimization
+      }
+    }
+
+# Helper functions for measurement
+helpers:
+  AVERAGE_TOKEN_USAGE: "Calculate average token usage across test results"
+  MEASURE_INTERPRETATION_COMPLEXITY: "Assess cognitive load of DSL interpretation"
+
+metadata:
+  test_suite: dsl_bootstrap_ladder
+  purpose: empirical_foundation_building
+  optimization_readiness_threshold: 0.8
+  success_criteria:
+    - level_0_baseline: "> 0.85 success rate"
+    - level_1_dsl: "> 0.75 interpretation rate"
+    - token_efficiency: "> 0.20 savings"
+  next_phase_trigger: "interpretation_rate > 0.8"

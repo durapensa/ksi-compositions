@@ -1,0 +1,107 @@
+name: level0_message_passing
+type: orchestration
+version: 1.0.0
+description: |
+  Level 0 test: Message passing using natural language.
+  Tests multi-hop message relay without DSL SEND commands.
+  Establishes baseline for how agents naturally communicate.
+author: ksi_system
+timestamp: 2025-01-18T00:00:00Z
+
+agents:
+  # Message originator
+  alice:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "alice"
+      prompt: |
+        You are Alice, starting a message chain.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "alice_ready"}}
+        
+        Your task:
+        1. Create a message: "The secret number is 42"
+        2. Tell Bob to pass it to Charlie
+        3. Ask Bob to add " - verified" to the message
+        
+        Use natural language to communicate.
+        
+        ## MANDATORY: Track your action:
+        {"event": "orchestration:track", "data": {"agent": "alice", "action": "initiated_chain", "message": "..."}}
+
+  # First relay
+  bob:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "bob"
+      prompt: |
+        You are Bob, a message relay.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "bob_ready"}}
+        
+        When you receive a message:
+        1. Acknowledge receipt
+        2. Modify it as instructed
+        3. Pass it to the next recipient
+        
+        ## MANDATORY: Track relay:
+        {"event": "orchestration:track", "data": {"agent": "bob", "received": "...", "sent": "...", "to": "..."}}
+
+  # Final recipient
+  charlie:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "charlie"
+      prompt: |
+        You are Charlie, the final recipient.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "charlie_ready"}}
+        
+        When you receive a message:
+        1. Acknowledge receipt
+        2. Verify it contains "42" and "verified"
+        3. Report success or failure
+        
+        ## MANDATORY: Report result:
+        {"event": "state:entity:create", "data": {"type": "message_result", "id": "final_message", "properties": {"content": "...", "valid": true/false}}}
+
+  # Communication observer
+  observer:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "comm_observer"
+      prompt: |
+        You observe the message passing test.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "observer_ready"}}
+        
+        Track:
+        1. Message flow: Alice → Bob → Charlie
+        2. Message transformations
+        3. Communication clarity
+        4. Any dropped or confused messages
+        
+        ## MANDATORY: Report measurement:
+        {"event": "state:entity:create", "data": {"type": "test_result", "id": "level0_messaging", "properties": {"success": true/false, "hops_completed": N, "message_integrity": "intact/modified/lost", "natural_flow_score": N}}}
+
+variables:
+  test_name: "Natural Language Message Passing"
+  test_level: 0
+  expected_message: "The secret number is 42 - verified"
+  chain_length: 3
+
+metadata:
+  test_category: pre_dsl_baseline
+  skills_tested:
+    - multi_agent_communication
+    - message_relay
+    - instruction_following
+    - natural_language_routing
+  success_criteria:
+    - message_reaches_destination
+    - correct_modifications_applied
+    - clear_communication_flow

@@ -1,0 +1,106 @@
+name: test_dsl_execution
+type: orchestration
+version: 1.0.0
+description: |
+  Simple test orchestration to verify DSL execution works correctly.
+  Uses the DSL interpreter orchestrator to execute basic commands.
+author: ksi_system
+timestamp: 2025-01-18T23:30:00Z
+
+agents:
+  # DSL Interpreter as the main orchestrator
+  dsl_executor:
+    component: "components/core/dsl_interpreter_orchestrator"
+    vars:
+      agent_id: "dsl_executor"
+      pattern_name: "test_dsl_execution"
+  
+  # Simple worker agents
+  worker_a:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "worker_a"
+      prompt: |
+        You are Worker A. When you receive a task, acknowledge it and report completion.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "worker_a_ready"}}
+        
+        When you receive a task:
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_task", "properties": {"status": "completed", "task": "..."}}}
+  
+  worker_b:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "worker_b"
+      prompt: |
+        You are Worker B. When you receive a task, acknowledge it and report completion.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "worker_b_ready"}}
+        
+        When you receive a task:
+        {"event": "state:entity:update", "data": {"id": "{{agent_id}}_task", "properties": {"status": "completed", "task": "..."}}}
+
+# Variables
+variables:
+  num_tasks: 3
+
+# The DSL to execute
+orchestration_logic:
+  strategy: |
+    ## Test DSL Execution
+    
+    # Initialize state
+    STATE task_count = 0
+    STATE results = []
+    
+    TRACK {phase: "initialization", message: "Starting DSL execution test"}
+    
+    # Send tasks to workers
+    LOOP i FROM 1 TO {{num_tasks}}:
+      TRACK {event: "sending_task", task_number: i}
+      
+      # Send to worker A
+      SEND {
+        to: worker_a,
+        message: {
+          role: "user",
+          content: "Please process task #{{i}}: Calculate fibonacci({{i}})"
+        }
+      }
+      
+      # Send to worker B  
+      SEND {
+        to: worker_b,
+        message: {
+          role: "user", 
+          content: "Please process task #{{i}}: Calculate factorial({{i}})"
+        }
+      }
+      
+      STATE task_count = task_count + 1
+      
+      TRACK {event: "tasks_sent", count: task_count}
+    
+    # Final tracking
+    TRACK {
+      phase: "complete",
+      total_tasks_sent: task_count,
+      workers: ["worker_a", "worker_b"],
+      message: "DSL execution test completed"
+    }
+    
+    # Request termination
+    EVENT orchestration:request_termination {
+      agent_id: "dsl_executor",
+      reason: "Test completed successfully"
+    }
+
+# Metadata
+metadata:
+  tags: ["test", "dsl", "execution", "simple"]
+  capabilities_required:
+    - orchestration:track
+    - message:send
+    - state:entity:create

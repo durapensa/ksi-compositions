@@ -118,3 +118,948 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_analyst_1752880672",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_e30308da",
+    "variables": {
+      "agent_id": "test_analyst_1752880672"
+    },
+    "spawn_timestamp": "2025-07-18T23:17:52.144459Z"
+  },
+  "timestamp": "2025-07-18T23:17:52.144835Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_c5136a71_hybrid_optimizer",
+    "profile_name": "temp_profile_components_core_system_orchestrator_f514e428",
+    "variables": {
+      "agent_id": "orch_c5136a71_hybrid_optimizer"
+    },
+    "spawn_timestamp": "2025-07-18T23:22:45.453057Z"
+  },
+  "timestamp": "2025-07-18T23:22:45.453365Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/creative_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_c5136a71_prompt_dsl_mixer",
+    "profile_name": "temp_profile_components_personas_creative_thinker_19555bf8",
+    "variables": {
+      "agent_id": "orch_c5136a71_prompt_dsl_mixer"
+    },
+    "spawn_timestamp": "2025-07-18T23:22:45.460212Z"
+  },
+  "timestamp": "2025-07-18T23:22:45.460522Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_c5136a71_prompt_tester",
+    "profile_name": "temp_profile_components_core_base_agent_d2d65926",
+    "variables": {
+      "agent_id": "orch_c5136a71_prompt_tester"
+    },
+    "spawn_timestamp": "2025-07-18T23:22:45.467331Z"
+  },
+  "timestamp": "2025-07-18T23:22:45.467612Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/judges/optimization_technique_judge",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_c5136a71_pattern_judge",
+    "profile_name": "temp_profile_components_personas_judges_optimization_technique_judge_a731e104",
+    "variables": {
+      "agent_id": "orch_c5136a71_pattern_judge"
+    },
+    "spawn_timestamp": "2025-07-18T23:22:45.474810Z"
+  },
+  "timestamp": "2025-07-18T23:22:45.475092Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/game_players/adaptive_cooperator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_34f223f0_player_a",
+    "profile_name": "temp_profile_components_personas_game_players_adaptive_cooperator_026b79fc",
+    "variables": {
+      "agent_id": "orch_34f223f0_player_a"
+    },
+    "spawn_timestamp": "2025-07-18T23:23:00.343953Z"
+  },
+  "timestamp": "2025-07-18T23:23:00.344284Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/game_players/tit_for_tat",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_34f223f0_player_b",
+    "profile_name": "temp_profile_components_personas_game_players_tit_for_tat_06f3c45b",
+    "variables": {
+      "agent_id": "orch_34f223f0_player_b"
+    },
+    "spawn_timestamp": "2025-07-18T23:23:00.351040Z"
+  },
+  "timestamp": "2025-07-18T23:23:00.351337Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/judges/game_theory_pairwise_judge",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_34f223f0_strategy_judge",
+    "profile_name": "temp_profile_components_personas_judges_game_theory_pairwise_judge_de97abf8",
+    "variables": {
+      "agent_id": "orch_34f223f0_strategy_judge"
+    },
+    "spawn_timestamp": "2025-07-18T23:23:00.358075Z"
+  },
+  "timestamp": "2025-07-18T23:23:00.358399Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6b83b57d_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_fc571bdf",
+    "variables": {
+      "agent_id": "orch_6b83b57d_coordinator"
+    },
+    "spawn_timestamp": "2025-07-18T23:23:36.236609Z"
+  },
+  "timestamp": "2025-07-18T23:23:36.236914Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_single_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6b83b57d_variant_generator",
+    "profile_name": "temp_profile_components_core_system_single_agent_11cf97d8",
+    "variables": {
+      "agent_id": "orch_6b83b57d_variant_generator"
+    },
+    "spawn_timestamp": "2025-07-18T23:23:36.244389Z"
+  },
+  "timestamp": "2025-07-18T23:23:36.244689Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/judges/game_theory_pairwise_judge",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6b83b57d_quality_judge",
+    "profile_name": "temp_profile_components_personas_judges_game_theory_pairwise_judge_c2823673",
+    "variables": {
+      "agent_id": "orch_6b83b57d_quality_judge"
+    },
+    "spawn_timestamp": "2025-07-18T23:23:36.251700Z"
+  },
+  "timestamp": "2025-07-18T23:23:36.251995Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/dsl_interpreter_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4f1cc127_dsl_executor",
+    "profile_name": "temp_profile_components_core_dsl_interpreter_orchestrator_dcddd29c",
+    "variables": {
+      "agent_id": "orch_4f1cc127_dsl_executor"
+    },
+    "spawn_timestamp": "2025-07-18T23:30:17.265949Z"
+  },
+  "timestamp": "2025-07-18T23:30:17.266267Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4f1cc127_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_297fafdb",
+    "variables": {
+      "agent_id": "orch_4f1cc127_worker_a"
+    },
+    "spawn_timestamp": "2025-07-18T23:30:17.273232Z"
+  },
+  "timestamp": "2025-07-18T23:30:17.273555Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4f1cc127_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_4ec67b74",
+    "variables": {
+      "agent_id": "orch_4f1cc127_worker_b"
+    },
+    "spawn_timestamp": "2025-07-18T23:30:17.281607Z"
+  },
+  "timestamp": "2025-07-18T23:30:17.281918Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/dsl_interpreter_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_9ec47b0b_dsl_executor",
+    "profile_name": "temp_profile_components_core_dsl_interpreter_orchestrator_dd24123b",
+    "variables": {
+      "agent_id": "orch_9ec47b0b_dsl_executor"
+    },
+    "spawn_timestamp": "2025-07-18T23:31:34.707367Z"
+  },
+  "timestamp": "2025-07-18T23:31:34.707688Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_9ec47b0b_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_869f74ba",
+    "variables": {
+      "agent_id": "orch_9ec47b0b_worker_a"
+    },
+    "spawn_timestamp": "2025-07-18T23:31:34.714400Z"
+  },
+  "timestamp": "2025-07-18T23:31:34.714707Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_9ec47b0b_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_5d17401e",
+    "variables": {
+      "agent_id": "orch_9ec47b0b_worker_b"
+    },
+    "spawn_timestamp": "2025-07-18T23:31:34.721672Z"
+  },
+  "timestamp": "2025-07-18T23:31:34.722032Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_3aa28e3d_orchestrator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_40769cf9",
+    "variables": {
+      "agent_id": "orch_3aa28e3d_orchestrator"
+    },
+    "spawn_timestamp": "2025-07-19T00:12:09.495790Z"
+  },
+  "timestamp": "2025-07-19T00:12:09.496110Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_160931b4_coordinator",
+    "profile_name": "temp_profile_components_core_base_agent_035df3cf",
+    "variables": {
+      "agent_id": "orch_160931b4_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T00:12:22.112013Z"
+  },
+  "timestamp": "2025-07-19T00:12:22.112351Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_160931b4_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_2f10676c",
+    "variables": {
+      "agent_id": "orch_160931b4_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T00:12:22.119550Z"
+  },
+  "timestamp": "2025-07-19T00:12:22.119844Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_160931b4_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_0a40fe98",
+    "variables": {
+      "agent_id": "orch_160931b4_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T00:12:22.126682Z"
+  },
+  "timestamp": "2025-07-19T00:12:22.127006Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_160931b4_observer",
+    "profile_name": "temp_profile_components_core_base_agent_32a7dc63",
+    "variables": {
+      "agent_id": "orch_160931b4_observer"
+    },
+    "spawn_timestamp": "2025-07-19T00:12:22.133773Z"
+  },
+  "timestamp": "2025-07-19T00:12:22.134064Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_228bc029_coordinator",
+    "profile_name": "temp_profile_components_core_base_agent_cbfc829c",
+    "variables": {
+      "agent_id": "orch_228bc029_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T00:16:58.048438Z"
+  },
+  "timestamp": "2025-07-19T00:16:58.048774Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_228bc029_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_781657ec",
+    "variables": {
+      "agent_id": "orch_228bc029_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T00:16:58.055810Z"
+  },
+  "timestamp": "2025-07-19T00:16:58.056137Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_228bc029_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_79e0a1c4",
+    "variables": {
+      "agent_id": "orch_228bc029_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T00:16:58.063204Z"
+  },
+  "timestamp": "2025-07-19T00:16:58.063519Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_228bc029_observer",
+    "profile_name": "temp_profile_components_core_base_agent_c14ef53f",
+    "variables": {
+      "agent_id": "orch_228bc029_observer"
+    },
+    "spawn_timestamp": "2025-07-19T00:16:58.070815Z"
+  },
+  "timestamp": "2025-07-19T00:16:58.071110Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_c276a8c0_active_evolver",
+    "profile_name": "temp_profile_components_core_system_orchestrator_6305f315",
+    "variables": {
+      "agent_id": "orch_c276a8c0_active_evolver"
+    },
+    "spawn_timestamp": "2025-07-19T00:25:02.875177Z"
+  },
+  "timestamp": "2025-07-19T00:25:02.875513Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_60d79f44_coordinator",
+    "profile_name": "temp_profile_components_core_base_agent_3e173c23",
+    "variables": {
+      "agent_id": "orch_60d79f44_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T00:26:48.795515Z"
+  },
+  "timestamp": "2025-07-19T00:26:48.795911Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_60d79f44_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_fb560d11",
+    "variables": {
+      "agent_id": "orch_60d79f44_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T00:26:48.803274Z"
+  },
+  "timestamp": "2025-07-19T00:26:48.803581Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_60d79f44_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_f51d477a",
+    "variables": {
+      "agent_id": "orch_60d79f44_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T00:26:48.810733Z"
+  },
+  "timestamp": "2025-07-19T00:26:48.811032Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_60d79f44_observer",
+    "profile_name": "temp_profile_components_core_base_agent_5a6cafaa",
+    "variables": {
+      "agent_id": "orch_60d79f44_observer"
+    },
+    "spawn_timestamp": "2025-07-19T00:26:48.817709Z"
+  },
+  "timestamp": "2025-07-19T00:26:48.817970Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_5ce722dd_coordinator",
+    "profile_name": "temp_profile_components_core_base_agent_1cf14148",
+    "variables": {
+      "agent_id": "orch_5ce722dd_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T00:27:46.219019Z"
+  },
+  "timestamp": "2025-07-19T00:27:46.219333Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_5ce722dd_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_7f844c64",
+    "variables": {
+      "agent_id": "orch_5ce722dd_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T00:27:46.226676Z"
+  },
+  "timestamp": "2025-07-19T00:27:46.227095Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_5ce722dd_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_17f7b663",
+    "variables": {
+      "agent_id": "orch_5ce722dd_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T00:27:46.234406Z"
+  },
+  "timestamp": "2025-07-19T00:27:46.234720Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_5ce722dd_observer",
+    "profile_name": "temp_profile_components_core_base_agent_de46e5ce",
+    "variables": {
+      "agent_id": "orch_5ce722dd_observer"
+    },
+    "spawn_timestamp": "2025-07-19T00:27:46.241946Z"
+  },
+  "timestamp": "2025-07-19T00:27:46.242238Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_edbfbb06_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_36d2958d",
+    "variables": {
+      "agent_id": "orch_edbfbb06_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T00:31:00.478173Z"
+  },
+  "timestamp": "2025-07-19T00:31:00.478471Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_edbfbb06_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_f075a399",
+    "variables": {
+      "agent_id": "orch_edbfbb06_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T00:31:00.486471Z"
+  },
+  "timestamp": "2025-07-19T00:31:00.486820Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_edbfbb06_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_ec8578e0",
+    "variables": {
+      "agent_id": "orch_edbfbb06_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T00:31:00.493952Z"
+  },
+  "timestamp": "2025-07-19T00:31:00.494284Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_edbfbb06_observer",
+    "profile_name": "temp_profile_components_core_base_agent_879a10f7",
+    "variables": {
+      "agent_id": "orch_edbfbb06_observer"
+    },
+    "spawn_timestamp": "2025-07-19T00:31:00.501734Z"
+  },
+  "timestamp": "2025-07-19T00:31:00.502063Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_d7ab8f22_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_e8d599a6",
+    "variables": {
+      "agent_id": "orch_d7ab8f22_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T00:34:03.108432Z"
+  },
+  "timestamp": "2025-07-19T00:34:03.108745Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_d7ab8f22_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_d8de2b18",
+    "variables": {
+      "agent_id": "orch_d7ab8f22_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T00:34:03.115694Z"
+  },
+  "timestamp": "2025-07-19T00:34:03.116016Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_d7ab8f22_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_3e3eae05",
+    "variables": {
+      "agent_id": "orch_d7ab8f22_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T00:34:03.123576Z"
+  },
+  "timestamp": "2025-07-19T00:34:03.123887Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_d7ab8f22_observer",
+    "profile_name": "temp_profile_components_core_base_agent_2f691712",
+    "variables": {
+      "agent_id": "orch_d7ab8f22_observer"
+    },
+    "spawn_timestamp": "2025-07-19T00:34:03.131002Z"
+  },
+  "timestamp": "2025-07-19T00:34:03.131336Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_a53d276c_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_f1508aae",
+    "variables": {
+      "agent_id": "orch_a53d276c_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T01:26:08.929428Z"
+  },
+  "timestamp": "2025-07-19T01:26:08.929779Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_a53d276c_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_f5a66389",
+    "variables": {
+      "agent_id": "orch_a53d276c_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T01:26:08.936597Z"
+  },
+  "timestamp": "2025-07-19T01:26:08.936909Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_a53d276c_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_45243ddc",
+    "variables": {
+      "agent_id": "orch_a53d276c_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T01:26:08.944441Z"
+  },
+  "timestamp": "2025-07-19T01:26:08.944792Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_a53d276c_observer",
+    "profile_name": "temp_profile_components_core_base_agent_417c3185",
+    "variables": {
+      "agent_id": "orch_a53d276c_observer"
+    },
+    "spawn_timestamp": "2025-07-19T01:26:08.951319Z"
+  },
+  "timestamp": "2025-07-19T01:26:08.951857Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_ad88fb75_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_9358742b",
+    "variables": {
+      "agent_id": "orch_ad88fb75_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T02:10:16.799883Z"
+  },
+  "timestamp": "2025-07-19T02:10:16.800216Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_ad88fb75_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_41466ac3",
+    "variables": {
+      "agent_id": "orch_ad88fb75_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T02:10:16.807933Z"
+  },
+  "timestamp": "2025-07-19T02:10:16.808250Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_ad88fb75_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_bce22976",
+    "variables": {
+      "agent_id": "orch_ad88fb75_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T02:10:16.816175Z"
+  },
+  "timestamp": "2025-07-19T02:10:16.816498Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_ad88fb75_observer",
+    "profile_name": "temp_profile_components_core_base_agent_a8cbbffb",
+    "variables": {
+      "agent_id": "orch_ad88fb75_observer"
+    },
+    "spawn_timestamp": "2025-07-19T02:10:16.823954Z"
+  },
+  "timestamp": "2025-07-19T02:10:16.824264Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_084d75cc_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_9a3e3a9d",
+    "variables": {
+      "agent_id": "orch_084d75cc_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:15.653994Z"
+  },
+  "timestamp": "2025-07-19T02:14:15.654333Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_084d75cc_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_b0186da6",
+    "variables": {
+      "agent_id": "orch_084d75cc_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:15.661505Z"
+  },
+  "timestamp": "2025-07-19T02:14:15.661834Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_084d75cc_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_8004e062",
+    "variables": {
+      "agent_id": "orch_084d75cc_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:15.669252Z"
+  },
+  "timestamp": "2025-07-19T02:14:15.669586Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_084d75cc_observer",
+    "profile_name": "temp_profile_components_core_base_agent_127a5057",
+    "variables": {
+      "agent_id": "orch_084d75cc_observer"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:15.676932Z"
+  },
+  "timestamp": "2025-07-19T02:14:15.677237Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_826b2a7a_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_3fda89e0",
+    "variables": {
+      "agent_id": "orch_826b2a7a_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:37.821477Z"
+  },
+  "timestamp": "2025-07-19T02:14:37.821812Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_826b2a7a_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_fbb67d1b",
+    "variables": {
+      "agent_id": "orch_826b2a7a_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:37.828854Z"
+  },
+  "timestamp": "2025-07-19T02:14:37.829161Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_826b2a7a_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_ded42401",
+    "variables": {
+      "agent_id": "orch_826b2a7a_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:37.836153Z"
+  },
+  "timestamp": "2025-07-19T02:14:37.836492Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_826b2a7a_observer",
+    "profile_name": "temp_profile_components_core_base_agent_d10f3273",
+    "variables": {
+      "agent_id": "orch_826b2a7a_observer"
+    },
+    "spawn_timestamp": "2025-07-19T02:14:37.843238Z"
+  },
+  "timestamp": "2025-07-19T02:14:37.843557Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/system_orchestrator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_2e29fabd_coordinator",
+    "profile_name": "temp_profile_components_core_system_orchestrator_f6c4caba",
+    "variables": {
+      "agent_id": "orch_2e29fabd_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T02:15:01.949254Z"
+  },
+  "timestamp": "2025-07-19T02:15:01.949570Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_2e29fabd_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_902c07da",
+    "variables": {
+      "agent_id": "orch_2e29fabd_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T02:15:01.956555Z"
+  },
+  "timestamp": "2025-07-19T02:15:01.956866Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_2e29fabd_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_8533209e",
+    "variables": {
+      "agent_id": "orch_2e29fabd_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T02:15:01.963464Z"
+  },
+  "timestamp": "2025-07-19T02:15:01.963770Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_2e29fabd_observer",
+    "profile_name": "temp_profile_components_core_base_agent_9fa20310",
+    "variables": {
+      "agent_id": "orch_2e29fabd_observer"
+    },
+    "spawn_timestamp": "2025-07-19T02:15:01.970427Z"
+  },
+  "timestamp": "2025-07-19T02:15:01.970741Z",
+  "agent_id": null,
+  "request_id": null
+}

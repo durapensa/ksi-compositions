@@ -10,9 +10,9 @@ timestamp: 2025-01-18T14:30:00Z
 agents:
   # Hybrid Coordinator
   coordinator:
-    component: "components/core/system_orchestrator"
+    component: "components/core/dsl_interpreter_orchestrator"
     vars:
-      agent_id: "hybrid_coord_{{session_id}}"
+      agent_id: "hybrid_coordinator"
       prompt: |
         You coordinate a hybrid optimization approach.
         
@@ -29,7 +29,7 @@ agents:
   variant_generator:
     component: "components/core/system_single_agent"
     vars:
-      agent_id: "var_gen_{{session_id}}"
+      agent_id: "variant_generator"
       prompt: |
         Generate prompt variants using structured approaches.
         
@@ -49,11 +49,10 @@ agents:
   quality_judge:
     component: "components/personas/judges/game_theory_pairwise_judge"
     vars:
-      agent_id: "judge_{{session_id}}"
+      agent_id: "quality_judge"
       comparison_focus: "strategic_reasoning_quality"
 
 variables:
-  session_id: "{{session_id}}"
   target_component: "{{target_component|default:'components/personas/game_players/strategic_reasoner'}}"
   num_variants: "{{num_variants|default:4}}"
 
