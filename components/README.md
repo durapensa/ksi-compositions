@@ -4,7 +4,7 @@ This is the unified component architecture for KSI (Knowledge System Infrastruct
 
 ## Architecture Principle
 
-**Everything is a component** with a `component_type` attribute. Components are composed together to create agents, orchestrations, and evaluations.
+**Everything is a component** with a `type` attribute. Components are composed together to create agents, orchestrations, and evaluations.
 
 ## Directory Structure
 

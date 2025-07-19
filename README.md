@@ -90,7 +90,7 @@ All components should follow this structure:
 
 ```yaml
 ---
-component_type: persona  # Required: core|persona|behavior|orchestration|evaluation|tool
+type: persona  # Required: core|persona|behavior|orchestration|evaluation|tool
 name: component_name
 version: 1.0.0
 description: "Brief description of component"

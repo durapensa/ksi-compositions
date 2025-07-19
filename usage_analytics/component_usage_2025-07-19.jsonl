@@ -58,3 +58,903 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "components/core/orchestration_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4be51ccc_coordinator",
+    "profile_name": "temp_profile_components_core_orchestration_coordinator_6432a6c1",
+    "variables": {
+      "agent_id": "orch_4be51ccc_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T14:48:28.559377Z"
+  },
+  "timestamp": "2025-07-19T14:48:28.559729Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4be51ccc_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_b553efad",
+    "variables": {
+      "agent_id": "orch_4be51ccc_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T14:48:28.567027Z"
+  },
+  "timestamp": "2025-07-19T14:48:28.567382Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4be51ccc_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_a8c36911",
+    "variables": {
+      "agent_id": "orch_4be51ccc_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T14:48:28.574271Z"
+  },
+  "timestamp": "2025-07-19T14:48:28.574599Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4be51ccc_observer",
+    "profile_name": "temp_profile_components_core_base_agent_6ac0f554",
+    "variables": {
+      "agent_id": "orch_4be51ccc_observer"
+    },
+    "spawn_timestamp": "2025-07-19T14:48:28.581897Z"
+  },
+  "timestamp": "2025-07-19T14:48:28.582207Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/orchestration_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_b8d3ccf8_coordinator",
+    "profile_name": "temp_profile_components_core_orchestration_coordinator_5c53c631",
+    "variables": {
+      "agent_id": "orch_b8d3ccf8_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T14:50:56.735427Z"
+  },
+  "timestamp": "2025-07-19T14:50:56.735980Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_b8d3ccf8_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_38b1fa8f",
+    "variables": {
+      "agent_id": "orch_b8d3ccf8_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T14:50:56.745424Z"
+  },
+  "timestamp": "2025-07-19T14:50:56.745798Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_b8d3ccf8_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_38d337a4",
+    "variables": {
+      "agent_id": "orch_b8d3ccf8_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T14:50:56.756304Z"
+  },
+  "timestamp": "2025-07-19T14:50:56.756657Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_b8d3ccf8_observer",
+    "profile_name": "temp_profile_components_core_base_agent_13efcc09",
+    "variables": {
+      "agent_id": "orch_b8d3ccf8_observer"
+    },
+    "spawn_timestamp": "2025-07-19T14:50:56.767352Z"
+  },
+  "timestamp": "2025-07-19T14:50:56.767729Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/orchestration_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_bcc4c8c6_coordinator",
+    "profile_name": "temp_profile_components_core_orchestration_coordinator_8052d6d6",
+    "variables": {
+      "agent_id": "orch_bcc4c8c6_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T15:08:49.070656Z"
+  },
+  "timestamp": "2025-07-19T15:08:49.071011Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_bcc4c8c6_worker_a",
+    "profile_name": "temp_profile_components_core_base_agent_8c8d4c44",
+    "variables": {
+      "agent_id": "orch_bcc4c8c6_worker_a"
+    },
+    "spawn_timestamp": "2025-07-19T15:08:49.080520Z"
+  },
+  "timestamp": "2025-07-19T15:08:49.080855Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_bcc4c8c6_worker_b",
+    "profile_name": "temp_profile_components_core_base_agent_0d4d2c83",
+    "variables": {
+      "agent_id": "orch_bcc4c8c6_worker_b"
+    },
+    "spawn_timestamp": "2025-07-19T15:08:49.089860Z"
+  },
+  "timestamp": "2025-07-19T15:08:49.090177Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_bcc4c8c6_observer",
+    "profile_name": "temp_profile_components_core_base_agent_f9b2c35f",
+    "variables": {
+      "agent_id": "orch_bcc4c8c6_observer"
+    },
+    "spawn_timestamp": "2025-07-19T15:08:49.099749Z"
+  },
+  "timestamp": "2025-07-19T15:08:49.100070Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "personas/conversationalists/hello_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_hello_agent",
+    "profile_name": "temp_profile_personas_conversationalists_hello_agent_cc450e5b",
+    "variables": {
+      "agent_id": "test_hello_agent"
+    },
+    "spawn_timestamp": "2025-07-19T15:30:32.666668Z"
+  },
+  "timestamp": "2025-07-19T15:30:32.666980Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_data_analyst",
+    "profile_name": "temp_profile_personas_analysts_data_analyst_485b3185",
+    "variables": {
+      "agent_id": "test_data_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T15:30:38.948566Z"
+  },
+  "timestamp": "2025-07-19T15:30:38.948884Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/hello_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_7739c78e_hello",
+    "profile_name": "temp_profile_components_personas_conversationalists_hello_agent_0ba2795a",
+    "variables": {
+      "agent_id": "orch_7739c78e_hello"
+    },
+    "spawn_timestamp": "2025-07-19T16:10:24.179174Z"
+  },
+  "timestamp": "2025-07-19T16:10:24.179540Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/goodbye_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_7739c78e_goodbye",
+    "profile_name": "temp_profile_components_personas_conversationalists_goodbye_agent_56c75bc8",
+    "variables": {
+      "agent_id": "orch_7739c78e_goodbye"
+    },
+    "spawn_timestamp": "2025-07-19T16:10:24.189663Z"
+  },
+  "timestamp": "2025-07-19T16:10:24.190035Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/hello_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_3b16eed6_hello",
+    "profile_name": "temp_profile_components_personas_conversationalists_hello_agent_806d83bf",
+    "variables": {
+      "agent_id": "orch_3b16eed6_hello"
+    },
+    "spawn_timestamp": "2025-07-19T16:25:23.113808Z"
+  },
+  "timestamp": "2025-07-19T16:25:23.114222Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/goodbye_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_3b16eed6_goodbye",
+    "profile_name": "temp_profile_components_personas_conversationalists_goodbye_agent_13aa68cb",
+    "variables": {
+      "agent_id": "orch_3b16eed6_goodbye"
+    },
+    "spawn_timestamp": "2025-07-19T16:25:23.124689Z"
+  },
+  "timestamp": "2025-07-19T16:25:23.125052Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4dccc9ff_analyzer",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_2555d314",
+    "variables": {
+      "agent_id": "orch_4dccc9ff_analyzer"
+    },
+    "spawn_timestamp": "2025-07-19T16:55:23.762824Z"
+  },
+  "timestamp": "2025-07-19T16:55:23.763166Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_4dccc9ff_processor",
+    "profile_name": "temp_profile_components_core_base_agent_799bff2a",
+    "variables": {
+      "agent_id": "orch_4dccc9ff_processor"
+    },
+    "spawn_timestamp": "2025-07-19T16:55:23.772540Z"
+  },
+  "timestamp": "2025-07-19T16:55:23.772864Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_e58fd502_analyzer",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_43eab640",
+    "variables": {
+      "agent_id": "orch_e58fd502_analyzer"
+    },
+    "spawn_timestamp": "2025-07-19T17:01:27.527056Z"
+  },
+  "timestamp": "2025-07-19T17:01:27.527388Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_e58fd502_processor",
+    "profile_name": "temp_profile_components_core_base_agent_9613b858",
+    "variables": {
+      "agent_id": "orch_e58fd502_processor"
+    },
+    "spawn_timestamp": "2025-07-19T17:01:27.536681Z"
+  },
+  "timestamp": "2025-07-19T17:01:27.537012Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_940423a3_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_b96cdebe",
+    "variables": {
+      "agent_id": "orch_940423a3_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T17:22:09.005705Z"
+  },
+  "timestamp": "2025-07-19T17:22:09.006057Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/researchers/data_researcher",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_940423a3_researcher",
+    "profile_name": "temp_profile_components_personas_researchers_data_researcher_232cd70d",
+    "variables": {
+      "agent_id": "orch_940423a3_researcher"
+    },
+    "spawn_timestamp": "2025-07-19T17:22:09.016187Z"
+  },
+  "timestamp": "2025-07-19T17:22:09.016514Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/insight_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_940423a3_analyst",
+    "profile_name": "temp_profile_components_personas_analysts_insight_analyst_ea34533a",
+    "variables": {
+      "agent_id": "orch_940423a3_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T17:22:09.025736Z"
+  },
+  "timestamp": "2025-07-19T17:22:09.026070Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/communicators/summary_reporter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_940423a3_reporter",
+    "profile_name": "temp_profile_components_personas_communicators_summary_reporter_3fb64e64",
+    "variables": {
+      "agent_id": "orch_940423a3_reporter"
+    },
+    "spawn_timestamp": "2025-07-19T17:22:09.036199Z"
+  },
+  "timestamp": "2025-07-19T17:22:09.036527Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_dcbd3997_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_46e195c4",
+    "variables": {
+      "agent_id": "orch_dcbd3997_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T17:40:22.708490Z"
+  },
+  "timestamp": "2025-07-19T17:40:22.708802Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/researchers/data_researcher",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_dcbd3997_researcher",
+    "profile_name": "temp_profile_components_personas_researchers_data_researcher_8f6107a9",
+    "variables": {
+      "agent_id": "orch_dcbd3997_researcher"
+    },
+    "spawn_timestamp": "2025-07-19T17:40:22.719318Z"
+  },
+  "timestamp": "2025-07-19T17:40:22.719666Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/insight_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_dcbd3997_analyst",
+    "profile_name": "temp_profile_components_personas_analysts_insight_analyst_1acba07b",
+    "variables": {
+      "agent_id": "orch_dcbd3997_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T17:40:22.729049Z"
+  },
+  "timestamp": "2025-07-19T17:40:22.729384Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/communicators/summary_reporter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_dcbd3997_reporter",
+    "profile_name": "temp_profile_components_personas_communicators_summary_reporter_b287d881",
+    "variables": {
+      "agent_id": "orch_dcbd3997_reporter"
+    },
+    "spawn_timestamp": "2025-07-19T17:40:22.739098Z"
+  },
+  "timestamp": "2025-07-19T17:40:22.739430Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6cc37870_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_882be0dc",
+    "variables": {
+      "agent_id": "orch_6cc37870_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T17:48:24.386998Z"
+  },
+  "timestamp": "2025-07-19T17:48:24.387320Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/researchers/data_researcher",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6cc37870_researcher",
+    "profile_name": "temp_profile_components_personas_researchers_data_researcher_4656add7",
+    "variables": {
+      "agent_id": "orch_6cc37870_researcher"
+    },
+    "spawn_timestamp": "2025-07-19T17:48:24.397045Z"
+  },
+  "timestamp": "2025-07-19T17:48:24.397440Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/insight_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6cc37870_analyst",
+    "profile_name": "temp_profile_components_personas_analysts_insight_analyst_b39596dd",
+    "variables": {
+      "agent_id": "orch_6cc37870_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T17:48:24.407457Z"
+  },
+  "timestamp": "2025-07-19T17:48:24.407811Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/communicators/summary_reporter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_6cc37870_reporter",
+    "profile_name": "temp_profile_components_personas_communicators_summary_reporter_349c5f57",
+    "variables": {
+      "agent_id": "orch_6cc37870_reporter"
+    },
+    "spawn_timestamp": "2025-07-19T17:48:24.416921Z"
+  },
+  "timestamp": "2025-07-19T17:48:24.417240Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_53fc202d_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_45659e16",
+    "variables": {
+      "agent_id": "orch_53fc202d_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T17:58:03.681468Z"
+  },
+  "timestamp": "2025-07-19T17:58:03.681862Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/researchers/data_researcher",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_53fc202d_researcher",
+    "profile_name": "temp_profile_components_personas_researchers_data_researcher_fafea8f2",
+    "variables": {
+      "agent_id": "orch_53fc202d_researcher"
+    },
+    "spawn_timestamp": "2025-07-19T17:58:03.691442Z"
+  },
+  "timestamp": "2025-07-19T17:58:03.691769Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/insight_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_53fc202d_analyst",
+    "profile_name": "temp_profile_components_personas_analysts_insight_analyst_78743a69",
+    "variables": {
+      "agent_id": "orch_53fc202d_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T17:58:03.701155Z"
+  },
+  "timestamp": "2025-07-19T17:58:03.701502Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/communicators/summary_reporter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_53fc202d_reporter",
+    "profile_name": "temp_profile_components_personas_communicators_summary_reporter_10b9b6d7",
+    "variables": {
+      "agent_id": "orch_53fc202d_reporter"
+    },
+    "spawn_timestamp": "2025-07-19T17:58:03.710788Z"
+  },
+  "timestamp": "2025-07-19T17:58:03.711128Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_7fb40515_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_3937b16a",
+    "variables": {
+      "agent_id": "orch_7fb40515_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:07:24.784564Z"
+  },
+  "timestamp": "2025-07-19T18:07:24.784935Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/researchers/data_researcher",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_7fb40515_researcher",
+    "profile_name": "temp_profile_components_personas_researchers_data_researcher_1cd02007",
+    "variables": {
+      "agent_id": "orch_7fb40515_researcher"
+    },
+    "spawn_timestamp": "2025-07-19T18:07:24.795967Z"
+  },
+  "timestamp": "2025-07-19T18:07:24.796369Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/insight_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_7fb40515_analyst",
+    "profile_name": "temp_profile_components_personas_analysts_insight_analyst_28d1c304",
+    "variables": {
+      "agent_id": "orch_7fb40515_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T18:07:24.806243Z"
+  },
+  "timestamp": "2025-07-19T18:07:24.806571Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/communicators/summary_reporter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_7fb40515_reporter",
+    "profile_name": "temp_profile_components_personas_communicators_summary_reporter_83c04564",
+    "variables": {
+      "agent_id": "orch_7fb40515_reporter"
+    },
+    "spawn_timestamp": "2025-07-19T18:07:24.815983Z"
+  },
+  "timestamp": "2025-07-19T18:07:24.816281Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_911e8fd1_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_d3917f88",
+    "variables": {
+      "agent_id": "orch_911e8fd1_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:08:09.803584Z"
+  },
+  "timestamp": "2025-07-19T18:08:09.803915Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/researchers/data_researcher",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_911e8fd1_researcher",
+    "profile_name": "temp_profile_components_personas_researchers_data_researcher_a282a5d3",
+    "variables": {
+      "agent_id": "orch_911e8fd1_researcher"
+    },
+    "spawn_timestamp": "2025-07-19T18:08:09.813370Z"
+  },
+  "timestamp": "2025-07-19T18:08:09.813683Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/insight_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_911e8fd1_analyst",
+    "profile_name": "temp_profile_components_personas_analysts_insight_analyst_17cec5e5",
+    "variables": {
+      "agent_id": "orch_911e8fd1_analyst"
+    },
+    "spawn_timestamp": "2025-07-19T18:08:09.823189Z"
+  },
+  "timestamp": "2025-07-19T18:08:09.823512Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/communicators/summary_reporter",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_911e8fd1_reporter",
+    "profile_name": "temp_profile_components_personas_communicators_summary_reporter_0fecce2f",
+    "variables": {
+      "agent_id": "orch_911e8fd1_reporter"
+    },
+    "spawn_timestamp": "2025-07-19T18:08:09.832569Z"
+  },
+  "timestamp": "2025-07-19T18:08:09.832877Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_0586b5cc_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_eea451d8",
+    "variables": {
+      "agent_id": "orch_0586b5cc_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:17:22.378227Z"
+  },
+  "timestamp": "2025-07-19T18:17:22.378574Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_0586b5cc_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_bf49316f",
+    "variables": {
+      "agent_id": "orch_0586b5cc_worker"
+    },
+    "spawn_timestamp": "2025-07-19T18:17:22.387692Z"
+  },
+  "timestamp": "2025-07-19T18:17:22.388001Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_1dc492f8_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_cfa5eef0",
+    "variables": {
+      "agent_id": "orch_1dc492f8_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:33:45.135189Z"
+  },
+  "timestamp": "2025-07-19T18:33:45.135550Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_1dc492f8_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_03280277",
+    "variables": {
+      "agent_id": "orch_1dc492f8_worker"
+    },
+    "spawn_timestamp": "2025-07-19T18:33:45.145589Z"
+  },
+  "timestamp": "2025-07-19T18:33:45.145911Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_5504521d_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_1c5a42b6",
+    "variables": {
+      "agent_id": "orch_5504521d_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:43:30.305754Z"
+  },
+  "timestamp": "2025-07-19T18:43:30.306072Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_5504521d_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_a1031e8a",
+    "variables": {
+      "agent_id": "orch_5504521d_worker"
+    },
+    "spawn_timestamp": "2025-07-19T18:43:30.316524Z"
+  },
+  "timestamp": "2025-07-19T18:43:30.316898Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_09592899_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_8953db9b",
+    "variables": {
+      "agent_id": "orch_09592899_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:47:19.636510Z"
+  },
+  "timestamp": "2025-07-19T18:47:19.636866Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_09592899_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_ba77d52a",
+    "variables": {
+      "agent_id": "orch_09592899_worker"
+    },
+    "spawn_timestamp": "2025-07-19T18:47:19.646408Z"
+  },
+  "timestamp": "2025-07-19T18:47:19.646728Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_2383cd4c_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_be3f891b",
+    "variables": {
+      "agent_id": "orch_2383cd4c_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T18:48:47.858603Z"
+  },
+  "timestamp": "2025-07-19T18:48:47.858941Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_2383cd4c_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_62ceed9c",
+    "variables": {
+      "agent_id": "orch_2383cd4c_worker"
+    },
+    "spawn_timestamp": "2025-07-19T18:48:47.868481Z"
+  },
+  "timestamp": "2025-07-19T18:48:47.868801Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_0d56dccf_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_b148bc77",
+    "variables": {
+      "agent_id": "orch_0d56dccf_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T19:00:03.247416Z"
+  },
+  "timestamp": "2025-07-19T19:00:03.247762Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_0d56dccf_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_d67db987",
+    "variables": {
+      "agent_id": "orch_0d56dccf_worker"
+    },
+    "spawn_timestamp": "2025-07-19T19:00:03.257439Z"
+  },
+  "timestamp": "2025-07-19T19:00:03.257755Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/coordinators/research_coordinator",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_caf9868b_coordinator",
+    "profile_name": "temp_profile_components_personas_coordinators_research_coordinator_d635167d",
+    "variables": {
+      "agent_id": "orch_caf9868b_coordinator"
+    },
+    "spawn_timestamp": "2025-07-19T19:05:52.599762Z"
+  },
+  "timestamp": "2025-07-19T19:05:52.600122Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/systematic_thinker",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_caf9868b_worker",
+    "profile_name": "temp_profile_components_personas_systematic_thinker_ae64fc86",
+    "variables": {
+      "agent_id": "orch_caf9868b_worker"
+    },
+    "spawn_timestamp": "2025-07-19T19:05:52.610207Z"
+  },
+  "timestamp": "2025-07-19T19:05:52.610541Z",
+  "agent_id": null,
+  "request_id": null
+}
