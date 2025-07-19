@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: optimization_technique_judge
 version: 1.0.0
 description: Expert judge for comparing optimization techniques and their outputs

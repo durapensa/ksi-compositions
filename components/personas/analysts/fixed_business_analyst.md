@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 mixins:
   - personas/business_analyst
 ---

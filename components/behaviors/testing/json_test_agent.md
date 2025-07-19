@@ -1,5 +1,5 @@
 ---
-component_type: behavior
+type: behavior
 name: json_test_agent
 version: 1.0.0
 description: Test component for JSON event extraction testing

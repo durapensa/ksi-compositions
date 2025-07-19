@@ -36,7 +36,7 @@ All components use YAML frontmatter:
 
 ```yaml
 ---
-component_type: persona
+type: persona
 name: data_analyst
 version: 2.0.0
 description: Senior data analyst with statistical expertise

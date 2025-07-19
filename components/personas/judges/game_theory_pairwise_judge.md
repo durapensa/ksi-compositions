@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: game_theory_pairwise_judge
 version: 1.0.0
 description: Expert judge for comparing pairs of game theory strategies using relative ranking

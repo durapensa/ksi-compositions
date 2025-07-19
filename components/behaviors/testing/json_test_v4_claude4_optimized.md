@@ -1,5 +1,5 @@
 ---
-component_type: behavior
+type: behavior
 name: json_test_v4_claude4_optimized
 version: 1.0.0
 description: Claude 4 optimized JSON emission test (v4 strategy)

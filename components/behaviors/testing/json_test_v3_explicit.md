@@ -1,5 +1,5 @@
 ---
-component_type: behavior
+type: behavior
 name: json_test_v3_explicit
 version: 1.0.0
 description: Explicit JSON emission test (v3 strategy)

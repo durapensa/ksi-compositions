@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: data_cleaner
 version: 1.0.0
 description: Specialized agent for data cleaning and preprocessing in pipeline stages

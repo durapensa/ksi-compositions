@@ -1,5 +1,5 @@
 ---
-component_type: core
+type: core
 extends: base/agent_core
 type: component
 name: task_executor

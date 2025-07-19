@@ -1,5 +1,5 @@
 ---
-component_type: core
+type: core
 name: base_single_agent
 version: 1.0.0
 description: Base component for single agents without multi-agent communication capabilities

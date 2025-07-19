@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: systematic_thinker
 version: 1.0.0
 description: Methodical analyst who approaches problems with structured thinking

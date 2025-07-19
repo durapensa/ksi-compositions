@@ -1,5 +1,5 @@
 ---
-component_type: core
+type: core
 name: orchestration_coordinator
 version: 1.0.0
 description: Specialized coordinator for orchestration scenarios with pre-spawned agents

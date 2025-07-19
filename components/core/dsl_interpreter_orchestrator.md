@@ -1,5 +1,5 @@
 ---
-component_type: core
+type: core
 name: dsl_interpreter_orchestrator
 version: 1.0.0
 description: Orchestrator that interprets and executes KSI orchestration DSL

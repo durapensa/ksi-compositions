@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: ksi_aware_analyst
 version: 1.0.0
 author: ksi_system

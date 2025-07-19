@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: adaptive_cooperator
 version: 1.0.0
 description: Game theory player that starts cooperative and adapts to opponent behavior

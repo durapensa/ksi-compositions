@@ -1,5 +1,5 @@
 ---
-component_type: behavior
+type: behavior
 name: json_test_v5_persona_aware
 version: 1.0.0
 description: Persona-aware JSON emission test (v5 strategy)

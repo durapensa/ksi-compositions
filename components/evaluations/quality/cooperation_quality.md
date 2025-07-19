@@ -1,5 +1,5 @@
 ---
-component_type: evaluation
+type: evaluation
 name: cooperation_quality
 version: 1.0.0
 description: Evaluation metrics for cooperative behaviors in multi-agent interactions

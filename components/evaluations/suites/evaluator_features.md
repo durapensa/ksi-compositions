@@ -1,5 +1,5 @@
 ---
-component_type: evaluation_suite
+type: evaluation_suite
 name: evaluator_features
 version: 1.0.0
 description: Test suite to validate new evaluator features

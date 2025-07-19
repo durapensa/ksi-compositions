@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: goodbye_agent
 version: 1.0.0
 description: Graceful conversationalist who provides thoughtful farewells

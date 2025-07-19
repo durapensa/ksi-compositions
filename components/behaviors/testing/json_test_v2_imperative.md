@@ -1,5 +1,5 @@
 ---
-component_type: behavior
+type: behavior
 name: json_test_v2_imperative
 version: 1.0.0
 description: Imperative JSON emission test (v2 strategy)

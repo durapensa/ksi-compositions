@@ -1,5 +1,5 @@
 ---
-component_type: evaluation_suite
+type: evaluation_suite
 name: reasoning_tasks
 version: 1.0.0
 description: Test suite for logical reasoning and analytical capabilities

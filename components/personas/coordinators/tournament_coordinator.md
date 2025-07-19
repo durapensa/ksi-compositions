@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: tournament_coordinator
 version: 1.0.0
 description: Orchestrator specialized in running competitive tournaments and evaluations

@@ -1,5 +1,5 @@
 ---
-component_type: evaluation_suite
+type: evaluation_suite
 name: instruction_following
 version: 1.0.0
 description: Test suite for precise instruction following capabilities

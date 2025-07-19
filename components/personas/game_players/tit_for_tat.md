@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: tit_for_tat
 version: 1.0.0
 description: Classic tit-for-tat strategy with forgiveness mechanism

@@ -1,5 +1,5 @@
 ---
-component_type: persona
+type: persona
 name: creative_thinker
 version: 1.0.0
 description: Creative problem solver specializing in generating novel variations and approaches

@@ -1,5 +1,5 @@
 ---
-component_type: evaluation
+type: evaluation
 name: game_theory_quality
 version: 1.0.0
 description: Evaluation metrics for game theory agent behaviors

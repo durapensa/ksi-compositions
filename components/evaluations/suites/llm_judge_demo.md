@@ -1,5 +1,5 @@
 ---
-component_type: evaluation_suite
+type: evaluation_suite
 name: llm_judge_demo
 version: 1.0.0
 description: Demonstration of LLM-as-Judge integration with traditional evaluators

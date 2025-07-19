@@ -1,5 +1,5 @@
 ---
-component_type: behavior
+type: behavior
 name: json_test_v1_simple
 version: 1.0.0
 description: Simple JSON emission test (v1 strategy)
