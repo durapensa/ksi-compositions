@@ -958,3 +958,303 @@
   "agent_id": null,
   "request_id": null
 }
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_metadata_agent",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_a308b8da",
+    "variables": {
+      "agent_id": "test_metadata_agent"
+    },
+    "spawn_timestamp": "2025-07-19T20:15:04.987973Z"
+  },
+  "timestamp": "2025-07-19T20:15:04.988296Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_0",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_1c0648b1",
+    "variables": {
+      "agent_id": "analyst_0"
+    },
+    "spawn_timestamp": "2025-07-19T20:25:30.812084Z"
+  },
+  "timestamp": "2025-07-19T20:25:30.812538Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_1",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_dec64e76",
+    "variables": {
+      "agent_id": "analyst_1"
+    },
+    "spawn_timestamp": "2025-07-19T20:25:31.823112Z"
+  },
+  "timestamp": "2025-07-19T20:25:31.823830Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_0",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_1c0648b1",
+    "variables": {
+      "agent_id": "analyst_0"
+    },
+    "spawn_timestamp": "2025-07-19T20:31:00.452291Z"
+  },
+  "timestamp": "2025-07-19T20:31:00.452941Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_1",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_dec64e76",
+    "variables": {
+      "agent_id": "analyst_1"
+    },
+    "spawn_timestamp": "2025-07-19T20:31:01.446511Z"
+  },
+  "timestamp": "2025-07-19T20:31:01.447229Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_0",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_1c0648b1",
+    "variables": {
+      "agent_id": "analyst_0"
+    },
+    "spawn_timestamp": "2025-07-19T20:31:56.995272Z"
+  },
+  "timestamp": "2025-07-19T20:31:56.995649Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_1",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_dec64e76",
+    "variables": {
+      "agent_id": "analyst_1"
+    },
+    "spawn_timestamp": "2025-07-19T20:31:58.005815Z"
+  },
+  "timestamp": "2025-07-19T20:31:58.006420Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_0",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_1c0648b1",
+    "variables": {
+      "agent_id": "analyst_0"
+    },
+    "spawn_timestamp": "2025-07-19T20:38:22.740220Z"
+  },
+  "timestamp": "2025-07-19T20:38:22.740895Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyst_1",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_dec64e76",
+    "variables": {
+      "agent_id": "analyst_1"
+    },
+    "spawn_timestamp": "2025-07-19T20:38:23.728964Z"
+  },
+  "timestamp": "2025-07-19T20:38:23.729314Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyzer_001",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_4eb5acd5",
+    "variables": {
+      "agent_id": "analyzer_001"
+    },
+    "spawn_timestamp": "2025-07-19T20:43:00.905509Z"
+  },
+  "timestamp": "2025-07-19T20:43:00.905838Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_visible_agent",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_06fa30d4",
+    "variables": {
+      "agent_id": "test_visible_agent"
+    },
+    "spawn_timestamp": "2025-07-19T20:46:04.280241Z"
+  },
+  "timestamp": "2025-07-19T20:46:04.280600Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_visible_agent",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_06fa30d4",
+    "variables": {
+      "agent_id": "test_visible_agent"
+    },
+    "spawn_timestamp": "2025-07-19T20:47:13.745001Z"
+  },
+  "timestamp": "2025-07-19T20:47:13.745311Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_visible_agent",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_06fa30d4",
+    "variables": {
+      "agent_id": "test_visible_agent"
+    },
+    "spawn_timestamp": "2025-07-19T20:48:51.939834Z"
+  },
+  "timestamp": "2025-07-19T20:48:51.940180Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_visible_agent",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_06fa30d4",
+    "variables": {
+      "agent_id": "test_visible_agent"
+    },
+    "spawn_timestamp": "2025-07-19T20:54:14.383211Z"
+  },
+  "timestamp": "2025-07-19T20:54:14.383539Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "analyzer_001",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_4eb5acd5",
+    "variables": {
+      "agent_id": "analyzer_001"
+    },
+    "spawn_timestamp": "2025-07-19T20:54:25.602235Z"
+  },
+  "timestamp": "2025-07-19T20:54:25.602624Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_9ada59c6",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_bee045b4",
+    "variables": {
+      "agent_id": "agent_9ada59c6"
+    },
+    "spawn_timestamp": "2025-07-19T22:16:30.942381Z"
+  },
+  "timestamp": "2025-07-19T22:16:30.942775Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_3a379dbf",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_5353dfaf",
+    "variables": {
+      "agent_id": "agent_3a379dbf"
+    },
+    "spawn_timestamp": "2025-07-19T22:21:45.998887Z"
+  },
+  "timestamp": "2025-07-19T22:21:45.999273Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/analysts/data_analyst",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_62277cff",
+    "profile_name": "temp_profile_components_personas_analysts_data_analyst_c6d72353",
+    "variables": {
+      "agent_id": "agent_62277cff"
+    },
+    "spawn_timestamp": "2025-07-19T23:18:11.514904Z"
+  },
+  "timestamp": "2025-07-19T23:18:11.515287Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/hello_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_eba5bd0f_hello",
+    "profile_name": "temp_profile_components_personas_conversationalists_hello_agent_90a8045e",
+    "variables": {
+      "agent_id": "orch_eba5bd0f_hello"
+    },
+    "spawn_timestamp": "2025-07-19T23:19:27.665944Z"
+  },
+  "timestamp": "2025-07-19T23:19:27.666498Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/conversationalists/goodbye_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "orch_eba5bd0f_goodbye",
+    "profile_name": "temp_profile_components_personas_conversationalists_goodbye_agent_b5ac0575",
+    "variables": {
+      "agent_id": "orch_eba5bd0f_goodbye"
+    },
+    "spawn_timestamp": "2025-07-19T23:19:27.678488Z"
+  },
+  "timestamp": "2025-07-19T23:19:27.678855Z",
+  "agent_id": null,
+  "request_id": null
+}
