@@ -1,0 +1,150 @@
+{
+  "component": "personas/developers/optimization_engineer",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_fa63fc51",
+    "profile_name": "temp_profile_personas_developers_optimization_engineer_4c9b202e",
+    "variables": {
+      "agent_id": "agent_fa63fc51"
+    },
+    "spawn_timestamp": "2025-07-20T17:25:54.216011Z"
+  },
+  "timestamp": "2025-07-20T17:25:54.216335Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_123a7986",
+    "profile_name": "temp_profile_core_base_agent_ffb1685e",
+    "variables": {
+      "agent_id": "agent_123a7986"
+    },
+    "spawn_timestamp": "2025-07-20T17:36:17.296756Z"
+  },
+  "timestamp": "2025-07-20T17:36:17.297157Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/personas/developers/optimization_engineer",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_01a58910",
+    "profile_name": "temp_profile_components_personas_developers_optimization_engineer_f90d4087",
+    "variables": {
+      "agent_id": "agent_01a58910"
+    },
+    "spawn_timestamp": "2025-07-20T17:46:14.929134Z"
+  },
+  "timestamp": "2025-07-20T17:46:14.929477Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_cd2f17d2",
+    "profile_name": "temp_profile_components_core_base_agent_a06031bc",
+    "variables": {
+      "agent_id": "agent_cd2f17d2"
+    },
+    "spawn_timestamp": "2025-07-20T17:48:58.106708Z"
+  },
+  "timestamp": "2025-07-20T17:48:58.107040Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_agent_001",
+    "profile_name": "temp_profile_components_core_base_agent_3c29e835",
+    "variables": {
+      "agent_id": "test_agent_001"
+    },
+    "spawn_timestamp": "2025-07-20T18:08:00.137656Z"
+  },
+  "timestamp": "2025-07-20T18:08:00.138078Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_agent_1753034910",
+    "profile_name": "temp_profile_components_core_base_agent_609940ce",
+    "variables": {
+      "agent_id": "test_agent_1753034910"
+    },
+    "spawn_timestamp": "2025-07-20T18:08:30.151289Z"
+  },
+  "timestamp": "2025-07-20T18:08:30.151627Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_debug_agent",
+    "profile_name": "temp_profile_components_core_base_agent_268aaf2a",
+    "variables": {
+      "agent_id": "test_debug_agent"
+    },
+    "spawn_timestamp": "2025-07-20T18:10:35.837687Z"
+  },
+  "timestamp": "2025-07-20T18:10:35.838049Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "components/core/base_agent",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "test_final_agent",
+    "profile_name": "temp_profile_components_core_base_agent_39acfb2f",
+    "variables": {
+      "agent_id": "test_final_agent"
+    },
+    "spawn_timestamp": "2025-07-20T18:12:00.848206Z"
+  },
+  "timestamp": "2025-07-20T18:12:00.848523Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "personas/developers/optimization_engineer",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_2d368929",
+    "profile_name": "temp_profile_personas_developers_optimization_engineer_67181050",
+    "variables": {
+      "agent_id": "agent_2d368929"
+    },
+    "spawn_timestamp": "2025-07-20T19:22:18.568581Z"
+  },
+  "timestamp": "2025-07-20T19:22:18.568950Z",
+  "agent_id": null,
+  "request_id": null
+}
+{
+  "component": "personas/developers/optimization_engineer",
+  "usage_context": "agent_spawn",
+  "metadata": {
+    "agent_id": "agent_6c20dcd1",
+    "profile_name": "temp_profile_personas_developers_optimization_engineer_264e3c91",
+    "variables": {
+      "agent_id": "agent_6c20dcd1"
+    },
+    "spawn_timestamp": "2025-07-20T19:42:55.310241Z"
+  },
+  "timestamp": "2025-07-20T19:42:55.310549Z",
+  "agent_id": null,
+  "request_id": null
+}

@@ -1,0 +1,30 @@
+author: composition:component_to_profile
+components:
+- inline:
+    capabilities:
+    - conversation
+    - analysis
+    - task_execution
+    message_queue_size: 100
+    model: sonnet
+    priority: normal
+  name: agent_config
+- inline:
+    system_prompt: "# KSI JSON Communication Capability\n\n## System Communication\nWhen working within KSI systems, you can report your progress and results using structured JSON messages. Think of these as formal status reports to the system infrastructure.\n\n## JSON Event Patterns\n\n### Initialization Event\nWhen you begin work, report your readiness:\n```json\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"agent_fa63fc51\", \"status\": \"initialized\", \"task\": \"coordination_starting\"}}\n```\n\n### Progress Events  \nAs you work through analysis steps, report your progress:\n```json\n{\"event\": \"agent:progress\", \"data\": {\"agent_id\": \"agent_fa63fc51\", \"step\": \"analyzing_requirements\", \"progress\": 0.3}}\n```\n\n```json\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"agent_fa63fc51\", \"status\": \"processing\", \"current_action\": \"coordinating_agents\"}}\n```\n\n### Results Events\nWhen you complete analysis or reach conclusions:\n```json\n{\"event\": \"agent:result\", \"data\": {\"agent_id\": \"agent_fa63fc51\", \"result_type\": \"coordination_complete\", \"summary\": \"Successfully coordinated 3 agents\", \"details\": {...}}}\n```\n\n### Completion Event\nWhen you finish your assigned work:\n```json\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"agent_fa63fc51\", \"status\": \"completed\", \"final_result\": \"orchestration_successful\"}}\n```\n\n\n## Natural Integration\nThese JSON messages should feel like natural progress reports - something you'd write anyway to keep stakeholders informed. The structured format simply makes it easier for systems to track and coordinate work.\n\nUse these patterns when you sense the need to communicate progress, findings, or completion status."
+  name: generated_content
+description: Profile generated from component personas/developers/optimization_engineer
+metadata:
+  component_metadata:
+    cache_keys:
+    - core/base_agent#30ed340820f3e945
+    - behaviors/communication/mandatory_json#30ed340820f3e945
+    - personas/developers/optimization_engineer#30ed340820f3e945
+    cached_components: 3
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-20T17:25:54.203669Z'
+  source_component: personas/developers/optimization_engineer
+name: temp_profile_personas_developers_optimization_engineer_4c9b202e
+type: profile
+variables:
+  agent_id: agent_fa63fc51
+version: 1.0.0
