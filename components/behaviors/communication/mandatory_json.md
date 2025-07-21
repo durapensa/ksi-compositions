@@ -1,10 +1,3 @@
----
-type: behavior
-name: mandatory_json
-version: 1.0.0
-author: ksi_system
----
-
 # KSI JSON Communication Capability
 
 ## System Communication
