@@ -1,0 +1,122 @@
+name: optimization_result_pipeline
+description: Orchestration for processing DSPy optimization results through decision pipeline
+version: 1.0.0
+metadata:
+  author: ksi
+  created_at: 2025-07-20
+  purpose: Handle optimization results with agent-based decision making
+
+configuration:
+  timeout: 300  # 5 minutes for full pipeline
+  event_subscription_level: 1  # Direct agent events only
+  error_subscription_level: -1  # All errors bubble up
+
+phases:
+  - name: spawn_handler
+    type: agent_spawn
+    config:
+      component: components/agents/optimization_result_handler
+      capabilities:
+        - optimization_analysis
+        - decision_making
+      spawn_config:
+        metadata:
+          purpose: optimization_result_processing
+    outputs:
+      - handler_agent_id
+
+  - name: analyze_results
+    type: agent_interaction
+    depends_on: [spawn_handler]
+    config:
+      agent_id: "{{handler_agent_id}}"
+      prompt: |
+        Analyze these optimization results and decide next actions:
+        
+        Optimization ID: {{optimization_id}}
+        Component: {{component_name}}
+        Framework: {{framework}}
+        
+        Results:
+        - Original Score: {{original_score}}
+        - Optimized Score: {{optimized_score}}
+        - Improvement: {{improvement}}
+        - Status: {{status}}
+        
+        Metadata:
+        {{optimization_metadata}}
+        
+        Based on these results, decide whether to:
+        1. Proceed to LLM-as-Judge evaluation (if improvement is significant)
+        2. Retry with different parameters (if improvement is minimal)
+        3. Reject and diagnose issues (if optimization failed)
+        
+        Emit your decision as a JSON event.
+      timeout: 60
+    outputs:
+      - handler_decision
+      - handler_reasoning
+
+  - name: route_decision
+    type: conditional_routing
+    depends_on: [analyze_results]
+    config:
+      decision_field: "{{handler_decision.decision}}"
+      routes:
+        evaluate:
+          - name: trigger_evaluation
+            type: event_emission
+            config:
+              event: optimization:evaluate_result
+              data:
+                optimization_id: "{{optimization_id}}"
+                optimization_result:
+                  component_name: "{{component_name}}"
+                  original_content: "{{original_content}}"
+                  optimized_content: "{{optimized_content}}"
+                  optimization_metadata: "{{optimization_metadata}}"
+        
+        retry:
+          - name: prepare_retry
+            type: agent_interaction
+            config:
+              agent_id: "{{handler_agent_id}}"
+              prompt: |
+                Suggest specific parameter adjustments for re-optimization:
+                - Current config: {{optimization_config}}
+                - Failure reason: {{handler_reasoning}}
+                
+                Provide concrete suggestions for improvement.
+          
+          - name: emit_retry_suggestion
+            type: event_emission
+            config:
+              event: optimization:retry_suggested
+              data:
+                optimization_id: "{{optimization_id}}"
+                original_config: "{{optimization_config}}"
+                suggested_adjustments: "{{retry_suggestions}}"
+                reasoning: "{{handler_reasoning}}"
+        
+        reject:
+          - name: diagnose_failure
+            type: event_emission
+            config:
+              event: optimization:rejected
+              data:
+                optimization_id: "{{optimization_id}}"
+                component_name: "{{component_name}}"
+                reasoning: "{{handler_reasoning}}"
+                diagnostic_info: "{{handler_decision.recommended_action}}"
+
+  - name: cleanup
+    type: agent_termination
+    depends_on: [route_decision]
+    always_run: true
+    config:
+      agent_id: "{{handler_agent_id}}"
+
+outputs:
+  final_decision: "{{handler_decision.decision}}"
+  decision_reasoning: "{{handler_reasoning}}"
+  next_action: "{{handler_decision.recommended_action}}"
