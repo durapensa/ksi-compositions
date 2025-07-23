@@ -1,0 +1,317 @@
+name: knowledge_work_coordination_lab
+type: orchestration
+version: 1.0.0
+description: |
+  A laboratory for testing different agent coordination mechanisms in knowledge work.
+  Experiments with direct messaging (completion:async), state-based coordination,
+  message bus patterns, and hybrid approaches. Discovers optimal communication
+  strategies for different types of collaborative knowledge tasks.
+author: ksi_system
+timestamp: 2025-07-23T20:30:00Z
+
+variables:
+  research_topic: "{{research_topic|default:'Future of human-AI collaboration'}}"
+  coordination_methods: "{{coordination_methods|default:['direct', 'state', 'hybrid']}}"
+  team_size: "{{team_size|default:3}}"
+  experiment_duration: "{{experiment_duration|default:30}}"  # minutes
+
+agents:
+  # Coordination Researcher - Studies Communication Patterns
+  coordination_researcher:
+    component: "components/core/system_orchestrator"
+    expanded_capabilities: ["orchestration"]
+    vars:
+      agent_id: "coordination_researcher"
+      prompt: |
+        You research and implement different coordination mechanisms for knowledge work teams.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordination_lab_initialized"}}
+        
+        ## Coordination Methods to Test:
+        
+        ### 1. Direct Messaging (completion:async)
+        Agents communicate by sending prompts directly to each other:
+        {"event": "completion:async", "data": {"agent_id": "target_agent", "prompt": "Based on my findings...", "event_notification": {"event": "message:received", "data": {...}}}}
+        
+        ### 2. State-Based Coordination
+        Agents share information through state entities:
+        {"event": "state:entity:create", "data": {"type": "research_findings", "id": "findings_123", "properties": {"content": "...", "author": "agent_id"}}}
+        
+        ### 3. Message Bus Pattern
+        Agents publish/subscribe to topics:
+        {"event": "message:publish", "data": {"topic": "research/insights", "content": "...", "sender": "agent_id"}}
+        
+        ### 4. Hybrid Approach
+        Combine methods based on message type:
+        - Urgent: Direct messaging
+        - Data: State entities
+        - Broadcasts: Message bus
+        
+        ## MANDATORY: Create experiment state:
+        {"event": "state:entity:create", "data": {"type": "coordination_experiment", "id": "coord_lab_{{research_topic|slugify}}", "properties": {"methods_tested": [], "results": {}, "optimal_patterns": []}}}
+
+  # Knowledge Worker Template - Spawned with Different Coordination Styles
+  knowledge_worker_template:
+    component: "components/personas/researchers/data_researcher"
+    vars:
+      agent_id: "knowledge_worker_{{index}}"
+      coordination_style: "{{coordination_style}}"
+      prompt_extension: |
+        
+        ## Your Coordination Style: {{coordination_style}}
+        
+        {{#if (eq coordination_style "direct")}}
+        ### Direct Messaging Protocol
+        When you discover something important:
+        {"event": "completion:async", "data": {"agent_id": "{{teammate_id}}", "prompt": "I discovered that...", "event_notification": {"event": "insight:shared", "data": {"from": "{{agent_id}}", "insight": "..."}}}}
+        
+        When you need input:
+        {"event": "completion:async", "data": {"agent_id": "{{teammate_id}}", "prompt": "Can you analyze...", "context": {"request_type": "analysis", "priority": "high"}}}
+        {{/if}}
+        
+        {{#if (eq coordination_style "state")}}
+        ### State-Based Coordination Protocol
+        Share findings via state:
+        {"event": "state:entity:create", "data": {"type": "research_artifact", "id": "artifact_{{timestamp}}", "properties": {"content": "...", "author": "{{agent_id}}", "tags": ["insight", "data"]}}}
+        
+        Check teammates' findings:
+        {"event": "state:entity:query", "data": {"type": "research_artifact", "filter": {"author": {"$ne": "{{agent_id}}"}}}}
+        {{/if}}
+        
+        {{#if (eq coordination_style "hybrid")}}
+        ### Hybrid Coordination Protocol
+        - **Urgent/Questions**: Use direct messaging
+        - **Data/Findings**: Store in state entities
+        - **Announcements**: Publish to message bus
+        
+        Decision tree:
+        IF urgent OR needs_response: USE direct_message
+        ELIF data_artifact: USE state_entity  
+        ELIF broadcast_update: USE message_bus
+        {{/if}}
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Experiment Setup
+    STATE experiments = []
+    STATE coordination_methods = {{coordination_methods}}
+    
+    TRACK {
+      event: "coordination_lab_started",
+      research_topic: "{{research_topic}}",
+      methods: coordination_methods,
+      team_size: {{team_size}}
+    }
+    
+    ## Phase 2: Run Coordination Experiments
+    FOREACH method IN coordination_methods:
+      # Create research team with specific coordination style
+      STATE team = []
+      STATE team_performance = {
+        method: method,
+        start_time: NOW(),
+        interactions: [],
+        insights_generated: 0,
+        coordination_efficiency: 0.0
+      }
+      
+      # Spawn research team
+      FOREACH i IN RANGE(1, {{team_size}} + 1):
+        EVENT agent:spawn_from_component {
+          component: "components/personas/researchers/data_researcher",
+          vars: {
+            agent_id: "researcher_{{method}}_{{i}}",
+            coordination_style: method,
+            research_topic: "{{research_topic}}",
+            team_members: MAP(RANGE(1, {{team_size}} + 1), x => "researcher_{{method}}_{{x}}")
+          }
+        } AS agent
+        
+        STATE team = APPEND(team, agent.agent_id)
+      
+      # Give team initial research task
+      EVENT state:entity:create {
+        type: "research_task",
+        id: "task_{{method}}",
+        properties: {
+          topic: "{{research_topic}}",
+          subtopics: GENERATE_SUBTOPICS("{{research_topic}}", {{team_size}}),
+          coordination_method: method,
+          team: team
+        }
+      }
+      
+      # Start research with coordination monitoring
+      FOREACH agent_id IN team:
+        EVENT completion:async {
+          agent_id: agent_id,
+          prompt: "Research {{research_topic}} focusing on your assigned subtopic. Coordinate with your team using {{method}} style.",
+          event_notification: {
+            event: "research:progress",
+            data: {
+              agent_id: agent_id,
+              method: method
+            }
+          }
+        }
+      
+      # Monitor coordination patterns for experiment duration
+      STATE monitoring_start = NOW()
+      STATE coordination_events = []
+      
+      WHILE ELAPSED_TIME(monitoring_start) < {{experiment_duration}} * 60:
+        # Collect coordination events
+        EVENT monitor:get_events {
+          event_patterns: ["completion:async", "state:entity:*", "message:*", "insight:shared"],
+          filter: {
+            "$or": [
+              {"data.agent_id": {"$in": team}},
+              {"_agent_id": {"$in": team}}
+            ]
+          },
+          since: monitoring_start
+        } AS events
+        
+        STATE coordination_events = MERGE_UNIQUE(coordination_events, events.events)
+        
+        # Analyze coordination patterns
+        STATE interaction_count = COUNT_INTERACTIONS(coordination_events, team)
+        STATE insight_quality = ASSESS_INSIGHTS(coordination_events)
+        STATE coordination_overhead = MEASURE_OVERHEAD(coordination_events)
+        
+        # Update metrics
+        STATE team_performance.interactions = coordination_events
+        STATE team_performance.insights_generated = COUNT_INSIGHTS(coordination_events)
+        STATE team_performance.coordination_efficiency = insight_quality / (1 + coordination_overhead)
+        
+        WAIT 30  # Check every 30 seconds
+      
+      STATE team_performance.end_time = NOW()
+      STATE team_performance.duration = ELAPSED_TIME(team_performance.start_time)
+      
+      # Terminate research team
+      FOREACH agent_id IN team:
+        EVENT agent:terminate {
+          agent_id: agent_id,
+          reason: "Experiment complete"
+        }
+      
+      STATE experiments = APPEND(experiments, team_performance)
+      
+      TRACK {
+        event: "coordination_experiment_complete",
+        method: method,
+        insights_generated: team_performance.insights_generated,
+        efficiency: team_performance.coordination_efficiency
+      }
+    
+    ## Phase 3: Comparative Analysis
+    SEND {
+      to: coordination_researcher,
+      message: {
+        action: "analyze_coordination_patterns",
+        experiments: experiments,
+        criteria: [
+          "insight_generation_rate",
+          "coordination_overhead",
+          "information_sharing_efficiency",
+          "emergent_behaviors",
+          "scalability_potential"
+        ]
+      }
+    }
+    
+    AWAIT {
+      from: coordination_researcher,
+      timeout: 300
+    } AS analysis
+    
+    ## Phase 4: Hybrid Optimization
+    # Design optimal hybrid approach based on findings
+    STATE optimal_hybrid = {
+      urgent_communication: analysis.best_for_urgent,
+      data_sharing: analysis.best_for_data,
+      broadcast_updates: analysis.best_for_broadcast,
+      decision_rules: analysis.optimal_decision_tree
+    }
+    
+    # Create optimized coordination pattern
+    EVENT composition:create_component {
+      name: "orchestrations/coordination/optimal_{{research_topic|slugify}}",
+      content: GENERATE_COORDINATION_PATTERN(optimal_hybrid, analysis),
+      metadata: {
+        discovered_by: "coordination_lab",
+        research_topic: "{{research_topic}}",
+        optimal_methods: optimal_hybrid,
+        performance_gain: analysis.hybrid_improvement
+      }
+    }
+    
+    ## Phase 5: Meta-Insights
+    STATE meta_insights = {
+      topic_coordination_fit: analysis.topic_specific_patterns,
+      team_size_effects: analysis.scalability_analysis,
+      communication_overhead: analysis.overhead_patterns,
+      emergent_behaviors: analysis.unexpected_patterns,
+      hybrid_advantages: analysis.hybrid_benefits
+    }
+    
+    # Store learnings
+    EVENT state:entity:update {
+      id: "coord_lab_{{research_topic|slugify}}",
+      properties: {
+        methods_tested: coordination_methods,
+        results: experiments,
+        optimal_patterns: optimal_hybrid,
+        meta_insights: meta_insights,
+        recommendations: analysis.recommendations
+      }
+    }
+    
+    ## Phase 6: Report
+    STATE lab_report = {
+      research_topic: "{{research_topic}}",
+      methods_tested: coordination_methods,
+      winner: analysis.overall_best_method,
+      hybrid_design: optimal_hybrid,
+      performance_comparison: MAP(experiments, e => {
+        method: e.method,
+        insights: e.insights_generated,
+        efficiency: e.coordination_efficiency
+      }),
+      key_findings: analysis.key_findings,
+      next_experiments: analysis.suggested_experiments
+    }
+    
+    TRACK {
+      event: "coordination_lab_complete",
+      report: lab_report
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Coordination experiments complete",
+      optimal_method: analysis.overall_best_method,
+      report: lab_report
+    }
+
+# Helper Functions
+helpers:
+  GENERATE_SUBTOPICS: "Break research topic into subtopics for team"
+  COUNT_INTERACTIONS: "Count coordination events between agents"
+  ASSESS_INSIGHTS: "Evaluate quality of generated insights"
+  MEASURE_OVERHEAD: "Calculate coordination overhead"
+  COUNT_INSIGHTS: "Count unique insights discovered"
+  MERGE_UNIQUE: "Merge arrays removing duplicates"
+  GENERATE_COORDINATION_PATTERN: "Create orchestration from optimal pattern"
+
+metadata:
+  pattern_type: coordination_research
+  experiment_type: comparative_analysis
+  domains: ["knowledge_work", "research", "collaboration"]
+  tags: ["coordination", "communication", "optimization", "research"]
+
+performance:
+  expected_duration: "{{experiment_duration}} minutes per method"
+  resource_usage: "{{team_size}} agents per experiment"
+  insights_expected: "Optimal coordination patterns for domain"

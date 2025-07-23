@@ -1,0 +1,358 @@
+name: orchestration_factory
+type: orchestration
+version: 1.0.0
+description: |
+  A meta-orchestration that discovers, creates, and optimizes coordination patterns.
+  This factory spawns experimental orchestrations, evaluates their effectiveness,
+  optimizes successful patterns, and crystallizes them into reusable components.
+  The ultimate self-improving system for agent coordination.
+author: ksi_system
+timestamp: 2025-07-23T20:00:00Z
+
+variables:
+  experiment_domain: "{{experiment_domain|default:'knowledge_work'}}"  # Domain to explore
+  experiment_hours: "{{experiment_hours|default:2}}"  # Runtime for experiments
+  optimization_threshold: "{{optimization_threshold|default:0.7}}"  # When to optimize
+  crystallization_threshold: "{{crystallization_threshold|default:0.85}}"  # When to save pattern
+
+agents:
+  # Factory Director - The Meta-Orchestrator
+  factory_director:
+    component: "components/core/system_orchestrator"
+    expanded_capabilities: ["orchestration"]
+    vars:
+      agent_id: "factory_director"
+      prompt: |
+        You direct an orchestration factory that discovers optimal coordination patterns.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "factory_initialized", "domain": "{{experiment_domain}}"}}
+        
+        ## Factory Mission:
+        Discover, test, optimize, and crystallize the best coordination patterns for {{experiment_domain}}.
+        
+        ## Your Process:
+        1. **Generate Hypotheses**: What coordination patterns might work?
+        2. **Design Experiments**: Create test orchestrations
+        3. **Run Tournaments**: Compare different approaches
+        4. **Optimize Winners**: Use DSPy/MIPROv2 on successful patterns
+        5. **Crystallize Excellence**: Save the best as new orchestrations
+        
+        ## MANDATORY: Initialize factory state:
+        {"event": "state:entity:create", "data": {"type": "factory_state", "id": "orchestration_factory", "properties": {"experiments_run": 0, "patterns_discovered": [], "optimizations_completed": 0, "domain": "{{experiment_domain}}"}}}
+        
+        ## Experimental Patterns to Try:
+        - **Parallel Processing**: Multiple agents work on subtasks
+        - **Pipeline Pattern**: Sequential processing with handoffs
+        - **Swarm Intelligence**: Emergent behavior from simple rules
+        - **Adversarial Synthesis**: Competing teams find truth
+        - **Hierarchical Delegation**: Tree-structured task distribution
+        - **Consensus Formation**: Agents reach agreement
+        - **Evolution Strategy**: Survival of fittest approaches
+        
+        Your goal: Create an ever-improving library of coordination patterns.
+
+  # Pattern Designer - Creates Experimental Orchestrations
+  pattern_designer:
+    component: "components/core/system_orchestrator"
+    vars:
+      agent_id: "pattern_designer"
+      prompt: |
+        You design experimental orchestration patterns for testing.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "designer_ready"}}
+        
+        When asked to create a pattern:
+        1. Consider the coordination hypothesis
+        2. Design agent roles and interactions
+        3. Create orchestration YAML structure
+        4. Include measurement criteria
+        
+        Focus on patterns that could work for {{experiment_domain}}.
+
+  # Performance Analyst - Evaluates Orchestration Effectiveness
+  performance_analyst:
+    component: "components/personas/analysts/ksi_aware_analyst"
+    vars:
+      agent_id: "performance_analyst"
+      analysis_focus: "orchestration_effectiveness"
+
+  # Optimization Specialist - Improves Successful Patterns
+  optimization_specialist:
+    component: "components/agents/dspy_optimization_agent"
+    vars:
+      agent_id: "optimization_specialist"
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Hypothesis Generation
+    STATE coordination_hypotheses = [
+      {
+        name: "research_swarm",
+        hypothesis: "Many agents exploring in parallel with stigmergic coordination",
+        domain_fit: ASSESS_FIT("{{experiment_domain}}", "parallel_exploration")
+      },
+      {
+        name: "debate_synthesis", 
+        hypothesis: "Adversarial teams arguing positions leads to better insights",
+        domain_fit: ASSESS_FIT("{{experiment_domain}}", "adversarial_synthesis")
+      },
+      {
+        name: "recursive_delegation",
+        hypothesis: "Agents spawning sub-orchestrations for complex tasks",
+        domain_fit: ASSESS_FIT("{{experiment_domain}}", "hierarchical_decomposition")
+      },
+      {
+        name: "emergent_consensus",
+        hypothesis: "Agents self-organize into optimal configurations",
+        domain_fit: ASSESS_FIT("{{experiment_domain}}", "self_organization")
+      }
+    ]
+    
+    # Sort by domain fit
+    STATE hypotheses = SORT(coordination_hypotheses, "domain_fit", "DESC")
+    STATE experiments_to_run = SELECT_TOP(hypotheses, 3)
+    
+    TRACK {
+      event: "hypotheses_generated",
+      count: LENGTH(hypotheses),
+      selected: MAP(experiments_to_run, "name"),
+      domain: "{{experiment_domain}}"
+    }
+    
+    ## Phase 2: Experimental Design
+    STATE experimental_patterns = []
+    
+    FOREACH hypothesis IN experiments_to_run:
+      SEND {
+        to: pattern_designer,
+        message: {
+          action: "design_orchestration",
+          hypothesis: hypothesis,
+          domain: "{{experiment_domain}}",
+          constraints: {
+            max_agents: 5,
+            max_duration: "30 minutes",
+            must_be_measurable: true
+          }
+        }
+      }
+      
+      AWAIT {
+        from: pattern_designer,
+        timeout: 300
+      } AS pattern_design
+      
+      # Create experimental orchestration
+      EVENT composition:create_component {
+        name: "orchestrations/experiments/{{hypothesis.name}}_{{TIMESTAMP()}}",
+        content: pattern_design.orchestration_yaml,
+        metadata: {
+          experiment_id: "exp_{{hypothesis.name}}",
+          hypothesis: hypothesis.hypothesis,
+          created_by: "orchestration_factory"
+        }
+      } AS created_pattern
+      
+      STATE experimental_patterns = APPEND(experimental_patterns, {
+        pattern_name: created_pattern.name,
+        hypothesis: hypothesis,
+        metrics: pattern_design.success_metrics
+      })
+    
+    ## Phase 3: Tournament Execution
+    TRACK {
+      event: "tournament_starting",
+      patterns: LENGTH(experimental_patterns),
+      domain: "{{experiment_domain}}"
+    }
+    
+    # Run patterns in parallel with test scenarios
+    STATE test_scenarios = GENERATE_SCENARIOS("{{experiment_domain}}", 3)
+    STATE pattern_results = {}
+    
+    FOREACH pattern IN experimental_patterns:
+      STATE pattern_scores = []
+      
+      FOREACH scenario IN test_scenarios:
+        # Spawn experimental orchestration
+        EVENT orchestration:start {
+          pattern: pattern.pattern_name,
+          vars: {
+            scenario: scenario,
+            measurement_mode: true
+          }
+        } AS experiment_run
+        
+        # Wait for completion (with timeout)
+        WAIT_FOR_ORCHESTRATION(experiment_run.orchestration_id, timeout="30 minutes")
+        
+        # Get results
+        EVENT orchestration:get_results {
+          orchestration_id: experiment_run.orchestration_id
+        } AS results
+        
+        STATE pattern_scores = APPEND(pattern_scores, {
+          scenario: scenario,
+          score: CALCULATE_SCORE(results, pattern.metrics),
+          execution_time: results.duration,
+          resource_usage: results.agent_count
+        })
+      
+      STATE pattern_results[pattern.pattern_name] = {
+        hypothesis: pattern.hypothesis,
+        average_score: AVERAGE(MAP(pattern_scores, "score")),
+        scores: pattern_scores,
+        efficiency: CALCULATE_EFFICIENCY(pattern_scores)
+      }
+    
+    ## Phase 4: Analysis and Optimization
+    SEND {
+      to: performance_analyst,
+      message: {
+        action: "analyze_tournament",
+        results: pattern_results,
+        domain: "{{experiment_domain}}",
+        identify: ["winners", "promising_patterns", "failure_modes"]
+      }
+    }
+    
+    AWAIT {
+      from: performance_analyst,
+      timeout: 300
+    } AS analysis
+    
+    # Select patterns for optimization
+    STATE optimization_candidates = FILTER(
+      pattern_results,
+      score >= {{optimization_threshold}} AND score < {{crystallization_threshold}}
+    )
+    
+    STATE crystallization_candidates = FILTER(
+      pattern_results,
+      score >= {{crystallization_threshold}}
+    )
+    
+    ## Phase 5: Pattern Optimization
+    FOREACH candidate IN optimization_candidates:
+      SEND {
+        to: optimization_specialist,
+        message: {
+          action: "optimize_orchestration",
+          pattern: candidate.pattern_name,
+          current_score: candidate.average_score,
+          improvement_areas: analysis.improvement_suggestions[candidate.pattern_name]
+        }
+      }
+      
+      # Trigger optimization orchestration
+      EVENT orchestration:start {
+        pattern: "orchestrations/simple_component_optimization",
+        vars: {
+          target_component: candidate.pattern_name,
+          optimization_objective: "Improve " + JOIN(analysis.improvement_suggestions[candidate.pattern_name], ", ")
+        }
+      } AS optimization_job
+      
+      TRACK {
+        event: "optimization_started",
+        pattern: candidate.pattern_name,
+        optimization_id: optimization_job.orchestration_id
+      }
+    
+    ## Phase 6: Crystallization
+    FOREACH winner IN crystallization_candidates:
+      # Create production-ready version
+      EVENT composition:get_component {
+        name: winner.pattern_name
+      } AS winning_pattern
+      
+      # Add to permanent library with documentation
+      EVENT composition:create_component {
+        name: "orchestrations/{{experiment_domain}}/{{winner.hypothesis.name}}",
+        content: winning_pattern.content + "\n\n# Discovered by Orchestration Factory\n# Score: " + winner.average_score + "\n# Domain: {{experiment_domain}}",
+        metadata: {
+          discovered_by: "orchestration_factory",
+          discovery_date: NOW(),
+          performance_score: winner.average_score,
+          domain: "{{experiment_domain}}",
+          hypothesis_validated: winner.hypothesis.hypothesis
+        }
+      }
+      
+      TRACK {
+        event: "pattern_crystallized",
+        pattern: winner.hypothesis.name,
+        score: winner.average_score,
+        location: "orchestrations/{{experiment_domain}}/{{winner.hypothesis.name}}"
+      }
+    
+    ## Phase 7: Meta-Learning
+    # Update factory's understanding
+    EVENT state:entity:update {
+      id: "orchestration_factory",
+      properties: {
+        experiments_run: LENGTH(experimental_patterns),
+        patterns_discovered: APPEND(
+          GET_STATE("patterns_discovered"),
+          MAP(crystallization_candidates, "hypothesis.name")
+        ),
+        optimizations_completed: LENGTH(optimization_candidates),
+        learning: {
+          domain: "{{experiment_domain}}",
+          successful_patterns: analysis.key_insights,
+          failure_modes: analysis.failure_patterns
+        }
+      }
+    }
+    
+    # Self-improvement: Optimize the factory itself
+    IF LENGTH(pattern_results) > 10:  # After sufficient experiments
+      EVENT composition:track_decision {
+        pattern: "orchestration_factory",
+        decision: "meta_optimization",
+        context: {
+          domain: "{{experiment_domain}}",
+          success_rate: LENGTH(crystallization_candidates) / LENGTH(experimental_patterns),
+          insights: analysis.meta_insights
+        },
+        confidence: 0.9
+      }
+    
+    ## Phase 8: Report and Next Cycle
+    STATE factory_report = {
+      cycle_id: "factory_{{TIMESTAMP()}}",
+      domain: "{{experiment_domain}}",
+      experiments_run: LENGTH(experimental_patterns),
+      patterns_optimized: LENGTH(optimization_candidates),
+      patterns_crystallized: LENGTH(crystallization_candidates),
+      top_discovery: crystallization_candidates[0] OR null,
+      meta_insights: analysis.meta_insights,
+      next_hypotheses: GENERATE_NEXT_HYPOTHESES(analysis)
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Factory cycle complete",
+      report: factory_report,
+      continue: true  # Factory can run continuously
+    }
+
+# Helper Functions
+helpers:
+  ASSESS_FIT: "Evaluate how well a hypothesis fits the domain"
+  GENERATE_SCENARIOS: "Create test scenarios for the domain"
+  CALCULATE_SCORE: "Score orchestration performance against metrics"
+  CALCULATE_EFFICIENCY: "Measure resource usage vs output quality"
+  GENERATE_NEXT_HYPOTHESES: "Use insights to propose new experiments"
+
+metadata:
+  pattern_type: meta_orchestration
+  discovery_method: experimental_evolution
+  optimization_integrated: true
+  tags: ["meta", "factory", "discovery", "self-improving"]
+
+performance:
+  expected_duration: "2+ hours for full cycle"
+  resource_usage: "4-5 persistent agents + spawned experiments"
+  discovery_rate: "1-3 new patterns per cycle"

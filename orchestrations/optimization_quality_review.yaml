@@ -1,0 +1,199 @@
+name: optimization_quality_review
+type: orchestration
+version: 1.0.0
+description: |
+  Orchestration for reviewing optimized components and committing high-quality ones to git.
+  Uses LLM-as-Judge supervisor to evaluate improvements and execute git operations.
+author: ksi_system
+timestamp: 2025-07-23T19:00:00Z
+
+variables:
+  optimized_components: "{{optimized_components}}"  # List of optimized component paths
+  optimization_id: "{{optimization_id|default:'manual_review'}}"
+  auto_commit: "{{auto_commit|default:false}}"  # Whether to auto-commit approved components
+
+agents:
+  # Quality Supervisor
+  supervisor:
+    component: "components/agents/optimization_quality_supervisor"
+    vars:
+      agent_id: "quality_supervisor"
+      review_mode: "comprehensive"
+
+  # Git Operations Assistant
+  git_assistant:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "git_assistant"
+      prompt: |
+        You assist with git operations for approved components.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "git_assistant_ready"}}
+        
+        When instructed to commit components:
+        1. Stage the specified files
+        2. Create descriptive commit messages
+        3. Execute git operations
+        4. Report results
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Initialize Review
+    STATE review_results = []
+    STATE approved_components = []
+    STATE components_to_review = {{optimized_components}}
+    
+    TRACK {
+      event: "quality_review_started",
+      optimization_id: "{{optimization_id}}",
+      component_count: LENGTH(components_to_review)
+    }
+    
+    ## Phase 2: Systematic Evaluation
+    FOREACH component_path IN components_to_review:
+      # Load optimized component
+      EVENT composition:get_component {
+        name: component_path
+      } AS optimized
+      
+      # Try to load original (may not exist if new)
+      STATE original_path = REPLACE(component_path, "_optimized", "")
+      TRY:
+        EVENT composition:get_component {
+          name: original_path
+        } AS original
+      CATCH:
+        STATE original = null
+      
+      # Send to supervisor for evaluation
+      SEND {
+        to: supervisor,
+        message: {
+          action: "evaluate_optimization",
+          component_path: component_path,
+          optimized_content: optimized.content,
+          original_content: original ? original.content : null,
+          optimization_id: "{{optimization_id}}",
+          metadata: optimized.frontmatter
+        }
+      }
+      
+      AWAIT {
+        from: supervisor,
+        timeout: 120
+      } AS evaluation
+      
+      # Store evaluation result
+      STATE review_results = APPEND(review_results, {
+        component: component_path,
+        score: evaluation.score,
+        improvements: evaluation.improvements,
+        recommendation: evaluation.recommendation,
+        details: evaluation.details
+      })
+      
+      # Track approved components
+      IF evaluation.recommendation == "commit":
+        STATE approved_components = APPEND(approved_components, {
+          path: component_path,
+          commit_message: evaluation.commit_message,
+          score: evaluation.score
+        })
+      
+      TRACK {
+        event: "component_evaluated",
+        component: component_path,
+        score: evaluation.score,
+        recommendation: evaluation.recommendation
+      }
+    
+    ## Phase 3: Quality Report
+    STATE total_reviewed = LENGTH(review_results)
+    STATE total_approved = LENGTH(approved_components)
+    STATE approval_rate = total_approved / total_reviewed
+    STATE average_score = AVERAGE(MAP(review_results, "score"))
+    
+    EVENT state:entity:create {
+      type: "optimization_review_report",
+      id: "review_{{optimization_id}}",
+      properties: {
+        optimization_id: "{{optimization_id}}",
+        timestamp: NOW(),
+        total_reviewed: total_reviewed,
+        total_approved: total_approved,
+        approval_rate: approval_rate,
+        average_score: average_score,
+        results: review_results,
+        approved_components: approved_components
+      }
+    }
+    
+    TRACK {
+      event: "review_summary",
+      total_reviewed: total_reviewed,
+      total_approved: total_approved,
+      average_score: average_score,
+      top_improvements: MOST_COMMON(FLATTEN(MAP(review_results, "improvements")), 3)
+    }
+    
+    ## Phase 4: Git Operations (if enabled)
+    IF {{auto_commit}} AND LENGTH(approved_components) > 0:
+      SEND {
+        to: git_assistant,
+        message: {
+          action: "commit_components",
+          components: approved_components,
+          batch_message: "feat: Optimize {{total_approved}} components via {{optimization_id}}",
+          push_to_remote: true
+        }
+      }
+      
+      AWAIT {
+        from: git_assistant,
+        timeout: 180
+      } AS git_result
+      
+      TRACK {
+        event: "git_operations_complete",
+        committed: git_result.success,
+        commit_sha: git_result.commit_sha,
+        components_committed: LENGTH(approved_components)
+      }
+    
+    ## Phase 5: Recommendations
+    STATE recommendations = {
+      high_performers: FILTER(review_results, score >= 9.0),
+      needs_iteration: FILTER(review_results, score >= 6.0 AND score < 8.0),
+      rejected: FILTER(review_results, score < 6.0)
+    }
+    
+    IF LENGTH(recommendations.needs_iteration) > 0:
+      TRACK {
+        event: "iteration_recommended",
+        components: MAP(recommendations.needs_iteration, "component"),
+        suggestion: "Run targeted optimization on these components with specific objectives"
+      }
+    
+    EVENT orchestration:request_termination {
+      reason: "Quality review complete",
+      approved: total_approved,
+      average_quality: average_score,
+      committed: {{auto_commit}} ? LENGTH(approved_components) : 0
+    }
+
+# Helper functions
+helpers:
+  AVERAGE: "Calculate average of numeric array"
+  MOST_COMMON: "Find N most common elements in array"
+  FLATTEN: "Flatten nested arrays"
+
+metadata:
+  pattern_type: quality_review
+  evaluation_method: llm_as_judge
+  git_integration: true
+  tags: ["optimization", "quality", "review", "git"]
+
+performance:
+  expected_duration: "2-5 minutes per component"
+  resource_usage: "2 agents (supervisor + git assistant)"
