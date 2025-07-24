@@ -1,0 +1,218 @@
+name: state_based_research
+type: orchestration
+version: 1.0.0
+description: |
+  State-based research coordination from Pragmatic Agent Evolution Plan Step 2B.
+  Agents coordinate through shared state entities instead of direct messaging.
+  Demonstrates data collection, analysis, and shared context patterns.
+author: ksi_system
+timestamp: 2025-01-24T21:00:00Z
+
+# Define research team agents
+agents:
+  data_collector:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "data_collector"
+      prompt: |
+        You are a data collection agent coordinating through shared state.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "collector_ready"}}
+        
+        Your task: Collect research data about "Benefits of event-driven architectures" and store findings in state.
+        
+        ## MANDATORY: To store data, emit:
+        {"event": "state:entity:create", "data": {"type": "research_data", "id": "data_{{TIMESTAMP()}}", "properties": {"source": "{{agent_id}}", "content": "[your findings]", "category": "architecture_benefits", "timestamp": "{{TIMESTAMP()}}"}}}
+        
+        Collect 2-3 key findings and store each as a separate state entity.
+
+  analyzer:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "analyzer"
+      prompt: |
+        You are an analysis agent monitoring collected research data.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "analyzer_ready"}}
+        
+        Your task: Monitor state for research data and analyze patterns when sufficient data is available.
+        
+        ## MANDATORY: To query collected data, emit:
+        {"event": "state:entity:query", "data": {"type": "research_data", "limit": 10, "sort": {"timestamp": -1}}}
+        
+        ## MANDATORY: When you've analyzed the data, store your analysis:
+        {"event": "state:entity:create", "data": {"type": "analysis_result", "id": "analysis_{{TIMESTAMP()}}", "properties": {"analyzer": "{{agent_id}}", "findings_analyzed": N, "key_patterns": "[your analysis]", "recommendations": "[recommendations]"}}}
+
+  synthesizer:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "synthesizer"
+      prompt: |
+        You are a synthesis agent creating unified insights from analysis.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "synthesizer_ready"}}
+        
+        Your task: Query analysis results and create a synthesis report.
+        
+        ## MANDATORY: To query analysis results, emit:
+        {"event": "state:entity:query", "data": {"type": "analysis_result", "limit": 5}}
+        
+        ## MANDATORY: Create final synthesis:
+        {"event": "state:entity:create", "data": {"type": "synthesis_report", "id": "synthesis_{{TIMESTAMP()}}", "properties": {"synthesizer": "{{agent_id}}", "summary": "[executive summary]", "key_insights": "[main insights]", "next_steps": "[recommendations]"}}}
+
+# Orchestration phases
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Initialize Research Team
+    TRACK {
+      phase: "initialization",
+      event: "state_based_research_started",
+      agents: ["data_collector", "analyzer", "synthesizer"],
+      coordination_method: "shared_state"
+    }
+    
+    # Wait for all agents to be ready
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: ["collector_ready", "analyzer_ready", "synthesizer_ready"]},
+      count: 3,
+      timeout: 60
+    }
+    
+    TRACK {
+      event: "team_ready",
+      message: "Research team initialized, state-based coordination active"
+    }
+    
+    ## Phase 2: Data Collection
+    # Prompt collector to begin research
+    SEND {
+      to: data_collector,
+      message: {
+        action: "begin_collection",
+        topic: "Benefits of event-driven architectures",
+        target_findings: 3
+      }
+    }
+    
+    # Wait for data to be stored in state
+    AWAIT {
+      event_pattern: "state:entity:create",
+      filter: {type: "research_data"},
+      count: 3,
+      timeout: 180
+    } AS collected_data
+    
+    TRACK {
+      event: "collection_complete",
+      findings_collected: LENGTH(collected_data),
+      data_entities: EXTRACT_IDS(collected_data)
+    }
+    
+    ## Phase 3: Analysis
+    # Prompt analyzer to process collected data
+    SEND {
+      to: analyzer,
+      message: {
+        action: "analyze_data",
+        notification: "Research data collection complete",
+        expected_entities: LENGTH(collected_data)
+      }
+    }
+    
+    # Wait for analysis to be stored
+    AWAIT {
+      event_pattern: "state:entity:create",
+      filter: {type: "analysis_result"},
+      count: 1,
+      timeout: 120
+    } AS analysis
+    
+    TRACK {
+      event: "analysis_complete",
+      analysis_id: analysis[0].id,
+      patterns_found: analysis[0].properties.key_patterns != null
+    }
+    
+    ## Phase 4: Synthesis
+    # Prompt synthesizer to create final report
+    SEND {
+      to: synthesizer,
+      message: {
+        action: "create_synthesis",
+        notification: "Analysis complete, ready for synthesis"
+      }
+    }
+    
+    # Wait for synthesis report
+    AWAIT {
+      event_pattern: "state:entity:create",
+      filter: {type: "synthesis_report"},
+      count: 1,
+      timeout: 120
+    } AS synthesis
+    
+    TRACK {
+      event: "synthesis_complete",
+      report_id: synthesis[0].id,
+      has_recommendations: synthesis[0].properties.next_steps != null
+    }
+    
+    ## Phase 5: Final State Summary
+    # Query all created entities for summary
+    EVENT state:entity:query {
+      type: "research_data"
+    } AS final_data_count
+    
+    EVENT state:entity:query {
+      type: "analysis_result"
+    } AS final_analysis_count
+    
+    EVENT state:entity:query {
+      type: "synthesis_report"
+    } AS final_synthesis
+    
+    STATE coordination_summary = {
+      total_data_entities: LENGTH(final_data_count),
+      analysis_entities: LENGTH(final_analysis_count),
+      synthesis_entities: LENGTH(final_synthesis),
+      coordination_method: "state_based",
+      phases_completed: 5
+    }
+    
+    TRACK {
+      event: "state_coordination_complete",
+      summary: coordination_summary,
+      success: true,
+      pattern: "collector_analyzer_synthesizer"
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "State-based research coordination complete",
+      result: "Successfully demonstrated multi-agent state coordination",
+      entities_created: coordination_summary.total_data_entities + coordination_summary.analysis_entities + coordination_summary.synthesis_entities,
+      coordination_pattern: "shared_state_entities"
+    }
+
+# Helper functions
+helpers:
+  EXTRACT_IDS: |
+    Extract entity IDs from creation events
+  LENGTH: |
+    Count items in array
+
+metadata:
+  pattern_type: coordination_test
+  coordination_method: state_based
+  complexity: intermediate
+  test_focus: shared_state_coordination
+  tags: ["coordination", "state", "research", "multi_agent"]
+
+performance:
+  expected_duration: "3-5 minutes"
+  resource_usage: "3 agents concurrent"
+  state_entities_created: "~5-7 entities"
+  success_criteria: "All agents coordinate through state without direct messaging"

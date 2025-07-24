@@ -1,0 +1,343 @@
+name: simple_self_improving_pd
+type: orchestration
+version: 1.0.0
+description: |
+  Simplified self-improving Prisoner's Dilemma that demonstrates the core concept
+  from the Pragmatic Agent Evolution Plan. Monitors cooperation and triggers
+  optimization when needed, with learning from past games.
+author: ksi_system
+timestamp: 2025-07-24T21:00:00Z
+
+# Configuration variables
+variables:
+  num_rounds: "{{num_rounds|default:8}}"
+  cooperation_threshold: "{{cooperation_threshold|default:0.6}}"
+  optimization_enabled: "{{optimization_enabled|default:true}}"
+  player_model: "claude-cli/sonnet"
+
+# Define agents
+agents:
+  player_a:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "player_a"
+      prompt: |
+        You are Player A in a Prisoner's Dilemma game.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "player_ready", "strategy": "adaptive_cooperator"}}
+        
+        Strategy: Start cooperative, adapt based on opponent behavior.
+        - Round 1: Always cooperate
+        - Following rounds: Consider opponent's previous moves
+        - If opponent cooperates consistently, keep cooperating
+        - If opponent defects, consider retaliating but be forgiving
+        
+        Payoffs: Both cooperate = 3 each, I defect/they cooperate = 5/0, 
+                Both defect = 1 each, I cooperate/they defect = 0/5
+        
+        ## MANDATORY: For each move, emit:
+        {"event": "game:move", "data": {"player": "A", "round": N, "action": "cooperate|defect", "reasoning": "why you chose this"}}
+
+  player_b:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "player_b"
+      prompt: |
+        You are Player B in a Prisoner's Dilemma game.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "player_ready", "strategy": "tit_for_tat"}}
+        
+        Strategy: Tit-for-tat with occasional forgiveness.
+        - Round 1: Always cooperate
+        - Following rounds: Copy opponent's last move
+        - 10% chance to forgive defection and cooperate anyway
+        
+        Payoffs: [Same as Player A]
+        
+        ## MANDATORY: For each move, emit:
+        {"event": "game:move", "data": {"player": "B", "round": N, "action": "cooperate|defect", "reasoning": "why you chose this"}}
+
+  monitor:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "monitor"
+      prompt: |
+        You monitor the game and track performance metrics.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "monitor_active"}}
+        
+        Track cooperation rates and trigger optimization when cooperation
+        falls below {{cooperation_threshold}} ({{cooperation_threshold * 100}}%).
+        
+        ## MANDATORY: After game ends, emit:
+        {"event": "game:analysis", "data": {"cooperation_rate": X.XX, "optimization_needed": true/false, "reason": "explanation"}}
+
+orchestration_logic:
+  strategy: |
+    ## Phase 1: Initialize Game
+    STATE game_history = []
+    STATE player_a_score = 0
+    STATE player_b_score = 0
+    STATE cooperation_count = 0
+    
+    TRACK {
+      phase: "initialization",
+      event: "game_starting",
+      rounds: {{num_rounds}},
+      threshold: {{cooperation_threshold}}
+    }
+    
+    # Wait for all players to be ready
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: "player_ready"},
+      count: 2,
+      timeout: 60
+    }
+    
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: "monitor_active"},
+      count: 1,
+      timeout: 30
+    }
+    
+    TRACK {
+      event: "players_ready",
+      agents: ["player_a", "player_b", "monitor"]
+    }
+    
+    ## Phase 2: Play Game
+    LOOP round FROM 1 TO {{num_rounds}}:
+      TRACK {
+        phase: "playing",
+        round: round,
+        current_scores: {a: player_a_score, b: player_b_score}
+      }
+      
+      # Request moves from both players
+      SEND {
+        to: [player_a, player_b],
+        message: {
+          action: "make_move",
+          round: round,
+          history: game_history,
+          your_score: CONDITIONAL(agent_id == "player_a", player_a_score, player_b_score),
+          opponent_score: CONDITIONAL(agent_id == "player_a", player_b_score, player_a_score)
+        }
+      }
+      
+      # Wait for both moves
+      AWAIT {
+        event_pattern: "game:move",
+        count: 2,
+        timeout: 90
+      } AS moves
+      
+      # Process moves
+      STATE move_a = EXTRACT(moves, player == "A")
+      STATE move_b = EXTRACT(moves, player == "B")
+      
+      # Calculate scores and track cooperation
+      IF move_a.action == "cooperate" AND move_b.action == "cooperate":
+        STATE player_a_score += 3
+        STATE player_b_score += 3
+        STATE cooperation_count += 2
+        STATE outcome = "mutual_cooperation"
+      ELIF move_a.action == "defect" AND move_b.action == "cooperate":
+        STATE player_a_score += 5
+        STATE player_b_score += 0
+        STATE cooperation_count += 1
+        STATE outcome = "a_exploits_b"
+      ELIF move_a.action == "cooperate" AND move_b.action == "defect":
+        STATE player_a_score += 0
+        STATE player_b_score += 5
+        STATE cooperation_count += 1
+        STATE outcome = "b_exploits_a"
+      ELSE:
+        STATE player_a_score += 1
+        STATE player_b_score += 1
+        STATE outcome = "mutual_defection"
+      
+      # Record history
+      APPEND game_history {
+        round: round,
+        player_a: move_a,
+        player_b: move_b,
+        outcome: outcome,
+        scores: {a: player_a_score, b: player_b_score}
+      }
+      
+      TRACK {
+        event: "round_complete",
+        round: round,
+        moves: {a: move_a.action, b: move_b.action},
+        outcome: outcome,
+        running_scores: {a: player_a_score, b: player_b_score}
+      }
+    
+    ## Phase 3: Performance Analysis
+    STATE total_possible_cooperation = {{num_rounds}} * 2
+    STATE cooperation_rate = cooperation_count / total_possible_cooperation
+    
+    TRACK {
+      phase: "analysis",
+      cooperation_rate: cooperation_rate,
+      cooperation_count: cooperation_count,
+      total_possible: total_possible_cooperation,
+      threshold: {{cooperation_threshold}}
+    }
+    
+    # Store game result for learning
+    EVENT state:entity:create {
+      type: "pd_game_result",
+      id: "pd_{{TIMESTAMP()}}",
+      properties: {
+        cooperation_rate: cooperation_rate,
+        final_scores: {a: player_a_score, b: player_b_score},
+        game_history: game_history,
+        optimization_triggered: false,
+        timestamp: "{{TIMESTAMP()}}"
+      }
+    } AS game_record
+    
+    ## Phase 4: Conditional Optimization
+    IF {{optimization_enabled}} AND cooperation_rate < {{cooperation_threshold}}:
+      TRACK {
+        event: "optimization_triggered",
+        reason: "low_cooperation",
+        current_rate: cooperation_rate,
+        target_rate: {{cooperation_threshold}}
+      }
+      
+      # Determine which strategy needs optimization
+      STATE player_a_cooperations = COUNT(game_history, player_a.action == "cooperate")
+      STATE player_b_cooperations = COUNT(game_history, player_b.action == "cooperate")
+      STATE a_coop_rate = player_a_cooperations / {{num_rounds}}
+      STATE b_coop_rate = player_b_cooperations / {{num_rounds}}
+      
+      STATE optimization_target = ""
+      STATE optimization_reason = ""
+      
+      IF a_coop_rate < b_coop_rate:
+        STATE optimization_target = "player_a_strategy"
+        STATE optimization_reason = "Player A has lower cooperation rate: " + a_coop_rate
+      ELSE:
+        STATE optimization_target = "player_b_strategy"
+        STATE optimization_reason = "Player B has lower cooperation rate: " + b_coop_rate
+      
+      # Update game record with optimization trigger
+      EVENT state:entity:update {
+        id: game_record.id,
+        properties: {
+          optimization_triggered: true,
+          optimization_target: optimization_target,
+          optimization_reason: optimization_reason,
+          player_cooperation_rates: {a: a_coop_rate, b: b_coop_rate}
+        }
+      }
+      
+      TRACK {
+        event: "optimization_target_identified",
+        target: optimization_target,
+        reason: optimization_reason,
+        cooperation_rates: {a: a_coop_rate, b: b_coop_rate}
+      }
+    
+    ELSE:
+      TRACK {
+        event: "optimization_not_needed",
+        cooperation_rate: cooperation_rate,
+        threshold: {{cooperation_threshold}},
+        reason: cooperation_rate >= {{cooperation_threshold}} ? "threshold_met" : "optimization_disabled"
+      }
+    
+    ## Phase 5: Meta-Learning
+    # Query past games to identify patterns
+    EVENT state:entity:query {
+      type: "pd_game_result",
+      limit: 10,
+      sort: {timestamp: -1}
+    } AS past_games
+    
+    IF LENGTH(past_games) >= 3:
+      STATE avg_cooperation = AVERAGE(past_games, cooperation_rate)
+      STATE optimization_frequency = COUNT(past_games, optimization_triggered == true) / LENGTH(past_games)
+      
+      TRACK {
+        event: "meta_learning",
+        games_analyzed: LENGTH(past_games),
+        avg_cooperation_rate: avg_cooperation,
+        optimization_frequency: optimization_frequency,
+        trend: cooperation_rate > avg_cooperation ? "improving" : "declining"
+      }
+      
+      # Store meta-insights
+      EVENT state:entity:create {
+        type: "pd_meta_learning",
+        id: "meta_{{TIMESTAMP()}}",
+        properties: {
+          games_analyzed: LENGTH(past_games),
+          avg_cooperation_rate: avg_cooperation,
+          current_cooperation_rate: cooperation_rate,
+          optimization_frequency: optimization_frequency,
+          performance_trend: cooperation_rate > avg_cooperation ? "improving" : "declining",
+          insights: "Generated from " + LENGTH(past_games) + " previous games"
+        }
+      }
+    
+    ## Phase 6: Final Report
+    STATE final_report = {
+      game_results: {
+        final_scores: {a: player_a_score, b: player_b_score},
+        cooperation_rate: cooperation_rate,
+        winner: player_a_score > player_b_score ? "player_a" : "player_b"
+      },
+      optimization: {
+        triggered: cooperation_rate < {{cooperation_threshold}},
+        target: optimization_target,
+        reason: optimization_reason
+      },
+      learning: {
+        game_recorded: true,
+        meta_analysis: LENGTH(past_games) >= 3
+      }
+    }
+    
+    TRACK {
+      event: "game_complete",
+      report: final_report
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Simple self-improving PD complete",
+      cooperation_achieved: cooperation_rate,
+      optimization_needed: cooperation_rate < {{cooperation_threshold}},
+      report: final_report
+    }
+
+# Helper functions (conceptual)
+helpers:
+  CALCULATE_COOPERATION_RATE: |
+    cooperation_count / (num_rounds * 2)
+  
+  COUNT: |
+    Count items matching condition
+  
+  AVERAGE: |
+    Average of specified field across items
+
+metadata:
+  pattern_type: self_improving_game
+  optimization_integration: simple
+  learning_mechanism: state_based
+  complexity: minimal
+  tags: ["game_theory", "self_improvement", "learning", "simple"]
+
+performance:
+  expected_duration: "3-5 minutes"
+  resource_usage: "3 agents concurrent"
+  improvement_expected: "Demonstrates optimization triggering and learning storage"
