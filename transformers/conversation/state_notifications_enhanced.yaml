@@ -1,0 +1,149 @@
+name: conversation_state_notifications_enhanced
+description: Enhanced conversation state change notifications using advanced templates
+metadata:
+  category: conversation
+  author: ksi
+  version: 2.0.0
+  created: 2025-01-24
+  replaces: transformers/conversation/state_notifications.yaml
+  features:
+    - "{{$}} for complete state forwarding"
+    - "{{timestamp_utc()}} for auto-generated timestamps"
+    - "{{_ksi_context}} for request tracking"
+    - "{{upper()}} and other string functions"
+
+# Enhanced transformers for conversation state management
+transformers:
+  # Simple queue notification with pass-through
+  - source: "conversation:request_queued"
+    target: "conversation:queued"
+    mapping: "{{$}}"  # Forward entire queue state
+    description: Pass through complete queue information
+
+  # Enhanced lock notification with context
+  - source: "conversation:lock_acquired"
+    target: "conversation:locked"
+    mapping:
+      request_id: "{{request_id}}"
+      conversation_id: "{{conversation_id}}"
+      lock_holder: "{{lock_holder}}"
+      acquired_at: "{{timestamp_utc()}}"
+      acquired_by: "{{_ksi_context._agent_id|system}}"
+      lock_summary: "{{upper(lock_holder)}} locked conversation {{conversation_id}}"
+    description: Lock notification with enhanced metadata
+
+  # Release notification with duration calculation
+  - source: "conversation:lock_released"
+    target: "conversation:unlocked"
+    mapping:
+      request_id: "{{request_id}}"
+      conversation_id: "{{conversation_id}}"
+      released_by: "{{released_by}}"
+      released_at: "{{timestamp_utc()}}"
+      hold_duration_ms: "{{release_time - acquire_time|0}}"
+      release_summary: "Conversation {{conversation_id}} unlocked"
+    description: Release notification with timing info
+
+  # Fork notification with relationship tracking
+  - source: "conversation:fork_created"
+    target: "conversation:forked"
+    mapping:
+      original_id: "{{original_conversation_id}}"
+      fork_id: "{{fork_conversation_id}}"
+      request_id: "{{request_id}}"
+      fork_point: "{{fork_context_id|none}}"
+      forked_at: "{{timestamp_utc()}}"
+      forked_by: "{{_ksi_context._agent_id|system}}"
+      fork_summary: "Forked {{original_conversation_id}} → {{fork_conversation_id}}"
+      depth: "{{len(context_chain)|0}}"
+    description: Fork notification with relationship metadata
+
+  # Simple error pass-through for warnings
+  - source: "conversation:lock_error"
+    target: "monitor:conversation_warning"
+    condition: "severity == 'warning'"
+    mapping: "{{$}}"  # Pass entire error structure
+    description: Warning-level errors forwarded unchanged
+
+  # Enhanced critical error handling
+  - source: "conversation:lock_error"
+    target: "alert:conversation_critical"
+    condition: "severity == 'critical'"
+    mapping:
+      conversation_id: "{{conversation_id}}"
+      error_type: "lock_error"
+      error: "{{error}}"
+      severity: "{{severity}}"
+      action_required: "immediate"
+      alert_summary: "CRITICAL: {{upper(error.type|ERROR)}} in {{conversation_id}}"
+      timestamp: "{{timestamp_utc()}}"
+      reported_by: "{{_ksi_context._agent_id|conversation_system}}"
+      context: "{{$}}"  # Include all context for debugging
+    description: Critical errors with full context for investigation
+
+  # Conversation metrics aggregation
+  - source: "conversation:metrics_update"
+    target: "metrics:conversation_stats"
+    mapping:
+      conversation_id: "{{conversation_id}}"
+      total_messages: "{{len(messages)}}"
+      active_duration_ms: "{{end_time - start_time|0}}"
+      participants: "{{len(participants)}}"
+      first_participant: "{{participants.0.id|none}}"
+      last_message: "{{messages.-1.content|no_messages}}"  # Future: negative indexing
+      summary: "Conversation {{conversation_id}} had {{len(messages)}} messages"
+      updated_at: "{{timestamp_utc()}}"
+    description: Aggregate conversation metrics with computed fields
+
+  # State transition logging
+  - source: "conversation:state_transition"
+    target: "audit:conversation_log"
+    mapping:
+      conversation_id: "{{conversation_id}}"
+      transition: "{{from_state}} → {{to_state}}"
+      from_state: "{{from_state}}"
+      to_state: "{{to_state}}"
+      trigger: "{{trigger|manual}}"
+      transition_time: "{{timestamp_utc()}}"
+      triggered_by: "{{_ksi_context._agent_id|system}}"
+      valid_transition: "{{is_valid|true}}"
+      log_entry: "Conversation {{conversation_id}}: {{upper(from_state)}} → {{upper(to_state)}}"
+    description: Detailed state transition logging
+
+# Examples of complex routing (when multi-target is supported)
+multi_target_examples:
+  - source: "conversation:context_overflow"
+    targets:
+      # Log the overflow
+      - event: "audit:context_overflow"
+        mapping: "{{$}}"
+      # Alert if severe
+      - event: "alert:memory_pressure"
+        condition: "context_size > 50000"
+        mapping:
+          conversation_id: "{{conversation_id}}"
+          context_size: "{{context_size}}"
+          severity: "high"
+          alert: "Large context in {{conversation_id}}: {{context_size}} tokens"
+      # Update metrics
+      - event: "metrics:context_stats"
+        mapping:
+          conversation_id: "{{conversation_id}}"
+          size_tokens: "{{context_size}}"
+          overflow_at: "{{timestamp_utc()}}"
+    description: Handle context overflow with multiple actions
+
+# Function call examples
+function_examples:
+  - source: "conversation:analyze_request"
+    target: "conversation:analysis_result"
+    mapping:
+      conversation_id: "{{conversation_id}}"
+      message_count: "{{len(messages)}}"
+      participant_count: "{{len(participants)}}"
+      avg_message_length: "{{total_length / len(messages)|0}}"
+      analysis_summary: "{{len(messages)}} messages from {{len(participants)}} participants"
+      contains_code: "{{lower(content) contains 'function'|false}}"  # Future: contains function
+      analyzed_at: "{{timestamp_utc()}}"
+      analyzer: "{{_ksi_context._agent_id|analyzer}}"
+    description: Example using multiple template functions
