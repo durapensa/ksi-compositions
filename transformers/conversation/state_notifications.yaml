@@ -1,0 +1,89 @@
+name: conversation_state_notifications
+description: Declarative transformers for conversation state change notifications
+metadata:
+  category: conversation
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+  replaces: conversation_lock.py notification handlers
+
+# These transformers replace imperative notification code with declarative rules
+transformers:
+  # Queue notification when request is queued
+  - source: "conversation:request_queued"
+    target: "conversation:queued"
+    mapping:
+      request_id: "{{request_id}}"
+      conversation_id: "{{conversation_id}}"
+      position: "{{position}}"
+      holder: "{{current_holder}}"
+      timestamp: "{{timestamp}}"
+    description: Notify when conversation request is queued
+
+  # Lock acquired notification
+  - source: "conversation:lock_acquired"
+    target: "conversation:locked"
+    mapping:
+      request_id: "{{request_id}}"
+      conversation_id: "{{conversation_id}}"
+      lock_holder: "{{lock_holder}}"
+      timestamp: "{{timestamp}}"
+    description: Notify when conversation lock is acquired
+
+  # Lock released notification
+  - source: "conversation:lock_released"
+    target: "conversation:unlocked"
+    mapping:
+      request_id: "{{request_id}}"
+      conversation_id: "{{conversation_id}}"
+      released_by: "{{released_by}}"
+      timestamp: "{{timestamp}}"
+    description: Notify when conversation lock is released
+
+  # Fork notification
+  - source: "conversation:fork_created"
+    target: "conversation:forked"
+    mapping:
+      original_id: "{{original_conversation_id}}"
+      fork_id: "{{fork_conversation_id}}"
+      request_id: "{{request_id}}"
+      fork_point: "{{fork_context_id}}"
+      timestamp: "{{timestamp}}"
+    description: Notify when conversation is forked
+
+  # Error notifications with severity routing
+  - source: "conversation:lock_error"
+    target: "monitor:conversation_error"
+    condition: "severity == 'warning'"
+    mapping:
+      conversation_id: "{{conversation_id}}"
+      error_type: "lock_error"
+      details: "{{error}}"
+      severity: "{{severity}}"
+      timestamp: "{{timestamp}}"
+    description: Route non-critical lock errors to monitoring
+
+  - source: "conversation:lock_error"
+    target: "alert:conversation_critical"
+    condition: "severity == 'critical'"
+    mapping:
+      conversation_id: "{{conversation_id}}"
+      error_type: "lock_error"
+      details: "{{error}}"
+      action_required: "immediate"
+      timestamp: "{{timestamp}}"
+    description: Route critical lock errors to alerts
+
+# Multi-target example (requires enhancement)
+# transformers:
+#   - source: "conversation:state_changed"
+#     targets:
+#       - event: "monitor:conversation_state"
+#         mapping:
+#           conversation_id: "{{conversation_id}}"
+#           new_state: "{{state}}"
+#       - event: "metrics:conversation_transition"
+#         mapping:
+#           from_state: "{{old_state}}"
+#           to_state: "{{new_state}}"
+#           duration_ms: "{{transition_time}}"

@@ -1,0 +1,80 @@
+name: hierarchical_routing_transformers
+description: Declarative transformers for hierarchical event routing
+metadata:
+  category: routing
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+  replaces: ksi_daemon/core/hierarchical_routing.py
+
+# These transformers replace imperative routing methods with declarative rules
+transformers:
+  # Agent-to-Agent routing via completion:async
+  - source: "routing:agent_to_agent"
+    target: "completion:async"
+    mapping:
+      agent_id: "{{target_agent_id}}"
+      event_notification:
+        source_agent: "{{source_agent_id}}"
+        event: "{{event_name}}"
+        data: "{{event_data}}"
+        routed_by: "hierarchical_router"
+        timestamp: "{{timestamp}}"
+    description: Routes events between agents using completion:async
+
+  # Agent-to-Orchestration routing
+  - source: "routing:agent_to_orchestration"
+    target: "orchestration:event"
+    mapping:
+      orchestration_id: "{{orchestration_id}}"
+      source_agent: "{{source_agent_id}}"
+      event: "{{event_name}}"
+      data: "{{event_data}}"
+      timestamp: "{{timestamp}}"
+    description: Routes agent events to parent orchestrations
+
+  # Broadcast to multiple agents
+  - source: "routing:broadcast_to_agents"
+    target: "routing:agent_to_agent"
+    mapping:
+      target_agent_id: "{{agent_id}}"
+      source_agent_id: "{{source_agent_id}}"
+      event_name: "{{event_name}}"
+      event_data: "{{event_data}}"
+      timestamp: "{{timestamp}}"
+    # Note: In practice, this would need multi-target support
+    # or a handler that iterates over agent_ids
+    description: Broadcasts events to multiple agents
+
+  # Error routing based on severity
+  - source: "agent:error"
+    target: "orchestration:critical_error"
+    condition: "severity == 'critical'"
+    mapping:
+      orchestration_id: "{{orchestration_id}}"
+      agent_id: "{{agent_id}}"
+      error: "{{error}}"
+      context: "{{context}}"
+      timestamp: "{{timestamp}}"
+    description: Routes critical errors to orchestration
+
+  - source: "agent:error"
+    target: "monitor:agent_error"
+    condition: "severity != 'critical'"
+    mapping:
+      agent_id: "{{agent_id}}"
+      error: "{{error}}"
+      severity: "{{severity}}"
+      timestamp: "{{timestamp}}"
+    description: Routes non-critical errors to monitoring
+
+# Response routing for async transformations
+response_routes:
+  - transform_pattern: "routing:*"
+    response_event: "routing:result"
+    filters:
+      success: "{{status == 'success'}}"
+    mapping:
+      original_event: "{{_transform.source_event}}"
+      routing_result: "{{result}}"
+      timestamp: "{{timestamp}}"
