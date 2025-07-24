@@ -1,0 +1,78 @@
+name: simple_forwarder_template
+description: Template for migrating simple event forwarding handlers
+metadata:
+  category: migration_template
+  pattern_type: simple_forwarder
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+
+# Template for handlers that just forward events with minimal transformation
+# Example usage: @event_handler("source:event") -> emit_event("target:event", data)
+
+template_variables:
+  - source_event: "Source event pattern to listen for"
+  - target_event: "Target event to emit to"
+  - mapping_type: "simple|passthrough|field_mapping"
+  - service_name: "Name of service this transformer belongs to"
+
+transformers:
+  # Simple pass-through - just forward everything
+  - source: "{{source_event}}"
+    target: "{{target_event}}"
+    mapping: "{{$}}"  # Pass entire event data
+    description: "Forward {{source_event}} to {{target_event}} with no changes"
+
+  # Simple field mapping - extract specific fields
+  - source: "{{source_event}}"
+    target: "{{target_event}}"
+    mapping:
+      # Common fields to map
+      entity_id: "{{id|entity_id|agent_id}}"
+      timestamp: "{{timestamp_utc()}}"
+      event_type: "{{type|event_type}}"
+      data: "{{$}}"  # Include original data
+    description: "Forward {{source_event}} to {{target_event}} with field mapping"
+
+  # Enhanced forwarding with metadata
+  - source: "{{source_event}}"
+    target: "{{target_event}}"
+    mapping:
+      original_event: "{{$}}"
+      metadata:
+        forwarded_by: "{{_ksi_context._agent_id|system}}"
+        forwarded_at: "{{timestamp_utc()}}"
+        service: "{{service_name}}"
+    description: "Forward {{source_event}} to {{target_event}} with metadata enrichment"
+
+# Common patterns for simple forwarders
+common_patterns:
+  status_propagation:
+    source: "{{service}}:status_changed"
+    target: "monitor:{{service}}_status"
+    mapping:
+      service: "{{service_name}}"
+      status: "{{status}}"
+      previous_status: "{{previous_status|unknown}}"
+      timestamp: "{{timestamp_utc()}}"
+
+  lifecycle_events:
+    source: "{{service}}:{{event_type}}"
+    target: "monitor:{{service}}_lifecycle"
+    mapping:
+      service: "{{service_name}}"
+      event_type: "{{event_type}}"
+      entity_id: "{{id}}"
+      data: "{{$}}"
+      timestamp: "{{timestamp_utc()}}"
+
+usage_notes: |
+  Simple forwarders are handlers that:
+  1. Take an input event
+  2. Emit another event with minimal transformation
+  3. Do not contain complex business logic
+  4. Can be replaced with declarative transformers
+  
+  This template covers ~30-40% of all KSI event handlers.
+  Use {{$}} for complete pass-through of event data.
+  Use field mapping when you need to restructure data.

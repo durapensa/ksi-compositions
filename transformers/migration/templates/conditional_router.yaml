@@ -1,0 +1,220 @@
+name: conditional_router_template
+description: Template for migrating handlers with conditional routing logic
+metadata:
+  category: migration_template
+  pattern_type: conditional_router
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+
+# Template for handlers that use if/else logic to determine routing targets
+# Example: if (data.status == "error") emit error_event else emit success_event
+
+template_variables:
+  - source_event: "Source event pattern"
+  - condition_field: "Field used for conditional logic"
+  - success_target: "Target for success/normal conditions"
+  - error_target: "Target for error conditions"
+  - warning_target: "Target for warning conditions"
+
+transformers:
+  # Binary conditional routing (success/error)
+  - source: "{{source_event}}"
+    condition: "{{condition_field}} == 'success'"
+    target: "{{success_target}}"
+    mapping: "{{$}}"  # Pass all data for success
+    description: "Route successful {{source_event}} to {{success_target}}"
+
+  - source: "{{source_event}}"
+    condition: "{{condition_field}} == 'error'"
+    target: "{{error_target}}"
+    mapping:
+      error: "{{error}}"
+      original_event: "{{$}}"
+      error_time: "{{timestamp_utc()}}"
+      reported_by: "{{_ksi_context._agent_id|system}}"
+    description: "Route failed {{source_event}} to {{error_target}}"
+
+  # Multi-condition routing (success/warning/error)
+  - source: "{{source_event}}"
+    condition: "{{condition_field}} == 'completed'"
+    target: "{{success_target}}"
+    mapping:
+      result: "{{result}}"
+      success_data: "{{$}}"
+      completed_at: "{{timestamp_utc()}}"
+    description: "Route completed {{source_event}} to success handler"
+
+  - source: "{{source_event}}"
+    condition: "{{condition_field}} == 'warning'"
+    target: "{{warning_target}}"
+    mapping:
+      warning: "{{warning|message}}"
+      severity: "{{severity|medium}}"
+      context: "{{$}}"
+      warning_time: "{{timestamp_utc()}}"
+    description: "Route warning {{source_event}} to warning handler"
+
+  - source: "{{source_event}}"
+    condition: "{{condition_field}} == 'failed'"
+    target: "{{error_target}}"
+    mapping:
+      error: "{{error}}"
+      failure_reason: "{{reason|Unknown error}}"
+      retry_possible: "{{can_retry|false}}"
+      context: "{{$}}"
+      failed_at: "{{timestamp_utc()}}"
+    description: "Route failed {{source_event}} to error handler"
+
+# Common conditional routing patterns
+common_patterns:
+  completion_routing:
+    # Success completion
+    - source: "completion:result"
+      condition: "status == 'completed'"
+      target: "monitor:completion_success"
+      mapping:
+        agent_id: "{{agent_id}}"
+        tokens_used: "{{tokens.total|0}}"
+        duration_ms: "{{duration}}"
+        result: "{{result}}"
+
+    # Error completion
+    - source: "completion:result"  
+      condition: "status == 'error'"
+      target: "alert:completion_error"
+      mapping:
+        agent_id: "{{agent_id}}"
+        error: "{{error}}"
+        retry_count: "{{retry_count|0}}"
+        original_request: "{{$}}"
+
+    # High token usage alert
+    - source: "completion:result"
+      condition: "tokens.total > 10000"
+      target: "alert:high_token_usage"
+      mapping:
+        agent_id: "{{agent_id}}"
+        tokens_used: "{{tokens.total}}"
+        cost_estimate: "{{tokens.total * 0.00002}}"
+        alert_summary: "High usage: {{tokens.total}} tokens by {{agent_id}}"
+
+  permission_routing:
+    # Permission granted
+    - source: "permission:check_result"
+      condition: "granted == true"
+      target: "agent:permission_granted"
+      mapping:
+        agent_id: "{{agent_id}}"
+        permission: "{{permission}}"
+        granted_by: "{{_ksi_context._agent_id}}"
+        granted_at: "{{timestamp_utc()}}"
+
+    # Permission denied
+    - source: "permission:check_result"
+      condition: "granted == false"
+      target: "security:permission_denied"
+      mapping:
+        agent_id: "{{agent_id}}"
+        permission: "{{permission}}"
+        denial_reason: "{{reason}}"
+        security_event: true
+        denied_at: "{{timestamp_utc()}}"
+
+  agent_lifecycle_routing:
+    # Active agent
+    - source: "agent:status_update"
+      condition: "status == 'active'"
+      target: "monitor:agent_active"
+      mapping:
+        agent_id: "{{agent_id}}"
+        profile: "{{profile}}"
+        activated_at: "{{timestamp_utc()}}"
+
+    # Terminated agent
+    - source: "agent:status_update" 
+      condition: "status == 'terminated'"
+      target: "cleanup:agent_terminated"
+      mapping:
+        agent_id: "{{agent_id}}"
+        termination_reason: "{{reason|normal}}"
+        cleanup_required: true
+        terminated_at: "{{timestamp_utc()}}"
+
+# Advanced conditional patterns
+advanced_patterns:
+  # Numeric threshold routing
+  threshold_routing:
+    - source: "metrics:update"
+      condition: "value > 1000"
+      target: "alert:high_metric"
+      mapping:
+        metric_name: "{{name}}"
+        value: "{{value}}"
+        threshold: 1000
+        alert_level: "high"
+
+    - source: "metrics:update"
+      condition: "value > 500 && value <= 1000"
+      target: "alert:medium_metric"
+      mapping:
+        metric_name: "{{name}}"
+        value: "{{value}}"
+        threshold_range: "500-1000"
+        alert_level: "medium"
+
+  # Complex condition routing
+  complex_conditions:
+    - source: "orchestration:status"
+      condition: "status == 'failed' && retry_count < 3"
+      target: "orchestration:retry"
+      mapping:
+        orchestration_id: "{{id}}"
+        retry_count: "{{retry_count + 1}}"
+        failure_reason: "{{error}}"
+
+    - source: "orchestration:status"
+      condition: "status == 'failed' && retry_count >= 3"
+      target: "orchestration:abandon"
+      mapping:
+        orchestration_id: "{{id}}"
+        final_error: "{{error}}"
+        max_retries_exceeded: true
+
+  # String pattern routing
+  pattern_matching:
+    - source: "log:entry"
+      condition: "level == 'ERROR'"
+      target: "alert:log_error"
+      mapping:
+        message: "{{message}}"
+        service: "{{service}}"
+        error_time: "{{timestamp_utc()}}"
+
+    - source: "log:entry"
+      condition: "level == 'WARN'"
+      target: "monitor:log_warning"
+      mapping:
+        message: "{{message}}"
+        service: "{{service}}"
+        warning_time: "{{timestamp_utc()}}"
+
+usage_notes: |
+  Conditional routers are handlers that:
+  1. Evaluate conditions on event data
+  2. Route to different targets based on conditions
+  3. Often implement if/else or switch-like logic
+  4. May transform data differently per condition
+  
+  This template covers ~15-20% of KSI event handlers.
+  
+  Current condition syntax supports:
+  - Equality: field == 'value'
+  - Inequality: field != 'value'  
+  - Numeric: field > 100, field <= 50
+  - Boolean: field == true, field == false
+  
+  Future enhancements will support:
+  - Complex expressions: field1 > 100 && field2 == 'active'
+  - Regular expressions: field ~= '^pattern.*'
+  - Array operations: field in ['val1', 'val2']

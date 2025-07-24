@@ -1,0 +1,273 @@
+name: transformer_validation_schemas
+description: Validation schemas for transformer migration patterns
+metadata:
+  category: validation
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+
+# JSON Schema definitions for validating transformer configurations
+schemas:
+  # Base transformer schema
+  base_transformer:
+    type: object
+    required: [source, target, mapping]
+    properties:
+      source:
+        type: string
+        pattern: "^[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z_*][a-zA-Z0-9_*]*$"
+        description: "Event pattern to listen for (e.g., 'agent:spawned')"
+      
+      target:
+        type: string  
+        pattern: "^[a-zA-Z_][a-zA-Z0-9_]*:[a-zA-Z_][a-zA-Z0-9_]*$"
+        description: "Target event to emit (e.g., 'monitor:agent_created')"
+      
+      mapping:
+        oneOf:
+          - type: string
+            enum: ["{{$}}"]  # Pass-through
+          - type: object    # Field mapping
+          - type: string
+            pattern: "^\\{\\{.*\\}\\}$"  # Template string
+        description: "Data mapping specification"
+      
+      condition:
+        type: string
+        description: "Optional condition for conditional routing"
+      
+      async:
+        type: boolean
+        default: false
+        description: "Whether this is an async transformer"
+      
+      description:
+        type: string
+        description: "Human-readable description of transformer purpose"
+
+  # Simple forwarder validation
+  simple_forwarder:
+    allOf:
+      - $ref: "#/schemas/base_transformer"
+      - properties:
+          mapping:
+            oneOf:
+              - const: "{{$}}"  # Must be pass-through
+              - type: object
+                maxProperties: 5  # Simple field mapping only
+          condition:
+            not: {}  # No conditions for simple forwarders
+
+  # Field mapper validation  
+  field_mapper:
+    allOf:
+      - $ref: "#/schemas/base_transformer"
+      - properties:
+          mapping:
+            type: object
+            minProperties: 1
+            properties:
+              # Common required fields for entity mapping
+              type:
+                type: string
+              id:
+                type: string
+                pattern: "^\\{\\{.*\\}\\}$"  # Must be template
+              timestamp:
+                type: string
+                pattern: "^\\{\\{timestamp_utc\\(\\)\\}\\}$"  # Must use function
+
+  # Conditional router validation
+  conditional_router:
+    allOf:
+      - $ref: "#/schemas/base_transformer"
+      - required: [source, target, mapping, condition]
+      - properties:
+          condition:
+            type: string
+            pattern: "^.+\\s*(==|!=|>|<|>=|<=)\\s*.+$"
+            description: "Must have comparison operator"
+
+  # Multi-target validation (current separate transformer approach)
+  multi_target_set:
+    type: array
+    minItems: 2
+    items:
+      allOf:
+        - $ref: "#/schemas/base_transformer"
+        - properties:
+            source:
+              type: string
+              # All transformers in set must have same source
+    description: "Array of transformers with same source, different targets"
+
+# Validation rules for migration patterns
+validation_rules:
+  naming_conventions:
+    transformer_name:
+      pattern: "^[a-z][a-z0-9_]*$"
+      description: "Snake case, lowercase only"
+    
+    service_prefix:
+      pattern: "^(agent|orchestration|monitor|state|config|completion|permission)_"
+      description: "Must start with service name"
+    
+    file_naming:
+      pattern: "^[a-z][a-z0-9_]*\\.yaml$"
+      description: "Snake case YAML files"
+
+  template_validation:
+    variable_syntax:
+      pattern: "^\\{\\{[a-zA-Z_][a-zA-Z0-9_\\.\\|]*\\}\\}$"
+      description: "Valid template variable syntax"
+    
+    function_calls:
+      allowed_functions:
+        - timestamp_utc
+        - len
+        - upper
+        - lower
+        - str
+        - int
+        - float
+        - json
+    
+    context_access:
+      pattern: "^\\{\\{_ksi_context\\.[a-zA-Z_][a-zA-Z0-9_]*.*\\}\\}$"
+      description: "Valid context variable access"
+
+  condition_validation:
+    supported_operators:
+      - "=="
+      - "!="
+      - ">"
+      - "<"
+      - ">="
+      - "<="
+    
+    field_references:
+      pattern: "^[a-zA-Z_][a-zA-Z0-9_\\.]*$"
+      description: "Valid field reference in conditions"
+
+# Migration quality checks
+quality_checks:
+  handler_coverage:
+    description: "Ensure all handler functionality is covered"
+    checks:
+      - name: "all_emit_events_covered"
+        description: "Every emit_event() call has corresponding transformer"
+      - name: "error_handling_preserved"
+        description: "Error conditions are handled in transformers"
+      - name: "data_transformation_equivalent"
+        description: "Output data structure matches original handler"
+
+  performance_validation:
+    description: "Ensure transformers don't degrade performance"
+    checks:
+      - name: "template_complexity"
+        description: "Template expressions are not overly complex"
+        max_nested_depth: 3
+      - name: "condition_complexity"
+        description: "Conditions are simple and fast to evaluate"
+        max_condition_length: 100
+
+  breaking_change_documentation:
+    description: "Document all breaking changes from migration"
+    required_fields:
+      - original_handler_location
+      - replaced_functionality
+      - behavior_changes
+      - migration_date
+      - migration_author
+
+# Validation utility functions
+validation_utilities:
+  template_extractor:
+    description: "Extract all template variables from mapping"
+    pattern: "\\{\\{([^}]+)\\}\\}"
+    
+  condition_parser:
+    description: "Parse and validate condition expressions"
+    grammar: "field operator value"
+    
+  dependency_checker:
+    description: "Check if transformer depends on other transformers"
+    check_source_target_chains: true
+
+# Migration validation workflow
+validation_workflow:
+  pre_migration:
+    steps:
+      - validate_transformer_schema
+      - check_template_syntax
+      - verify_condition_logic
+      - confirm_target_events_exist
+  
+  post_migration:
+    steps:
+      - verify_behavioral_equivalence
+      - check_performance_impact
+      - validate_error_handling
+      - confirm_integration_tests_pass
+
+# Example validation configurations
+examples:
+  valid_simple_forwarder:
+    source: "agent:spawned"
+    target: "monitor:agent_created"
+    mapping: "{{$}}"
+    description: "Forward agent spawning to monitor"
+
+  valid_field_mapper:
+    source: "agent:created"
+    target: "state:entity:create"
+    mapping:
+      type: "agent"
+      id: "{{agent_id}}"
+      properties:
+        name: "{{name|display_name}}"
+        created_at: "{{timestamp_utc()}}"
+      context:
+        created_by: "{{_ksi_context._agent_id|system}}"
+
+  valid_conditional_router:
+    source: "completion:result"
+    target: "alert:completion_error"
+    condition: "status == 'error'"
+    mapping:
+      agent_id: "{{agent_id}}"
+      error: "{{error}}"
+      error_time: "{{timestamp_utc()}}"
+
+  invalid_examples:
+    missing_required_field:
+      source: "agent:spawned"
+      # Missing target and mapping
+      description: "This will fail validation"
+    
+    invalid_condition:
+      source: "test:event"
+      target: "test:result"
+      condition: "invalid syntax here"
+      mapping: "{{$}}"
+    
+    complex_template:
+      source: "test:event" 
+      target: "test:result"
+      mapping:
+        # Too deeply nested template
+        result: "{{level1.level2.level3.level4.value}}"
+
+usage_notes: |
+  These schemas validate:
+  1. Transformer structure and syntax
+  2. Template variable correctness
+  3. Condition expression validity
+  4. Naming convention compliance
+  5. Migration quality standards
+  
+  Use these schemas to:
+  - Validate transformers before deployment
+  - Ensure migration quality
+  - Document breaking changes
+  - Maintain consistency across migrations

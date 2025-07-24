@@ -1,0 +1,159 @@
+name: field_mapper_template
+description: Template for migrating handlers that restructure and map event data
+metadata:
+  category: migration_template
+  pattern_type: field_mapper
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+
+# Template for handlers that take input data and restructure it for output
+# Example: Extract fields, add computed values, create nested structures
+
+template_variables:
+  - source_event: "Source event pattern"
+  - target_event: "Target event pattern"  
+  - entity_type: "Type of entity being processed (agent, orchestration, etc.)"
+  - computed_fields: "List of fields that need computation"
+
+transformers:
+  # Basic field extraction and mapping
+  - source: "{{source_event}}"
+    target: "{{target_event}}"
+    mapping:
+      # Identity fields
+      id: "{{id|entity_id|agent_id}}"
+      type: "{{entity_type}}"
+      
+      # Extracted data
+      name: "{{name|display_name}}"
+      status: "{{status|state}}"
+      
+      # Computed metadata  
+      created_at: "{{timestamp_utc()}}"
+      created_by: "{{_ksi_context._agent_id|system}}"
+      
+      # Nested structure creation
+      properties:
+        original_data: "{{$}}"
+        processed: true
+        version: "1.0"
+    description: "Extract and map fields from {{source_event}} to {{target_event}}"
+
+  # Entity lifecycle mapping
+  - source: "{{entity_type}}:created"
+    target: "state:entity:create"
+    mapping:
+      type: "{{entity_type}}"
+      id: "{{id}}"
+      properties:
+        name: "{{name|display_name}}"
+        status: "created"
+        created_at: "{{timestamp_utc()}}"
+        created_by: "{{_ksi_context._agent_id|system}}"
+        configuration: "{{config|{}}}"
+        metadata: "{{$}}"  # All original data as metadata
+    description: "Map {{entity_type}} creation to state entity"
+
+  # Status change mapping with computed fields
+  - source: "{{entity_type}}:status_changed"
+    target: "monitor:status_update"
+    mapping:
+      entity:
+        type: "{{entity_type}}"
+        id: "{{id}}"
+        name: "{{name|display_name|Unknown}}"
+      
+      status_change:
+        from: "{{old_status|previous_status|unknown}}"
+        to: "{{new_status|status}}"
+        reason: "{{reason|change_reason|automatic}}"
+        timestamp: "{{timestamp_utc()}}"
+      
+      computed:
+        duration_ms: "{{change_time - start_time|0}}"
+        is_improvement: "{{new_status == 'active' || new_status == 'completed'}}"
+        change_summary: "{{upper(entity_type)}} {{id}} changed from {{old_status|unknown}} to {{new_status}}"
+      
+      context:
+        triggered_by: "{{_ksi_context._agent_id|system}}"
+        orchestration_id: "{{_ksi_context.orchestration_id|none}}"
+        original_event: "{{$}}"
+    description: "Map status changes with computed fields and context"
+
+# Common field mapping patterns
+common_patterns:
+  agent_to_entity:
+    mapping:
+      type: "agent"
+      id: "{{agent_id}}"
+      properties:
+        profile: "{{profile}}"
+        sandbox_uuid: "{{sandbox_uuid}}"
+        capabilities: "{{capabilities|[]}}"
+        status: "{{status|active}}"
+        created_at: "{{timestamp_utc()}}"
+
+  orchestration_to_entity:
+    mapping:
+      type: "orchestration" 
+      id: "{{orchestration_id}}"
+      properties:
+        pattern: "{{pattern}}"
+        agents: "{{agent_list|[]}}"
+        status: "{{status|initializing}}"
+        variables: "{{variables|{}}}"
+        created_at: "{{timestamp_utc()}}"
+
+  completion_to_result:
+    mapping:
+      request:
+        agent_id: "{{agent_id}}"
+        prompt: "{{prompt}}"
+        model: "{{model|default}}"
+      
+      response:
+        content: "{{response.content}}"
+        tokens: "{{response.tokens|{}}}"
+        metadata: "{{response.metadata|{}}}"
+      
+      metrics:
+        duration_ms: "{{end_time - start_time}}"
+        token_rate: "{{response.tokens.total / (duration_ms / 1000)|0}}"
+        success: "{{status == 'completed'}}"
+      
+      audit:
+        completed_at: "{{timestamp_utc()}}"
+        processing_node: "{{_ksi_context._processing_node|local}}"
+
+# Data transformation utilities
+transformation_patterns:
+  # Convert arrays to objects
+  array_to_object:
+    items_as_object: "{{items.0}}"  # First item
+    items_count: "{{len(items)}}"
+    items_summary: "{{len(items)}} items: {{items.0.name|unknown}} to {{items.-1.name|unknown}}"
+
+  # String manipulation  
+  string_formatting:
+    title_case: "{{upper(name)}}"
+    summary_text: "{{entity_type}} {{id}} has status {{upper(status)}}"
+    file_path: "{{base_path}}/{{entity_type}}/{{id}}.json"
+
+  # Conditional field mapping
+  conditional_fields:
+    error_details: "{{error.message|No error}}"  # Only if error exists
+    success_data: "{{result|{}}}"  # Empty object if no result
+    optional_metadata: "{{metadata|{}}}"
+
+usage_notes: |
+  Field mappers are handlers that:
+  1. Extract specific fields from input events
+  2. Restructure data into different formats
+  3. Add computed fields and metadata
+  4. Create nested object structures
+  5. Transform data types and formats
+  
+  This template covers ~20-25% of KSI event handlers.
+  Use nested mapping structures to create complex output.
+  Use defaults ({{field|default}}) to handle missing data gracefully.

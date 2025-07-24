@@ -1,0 +1,271 @@
+name: multi_target_template
+description: Template for migrating handlers that emit to multiple targets
+metadata:
+  category: migration_template
+  pattern_type: multi_target
+  author: ksi
+  version: 1.0.0
+  created: 2025-01-24
+
+# Template for handlers that take one input and emit to multiple targets
+# Example: await emit_event("target1", data); await emit_event("target2", data);
+
+template_variables:
+  - source_event: "Source event pattern"
+  - primary_target: "Main target event"
+  - secondary_targets: "List of additional target events"
+  - entity_type: "Type of entity (agent, orchestration, etc.)"
+
+# Note: Multi-target syntax shown here is for future enhancement
+# Current implementation requires separate transformers for each target
+
+transformers:
+  # Current approach: Separate transformer for each target
+  # Target 1: Primary destination (e.g., state management)
+  - source: "{{source_event}}"
+    target: "{{primary_target}}"
+    mapping:
+      type: "{{entity_type}}"
+      id: "{{id}}"
+      properties: "{{$}}"
+      created_at: "{{timestamp_utc()}}"
+    description: "Primary routing of {{source_event}} to {{primary_target}}"
+
+  # Target 2: Monitoring/logging
+  - source: "{{source_event}}"
+    target: "monitor:{{entity_type}}_event"
+    mapping:
+      entity_type: "{{entity_type}}"
+      entity_id: "{{id}}"
+      event_type: "{{event_type|activity}}"
+      event_data: "{{$}}"
+      timestamp: "{{timestamp_utc()}}"
+      monitored_by: "{{_ksi_context._agent_id|system}}"
+    description: "Monitor routing of {{source_event}} to monitoring system"
+
+  # Target 3: Metrics/analytics
+  - source: "{{source_event}}"
+    target: "metrics:{{entity_type}}_metrics"
+    mapping:
+      entity_type: "{{entity_type}}"
+      entity_id: "{{id}}"
+      metric_type: "{{metric_type|event_count}}"
+      value: 1
+      tags:
+        event: "{{source_event}}"
+        status: "{{status|active}}"
+      recorded_at: "{{timestamp_utc()}}"
+    description: "Metrics routing of {{source_event}} to analytics system"
+
+  # Target 4: Audit trail
+  - source: "{{source_event}}"
+    target: "audit:{{entity_type}}_audit"
+    mapping:
+      entity_type: "{{entity_type}}"
+      entity_id: "{{id}}"
+      action: "{{action|event_received}}"
+      actor: "{{_ksi_context._agent_id|system}}"
+      details: "{{$}}"
+      audit_timestamp: "{{timestamp_utc()}}"
+    description: "Audit routing of {{source_event}} to audit system"
+
+# Common multi-target patterns
+common_patterns:
+  agent_lifecycle:
+    # Agent spawned - notify multiple systems
+    - source: "agent:spawned"
+      targets:
+        state_management:
+          event: "state:entity:create"
+          mapping:
+            type: "agent"
+            id: "{{agent_id}}"
+            properties:
+              profile: "{{profile}}"
+              sandbox_uuid: "{{sandbox_uuid}}"
+              created_at: "{{timestamp_utc()}}"
+
+        monitoring:
+          event: "monitor:agent_created"
+          mapping:
+            agent_id: "{{agent_id}}"
+            profile_name: "{{profile.name|unknown}}"
+            capabilities: "{{capabilities|[]}}"
+            created_at: "{{timestamp_utc()}}"
+
+        metrics:
+          event: "metrics:agent_count"
+          mapping:
+            metric: "agents_spawned"
+            value: 1
+            tags:
+              profile: "{{profile.name}}"
+            recorded_at: "{{timestamp_utc()}}"
+
+  orchestration_completion:
+    # Orchestration completed - multiple cleanup/notification targets
+    - source: "orchestration:completed"
+      targets:
+        state_update:
+          event: "state:entity:update"
+          mapping:
+            type: "orchestration"
+            id: "{{orchestration_id}}"
+            properties:
+              status: "completed"
+              completed_at: "{{timestamp_utc()}}"
+              final_result: "{{result}}"
+
+        monitoring:
+          event: "monitor:orchestration_done"
+          mapping:
+            orchestration_id: "{{orchestration_id}}"
+            duration_ms: "{{end_time - start_time}}"
+            success: "{{status == 'completed'}}"
+            agents_used: "{{len(agents)}}"
+
+        cleanup:
+          event: "cleanup:orchestration"
+          mapping:
+            orchestration_id: "{{orchestration_id}}"
+            cleanup_agents: true
+            cleanup_resources: true
+            cleanup_reason: "completed"
+
+        metrics:
+          event: "metrics:orchestration_metrics"
+          mapping:
+            orchestration_id: "{{orchestration_id}}"
+            duration_ms: "{{end_time - start_time}}"
+            agent_count: "{{len(agents)}}"
+            success: "{{status == 'completed'}}"
+
+  system_events:
+    # System startup - notify all services
+    - source: "system:startup"
+      targets:
+        service_notification:
+          event: "services:system_ready"
+          mapping:
+            startup_time: "{{startup_duration_ms}}"
+            services_loaded: "{{services}}"
+            ready_at: "{{timestamp_utc()}}"
+
+        monitoring:
+          event: "monitor:system_startup"
+          mapping:
+            startup_duration: "{{startup_duration_ms}}"
+            services_count: "{{len(services)}}"
+            timestamp: "{{timestamp_utc()}}"
+
+        metrics:
+          event: "metrics:system_metrics"
+          mapping:
+            metric: "system_startup"
+            duration_ms: "{{startup_duration_ms}}"
+            services_loaded: "{{len(services)}}"
+
+# Advanced multi-target patterns
+advanced_patterns:
+  error_propagation:
+    # Error occurred - notify monitoring, alerting, and recovery systems
+    error_source: "{{entity_type}}:error"
+    targets:
+      monitoring:
+        event: "monitor:error_logged"
+        mapping:
+          entity_type: "{{entity_type}}"
+          entity_id: "{{id}}"
+          error: "{{error}}"
+          severity: "{{severity}}"
+          logged_at: "{{timestamp_utc()}}"
+
+      alerting:
+        event: "alert:error_occurred"
+        condition: "severity == 'critical'"
+        mapping:
+          alert_type: "critical_error"
+          entity: "{{entity_type}}:{{id}}"
+          error_message: "{{error.message}}"
+          requires_action: true
+
+      recovery:
+        event: "recovery:error_recovery"
+        condition: "recoverable == true"
+        mapping:
+          entity_type: "{{entity_type}}"
+          entity_id: "{{id}}"
+          recovery_strategy: "{{recovery_strategy|retry}}"
+          error_context: "{{$}}"
+
+  state_synchronization:
+    # State changed - synchronize across multiple systems
+    state_source: "{{entity_type}}:state_changed"
+    targets:
+      primary_state:
+        event: "state:entity:update"
+        mapping:
+          type: "{{entity_type}}"
+          id: "{{id}}"
+          properties: "{{new_state}}"
+          updated_at: "{{timestamp_utc()}}"
+
+      cache_sync:
+        event: "cache:invalidate"
+        mapping:
+          cache_key: "{{entity_type}}:{{id}}"
+          cache_pattern: "{{entity_type}}:*"
+          reason: "state_changed"
+
+      dependent_updates:
+        event: "dependencies:state_changed"
+        mapping:
+          entity: "{{entity_type}}:{{id}}"
+          old_state: "{{old_state}}"
+          new_state: "{{new_state}}"
+          change_reason: "{{reason}}"
+
+# Future multi-target syntax (when implemented)
+future_syntax:
+  multi_target_single_transformer:
+    - source: "agent:spawned"
+      targets:
+        - event: "state:entity:create"
+          mapping:
+            type: "agent"
+            id: "{{agent_id}}"
+            properties: "{{$}}"
+        - event: "monitor:agent_created"
+          mapping:
+            agent_id: "{{agent_id}}"
+            created_at: "{{timestamp_utc()}}"
+        - event: "metrics:agent_count"
+          mapping:
+            metric: "agents_spawned"
+            value: 1
+
+usage_notes: |
+  Multi-target handlers are handlers that:
+  1. Take one input event
+  2. Emit to multiple target events
+  3. Often notify different systems (state, monitoring, metrics, audit)
+  4. May use different data mappings for each target
+  
+  This template covers ~10-15% of KSI event handlers.
+  
+  Current Implementation:
+  - Use separate transformers for each target (shown above)
+  - Each transformer has the same source but different target
+  - This works with existing transformer system
+  
+  Future Enhancement:
+  - Native multi-target syntax in single transformer
+  - Conditional targets (only emit if condition met)
+  - Target-specific condition evaluation
+  
+  Common Multi-Target Use Cases:
+  - Entity lifecycle events (create, update, delete)
+  - System events (startup, shutdown)
+  - Error handling (log, alert, recover)
+  - State synchronization (primary, cache, dependencies)
+  - Metrics and monitoring (multiple analytics systems)
