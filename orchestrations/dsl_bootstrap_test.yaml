@@ -1,0 +1,50 @@
+name: dsl_bootstrap_test
+description: Test orchestration for DSL interpreter bootstrap
+version: 1.0.0
+
+# Test the basic DSL interpreter with EVENT blocks
+agents:
+  - dsl_test:
+      component: components/agents/dsl_interpreter_basic
+      
+flow: |
+  ## Test 1: Single EVENT block
+  
+  Please interpret this DSL:
+  
+  EVENT agent:status {
+    status: "testing",
+    message: "Running DSL test 1"
+  }
+  
+  ## Test 2: Multiple EVENT blocks
+  
+  Now interpret these DSL blocks:
+  
+  EVENT state:entity:update {
+    id: "test_progress",
+    properties: {step: 1, total: 3}
+  }
+  
+  EVENT completion:async {
+    agent_id: "monitor_agent",
+    prompt: "Test 1 complete, proceeding to test 2"
+  }
+  
+  EVENT agent:status {
+    status: "complete",
+    message: "All DSL tests finished"
+  }
+  
+  ## Test 3: Component discovery
+  
+  Finally, interpret this discovery event:
+  
+  EVENT composition:discover {
+    type: "behavior"
+  }
+  
+  After processing all EVENT blocks, emit:
+  EVENT orchestration:request_termination {
+    reason: "DSL bootstrap test completed successfully"
+  }
