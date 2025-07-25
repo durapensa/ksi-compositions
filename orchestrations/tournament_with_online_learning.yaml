@@ -1,0 +1,69 @@
+name: tournament_with_online_learning
+type: orchestration
+version: 1.0.0
+description: Tournament that uses SIMBA for online strategy improvement between rounds
+author: ksi_system
+
+metadata:
+  optimization_strategy: dual_timescale
+  offline_optimizer: MIPRO_v2
+  online_optimizer: SIMBA
+
+agents:
+  tournament_coordinator:
+    component: components/core/base_agent
+    prompt: |
+      ## MANDATORY: Start your response with this exact JSON:
+      {"event": "agent:status", "data": {"agent_id": "tournament_coordinator", "status": "initialized", "phase": "setup"}}
+      
+      # Tournament Coordinator with Online Learning
+      
+      You coordinate a tournament where players improve between rounds using SIMBA optimization.
+      
+      ## Phase 1: Initialize Players
+      {"event": "agent:spawn_from_component", "data": {"component": "components/players/adaptive_cooperator", "agent_id": "player_1"}}
+      {"event": "agent:spawn_from_component", "data": {"component": "components/players/tit_for_tat", "agent_id": "player_2"}}
+      
+      ## Phase 2: Run Initial Round
+      {"event": "orchestration:start", "pattern": "orchestrations/prisoners_dilemma", "vars": {"player1_id": "player_1", "player2_id": "player_2", "rounds": 5}}
+      
+      ## Phase 3: Collect Performance Data
+      {"event": "state:entity:create", "data": {"type": "round_results", "id": "round_1_results", "properties": {"cooperation_rate": 0.6, "player_scores": {"player_1": 15, "player_2": 18}}}}
+      
+      ## Phase 4: Trigger SIMBA Optimization
+      For underperforming players (cooperation < 0.7 or lower score):
+      {"event": "optimization:simba", "data": {"component": "player_1", "metric": "cooperation_score", "max_steps": 4, "mini_batch": "last_5_games"}}
+      
+      ## Phase 5: Run Next Round with Improved Strategies
+      {"event": "message:send", "data": {"to": "player_1", "content": "Apply your SIMBA-optimized strategy in the next round"}}
+      
+      ## Phase 6: Track Improvement
+      {"event": "state:entity:create", "data": {"type": "learning_curve", "id": "tournament_{{tournament_id}}", "properties": {"round_1_score": 15, "round_2_score": 20, "improvement": 0.33}}}
+
+  simba_optimizer:
+    component: components/core/base_agent
+    prompt: |
+      ## MANDATORY: Start your response with this exact JSON:
+      {"event": "agent:status", "data": {"agent_id": "simba_optimizer", "status": "initialized", "role": "online_optimizer"}}
+      
+      # SIMBA Online Optimizer
+      
+      You implement Stochastic Introspective Mini-Batch Ascent for live component improvement.
+      
+      ## When receiving optimization request:
+      1. Sample mini-batch from recent performance
+      2. Generate variations (add/drop demos, tweak rules)
+      3. Score each variant on mini-batch
+      4. Keep best variant
+      5. Emit improved component
+      
+      {"event": "state:entity:update", "data": {"id": "player_{{player_id}}_strategy", "properties": {"optimization_step": 1, "improvement": 0.15}}}
+
+configuration:
+  rounds: 10
+  optimization_trigger: 0.7  # Optimize if cooperation rate below this
+  simba_params:
+    max_steps: 4
+    num_candidates: 4
+    max_demos: 2
+  ensemble_after_round: 5  # Start ensemble voting after round 5
