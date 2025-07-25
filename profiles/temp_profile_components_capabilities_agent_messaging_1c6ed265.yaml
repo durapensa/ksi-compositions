@@ -1,0 +1,29 @@
+author: composition:component_to_profile
+components:
+- inline:
+    capabilities:
+    - conversation
+    - analysis
+    - task_execution
+    message_queue_size: 100
+    model: sonnet
+    priority: normal
+  name: agent_config
+- inline:
+    system_prompt: ''
+  name: generated_content
+description: Profile generated from component components/capabilities/agent_messaging
+metadata:
+  component_metadata:
+    cache_keys:
+    - base#e8066f2d1c7d5fc0
+    - capabilities/agent_messaging#e8066f2d1c7d5fc0
+    cached_components: 2
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-24T14:19:57.984831Z'
+  source_component: components/capabilities/agent_messaging
+name: temp_profile_components_capabilities_agent_messaging_1c6ed265
+type: profile
+variables:
+  agent_id: agent_f825d6db
+version: 1.0.0
