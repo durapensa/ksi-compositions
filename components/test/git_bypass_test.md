@@ -1,0 +1,1 @@
+# Test Component\n\nThis is a test component to verify git bypass works.
