@@ -1,0 +1,1 @@
+@/tmp/tournament_coordinator.md
