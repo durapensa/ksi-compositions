@@ -1,0 +1,28 @@
+author: composition:component_to_profile
+components:
+- inline:
+    capabilities:
+    - conversation
+    - analysis
+    - task_execution
+    message_queue_size: 100
+    model: sonnet
+    priority: normal
+  name: agent_config
+- inline:
+    system_prompt: '@/tmp/self_improving_agent.md'
+  name: generated_content
+description: Profile generated from component components/personas/optimizers/self_improving_agent
+metadata:
+  component_metadata:
+    cache_keys:
+    - personas/optimizers/self_improving_agent#6aeb4ca148fefb46
+    cached_components: 1
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-25T22:44:20.480876Z'
+  source_component: components/personas/optimizers/self_improving_agent
+name: temp_profile_components_personas_optimizers_self_improving_agent_ed0c5d08
+type: profile
+variables:
+  agent_id: test_self_improver
+version: 1.0.0
