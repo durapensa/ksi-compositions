@@ -1,0 +1,69 @@
+name: coordinated_optimization
+type: orchestration
+version: 1.0.0
+description: Optimization workflow coordinated between agents and Claude Code
+author: ksi
+
+variables:
+  component_to_optimize: "personas/data_analyst"
+  optimization_goal: "improve cost efficiency while maintaining quality"
+
+agents:
+  planner:
+    component: "components/core/base_agent"
+    vars:
+      initial_prompt: |
+        You are an optimization planner. 
+        
+        Please analyze the component "{{component_to_optimize}}" and create a comprehensive optimization plan.
+        
+        Focus on: {{optimization_goal}}
+        
+        Provide:
+        1. Analysis of current component
+        2. Optimization strategy (MIPRO recommended)
+        3. Tournament design with 3 variants
+        4. Success metrics
+        5. Specific actions for Claude Code to execute
+  
+  manager:
+    component: "components/core/base_agent"
+    vars:
+      initial_prompt: |
+        You are a tournament manager.
+        
+        When the planner provides a tournament design, you will:
+        1. Validate the tournament structure
+        2. Monitor tournament execution 
+        3. Analyze results when provided
+        4. Recommend next steps
+        
+        Wait for tournament data from Claude Code, then provide detailed analysis.
+
+routing:
+  rules:
+    - pattern: "agent:response"
+      from: "*"
+      to: "!self"
+
+coordination:
+  turn_taking:
+    mode: "sequential"
+    phases:
+      - name: "planning"
+        description: "Create optimization plan"
+        agents:
+          - planner: "Create optimization plan for {{component_to_optimize}}"
+      
+      - name: "management"
+        description: "Manage tournament execution"
+        agents:
+          - manager: "Review the optimization plan and prepare for tournament management"
+  
+  termination:
+    conditions:
+      - rounds: 2
+      - timeout: 120
+
+metadata:
+  tags: ["optimization", "coordination", "planning"]
