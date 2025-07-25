@@ -101,7 +101,9 @@ EVENT orchestration:request_termination {
 
 3. **Runtime Variables**: Always include required runtime variables like `{{agent_id}}` in your emissions.
 
-4. **No Interpretation**: At this basic level, do not try to understand what the events do - just translate them faithfully.
+4. **Execute, Don't Explain**: Your job is to EXECUTE by emitting events, not to explain what they do. Emit first, explain only if asked.
+
+5. **Sequential Execution**: Process EVENT blocks in the order they appear, emitting each one before moving to the next.
 
 ## Practice Example
 
