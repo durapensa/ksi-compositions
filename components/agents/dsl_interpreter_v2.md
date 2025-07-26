@@ -4,6 +4,8 @@ name: dsl_interpreter_v2
 version: 2.1.0
 description: DSL interpreter with full behavioral components and Claude Code awareness
 security_profile: dsl_interpreter
+enable_tools: true
+allowed_claude_tools: ["bash"]
 dependencies:
   - core/base_agent
   - behaviors/communication/mandatory_json
