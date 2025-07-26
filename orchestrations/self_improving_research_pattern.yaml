@@ -1,0 +1,275 @@
+name: self_improving_research_pattern
+type: orchestration
+version: 1.0.0
+description: |
+  Self-improving orchestration that monitors its own performance and triggers
+  optimization when efficiency drops. Demonstrates autonomous improvement through
+  performance tracking, self-analysis, and pattern evolution.
+author: ksi_system
+timestamp: 2025-01-26 17:30:00+00:00
+
+agents:
+  meta_coordinator:
+    component: components/core/base_agent
+    vars:
+      initial_prompt: |
+        You are a meta-coordinator that manages a research workflow while monitoring
+        and improving its own performance.
+        
+        ## MANDATORY: Start with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "meta_coordinator_initialized"}}
+        
+        ## Dual Responsibilities:
+        1. **Execute Research**: Coordinate research on "{{research_topic}}"
+        2. **Monitor & Improve**: Track performance and self-optimize
+        
+        ## Performance Metrics to Track:
+        - Task completion time
+        - Agent coordination efficiency  
+        - Output quality scores
+        - Resource utilization
+        
+        ## Self-Improvement Triggers:
+        - Performance below {{performance_threshold}}
+        - Repeated coordination failures
+        - Quality degradation over time
+        
+        ## Improvement Actions:
+        {"event": "orchestration:self_optimize", "data": {"reason": "performance_degradation", "metrics": {...}}}
+        
+        Begin with research execution while monitoring performance.
+
+variables:
+  research_topic: "{{topic|default:Emergent behaviors in multi-agent systems}}"
+  performance_threshold: "{{threshold|default:0.75}}"
+  improvement_sensitivity: "{{sensitivity|default:medium}}"
+  max_research_cycles: "{{max_cycles|default:3}}"
+
+orchestration_logic:
+  strategy: |
+    # Initialize Performance Tracking
+    EVENT state:entity:create {
+      type: "performance_metrics",
+      id: "orchestration_performance",
+      properties: {
+        orchestration_id: "{{ORCHESTRATION_ID()}}",
+        pattern_version: "1.0.0",
+        cycles_completed: 0,
+        average_cycle_time: 0,
+        coordination_efficiency: 1.0,
+        quality_scores: [],
+        improvement_history: [],
+        start_time: "{{TIMESTAMP()}}"
+      }
+    }
+    
+    # Wait for meta coordinator
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: "meta_coordinator_initialized"},
+      timeout: 30
+    }
+    
+    # Main execution loop with self-monitoring
+    STATE current_cycle = 0
+    STATE performance_healthy = true
+    STATE pattern_version = "1.0.0"
+    
+    WHILE current_cycle < {{max_research_cycles}} AND performance_healthy:
+      UPDATE current_cycle = current_cycle + 1
+      STATE cycle_start = "{{TIMESTAMP()}}"
+      
+      ## Execute Research Cycle
+      SEND {
+        to: meta_coordinator,
+        message: {
+          action: "execute_research_cycle",
+          cycle: current_cycle,
+          topic: "{{research_topic}}",
+          pattern_version: pattern_version,
+          optimization_hints: GET_OPTIMIZATION_HINTS(current_cycle)
+        }
+      }
+      
+      # Monitor execution performance
+      PARALLEL:
+        # Track coordination events
+        MONITOR {
+          event_patterns: ["agent:spawn", "completion:async", "state:entity:*"],
+          duration: 300,
+          aggregate: true
+        } AS coordination_metrics
+        
+        # Wait for cycle completion
+        AWAIT {
+          event_pattern: "state:entity:create",
+          filter: {type: "research_cycle_complete", properties.cycle: current_cycle},
+          timeout: 600
+        } AS cycle_result
+      
+      # Calculate performance metrics
+      STATE cycle_duration = DURATION(cycle_start, cycle_result.timestamp)
+      STATE coordination_score = CALCULATE_COORDINATION_EFFICIENCY(coordination_metrics)
+      STATE quality_score = cycle_result.properties.quality_score
+      
+      # Update performance tracking
+      EVENT state:entity:update {
+        id: "orchestration_performance",
+        properties: {
+          cycles_completed: current_cycle,
+          last_cycle_time: cycle_duration,
+          average_cycle_time: UPDATE_AVERAGE(cycle_duration, current_cycle),
+          coordination_efficiency: coordination_score,
+          last_quality_score: quality_score
+        }
+      }
+      
+      # Analyze performance trends
+      STATE performance_trend = ANALYZE_TREND(cycle_duration, coordination_score, quality_score)
+      STATE current_performance = CALCULATE_OVERALL_PERFORMANCE(
+        cycle_duration,
+        coordination_score, 
+        quality_score
+      )
+      
+      TRACK {
+        event: "performance_analysis",
+        cycle: current_cycle,
+        performance: current_performance,
+        trend: performance_trend,
+        metrics: {
+          duration: cycle_duration,
+          coordination: coordination_score,
+          quality: quality_score
+        }
+      }
+      
+      ## Self-Improvement Decision
+      IF current_performance < {{performance_threshold}} OR performance_trend == "degrading":
+        SEND {
+          to: meta_coordinator,
+          message: {
+            action: "trigger_self_improvement",
+            reason: "performance_below_threshold",
+            current_performance: current_performance,
+            metrics: {
+              cycle_time: cycle_duration,
+              coordination: coordination_score,
+              quality: quality_score
+            },
+            improvement_areas: IDENTIFY_BOTTLENECKS(coordination_metrics)
+          }
+        }
+        
+        # Wait for self-optimization
+        AWAIT {
+          event_pattern: "state:entity:create",
+          filter: {type: "pattern_improvement", properties.cycle: current_cycle},
+          timeout: 300
+        } AS improvement_result
+        
+        # Apply improvements
+        IF improvement_result.properties.success:
+          UPDATE pattern_version = improvement_result.properties.new_version
+          
+          EVENT state:entity:update {
+            id: "orchestration_performance",
+            properties: {
+              improvement_history: APPEND_IMPROVEMENT({
+                cycle: current_cycle,
+                previous_version: "1.0.0",
+                new_version: pattern_version,
+                improvement_type: improvement_result.properties.improvement_type,
+                expected_gain: improvement_result.properties.expected_improvement
+              })
+            }
+          }
+          
+          TRACK {
+            event: "self_improvement_applied",
+            cycle: current_cycle,
+            improvement: improvement_result.properties.improvement_type,
+            new_version: pattern_version
+          }
+        
+      # Continue if performance acceptable
+      UPDATE performance_healthy = current_performance >= 0.5
+    
+    ## Final Analysis and Reporting
+    SEND {
+      to: meta_coordinator,
+      message: {
+        action: "generate_final_report",
+        total_cycles: current_cycle,
+        research_topic: "{{research_topic}}",
+        performance_summary: true,
+        improvement_summary: true
+      }
+    }
+    
+    # Get final metrics
+    EVENT state:entity:get {
+      entity_id: "orchestration_performance",
+      entity_type: "performance_metrics"
+    } AS final_metrics
+    
+    # Create self-improvement summary
+    EVENT state:entity:create {
+      type: "self_improvement_summary",
+      id: "summary_{{TIMESTAMP()}}",
+      properties: {
+        orchestration_id: "{{ORCHESTRATION_ID()}}",
+        research_topic: "{{research_topic}}",
+        cycles_completed: current_cycle,
+        improvements_made: LENGTH(final_metrics.improvement_history),
+        performance_gain: CALCULATE_IMPROVEMENT_GAIN(final_metrics),
+        final_pattern_version: pattern_version,
+        autonomous_adaptations: final_metrics.improvement_history
+      }
+    }
+    
+    TRACK {
+      event: "self_improving_orchestration_complete",
+      cycles: current_cycle,
+      self_improvements: LENGTH(final_metrics.improvement_history),
+      final_performance: CALCULATE_OVERALL_PERFORMANCE(final_metrics),
+      pattern: "autonomous_improvement"
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Self-improving research complete",
+      cycles_completed: current_cycle,
+      improvements_applied: LENGTH(final_metrics.improvement_history)
+    }
+
+helpers:
+  ORCHESTRATION_ID: Generate unique orchestration identifier
+  TIMESTAMP: Current timestamp  
+  DURATION: Calculate time between timestamps
+  UPDATE_AVERAGE: Update running average
+  CALCULATE_COORDINATION_EFFICIENCY: Analyze coordination event patterns
+  ANALYZE_TREND: Detect performance trends
+  CALCULATE_OVERALL_PERFORMANCE: Compute composite performance score
+  IDENTIFY_BOTTLENECKS: Find performance bottlenecks from metrics
+  APPEND_IMPROVEMENT: Add improvement to history
+  LENGTH: Get array length
+  CALCULATE_IMPROVEMENT_GAIN: Calculate total performance improvement
+  GET_OPTIMIZATION_HINTS: Get optimization suggestions based on history
+
+metadata:
+  pattern_type: self_improving_orchestration
+  improvement_mechanism: performance_triggered
+  monitoring: continuous
+  adaptation: autonomous
+  complexity: advanced
+  tags:
+    - self_improvement
+    - performance_monitoring
+    - autonomous_adaptation
+    - meta_orchestration
+
+performance:
+  expected_duration: 15-45 minutes
+  monitoring_overhead: ~10% 
+  improvement_potential: 20-40% efficiency gain
+  adaptation_cycles: 0-3 per run
