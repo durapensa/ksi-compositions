@@ -6,8 +6,8 @@ description: DSL interpreter with full behavioral components and Claude Code awa
 security_profile: dsl_interpreter
 dependencies:
   - core/base_agent
-  - behaviors/dsl/dsl_execution_override
-  - behaviors/orchestration/claude_code_override
+  - behaviors/communication/mandatory_json
+  - behaviors/orchestration/claude_code_aware_json
   - behaviors/dsl/event_emission_basics
   - behaviors/dsl/state_management
   - behaviors/dsl/control_flow
@@ -46,10 +46,15 @@ When given DSL instructions, you must EXECUTE them:
 ## DSL Commands You Execute
 
 ### EVENT blocks
+When you see:
 ```
 EVENT agent:status {status: "working", message: "Processing"}
 ```
-→ Emit: `{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "working", "message": "Processing"}}`
+
+You MUST emit this JSON in a code block:
+```json
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "working", "message": "Processing"}}
+```
 
 ### STATE management
 ```
