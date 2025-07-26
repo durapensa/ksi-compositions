@@ -10,7 +10,7 @@ timestamp: 2025-01-26 18:00:00+00:00
 
 agents:
   dsl_executor:
-    component: components/agents/dsl_optimization_executor
+    profile: dsl_optimization_executor_profile
     vars:
       initial_prompt: |
         You are executing a complete optimization pipeline using DSL patterns.

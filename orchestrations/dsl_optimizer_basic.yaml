@@ -1,0 +1,44 @@
+---
+name: dsl_optimizer_basic
+type: orchestration
+version: 1.0.0
+description: |
+  Basic DSL-based optimization orchestration using validated DSL executor.
+  Tests single component optimization with MIPRO.
+author: claude_code
+timestamp: 2025-07-26 18:00:00+00:00
+
+agents:
+  optimizer:
+    component: profiles/dsl_optimization_executor_profile
+    config:
+      security_profile: self_improver  # Explicit security profile
+    vars:
+      initial_prompt: |
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "role": "dsl_optimizer"}}
+        
+        You are optimizing a component using MIPRO. Execute this workflow:
+        
+        1. Create tracking state:
+        {"event": "state:entity:create", "data": {"type": "optimization_state", "id": "opt_{{target_component|replace:'/', '_'}}", "properties": {"phase": "starting", "component": "{{target_component}}", "trials": {{num_trials}}}}}
+        
+        2. Start MIPRO optimization:
+        {"event": "optimization:async", "data": {"component": "{{target_component}}", "framework": "dspy", "config": {"optimizer": "mipro", "num_trials": {{num_trials}}, "metric": "{{optimization_metric}}"}}}
+        
+        3. Report initialization complete:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_running", "target": "{{target_component}}", "trials": {{num_trials}}}}
+        
+        Emit these events directly. You have full optimization capabilities through self_improver profile.
+
+variables:
+  target_component: "{{component|default:components/personas/simple_analyst}}"
+  num_trials: "{{trials|default:3}}"
+  optimization_metric: "{{metric|default:clarity_and_accuracy}}"
+  
+orchestration_logic: |
+  Single-agent optimization flow:
+  1. DSL executor initializes with self_improver capabilities
+  2. Creates state tracking entity
+  3. Launches MIPRO optimization via events
+  4. Reports status for monitoring
