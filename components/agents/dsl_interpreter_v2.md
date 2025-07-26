@@ -6,6 +6,7 @@ description: DSL interpreter with full behavioral components and Claude Code awa
 security_profile: dsl_interpreter
 dependencies:
   - core/base_agent
+  - behaviors/dsl/dsl_execution_override
   - behaviors/orchestration/claude_code_override
   - behaviors/dsl/event_emission_basics
   - behaviors/dsl/state_management
