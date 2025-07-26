@@ -1,104 +1,85 @@
 name: simple_echo_test
 type: orchestration
 version: 1.0.0
-description: |
-  A minimal test pattern for orchestration with safe, predictable behavior.
+description: 'A minimal test pattern for orchestration with safe, predictable behavior.
+
   Designed to test orchestration flow without triggering expensive completions.
+
+  '
 author: claude_orchestrator
 extends: null
-
-# Define orchestrator agent to interpret the DSL
 agents:
   orchestrator:
-    component: "components/core/system_orchestrator"
+    component: components/core/system_orchestrator
     vars:
-      pattern_name: "simple_echo_test"
-      prompt: |
-        You are an orchestration agent for the simple_echo_test pattern.
-        Respond to messages based on their content:
-        - If message contains "echo": respond with "ECHO: [message]"
-        - If message contains "spawn": say you would spawn an agent (but don't actually spawn)
-        - If message contains "count": count from 1 to 3
-        - Always end with "Test complete"
+      pattern_name: simple_echo_test
+    prompt: 'You are an orchestration agent for the simple_echo_test pattern.
 
+      Respond to messages based on their content:
+
+      - If message contains "echo": respond with "ECHO: [message]"
+
+      - If message contains "spawn": say you would spawn an agent (but don''t actually
+      spawn)
+
+      - If message contains "count": count from 1 to 3
+
+      - Always end with "Test complete"
+
+      '
 metadata:
   tags:
-    - test
-    - simple
-    - safe
-    - echo
+  - test
+  - simple
+  - safe
+  - echo
   capabilities_required:
-    - agent:spawn
-    - agent:send_message
+  - agent:spawn
+  - agent:send_message
   use_cases:
-    - Testing orchestration patterns
-    - Debugging agent communication
-    - Safe pattern development
-
-# Simple DSL for testing
+  - Testing orchestration patterns
+  - Debugging agent communication
+  - Safe pattern development
 orchestration_logic:
-  description: |
-    This pattern simply echoes messages through agents to test communication flow.
+  description: 'This pattern simply echoes messages through agents to test communication
+    flow.
+
     No complex reasoning or expensive operations.
-  
-  strategy: |
-    WHEN receiving_test_request:
-      ACKNOWLEDGE with "Test pattern loaded"
-      
-      IF message CONTAINS "echo":
-        RESPOND with "ECHO: {{message}}"
-      
-      IF message CONTAINS "spawn":
-        SPAWN single_agent WITH:
-          component: "components/core/system_single_agent"
-          prompt: "You are a simple echo agent. Respond with 'ECHO: [message]' for any input."
-        
-        SEND to spawned_agent: "Hello from orchestrator"
-        WAIT for response
-        RELAY response to user
-      
-      IF message CONTAINS "count":
-        COUNT to 3:
-          - EMIT "orchestration:track" WITH {type: "count", value: {{index}}}
-          - RESPOND "Count: {{index}}"
-      
-      ALWAYS:
-        TRACK decision: "Processed test message"
-        RESPOND "Test complete"
 
-# Simple transformers for testing
+    '
+  strategy: "WHEN receiving_test_request:\n  ACKNOWLEDGE with \"Test pattern loaded\"\
+    \n  \n  IF message CONTAINS \"echo\":\n    RESPOND with \"ECHO: {{message}}\"\n\
+    \  \n  IF message CONTAINS \"spawn\":\n    SPAWN single_agent WITH:\n      component:\
+    \ \"components/core/system_single_agent\"\n      prompt: \"You are a simple echo\
+    \ agent. Respond with 'ECHO: [message]' for any input.\"\n    \n    SEND to spawned_agent:\
+    \ \"Hello from orchestrator\"\n    WAIT for response\n    RELAY response to user\n\
+    \  \n  IF message CONTAINS \"count\":\n    COUNT to 3:\n      - EMIT \"orchestration:track\"\
+    \ WITH {type: \"count\", value: {{index}}}\n      - RESPOND \"Count: {{index}}\"\
+    \n  \n  ALWAYS:\n    TRACK decision: \"Processed test message\"\n    RESPOND \"\
+    Test complete\"\n"
 transformers:
-  # Test event transformation
-  - source: "test:echo"
-    target: "agent:send_message"
-    mapping:
-      agent_id: "{{orchestrator_id}}"
-      message:
-        role: "user"
-        content: "Echo test: {{message}}"
-  
-  # Track test progress
-  - source: "test:track"
-    target: "orchestration:track"
-    mapping:
-      type: "test_event"
-      data: "{{event_data}}"
-      timestamp: "{{_timestamp}}"
-
-# Variables
+- source: test:echo
+  target: agent:send_message
+  mapping:
+    agent_id: '{{orchestrator_id}}'
+    message:
+      role: user
+      content: 'Echo test: {{message}}'
+- source: test:track
+  target: orchestration:track
+  mapping:
+    type: test_event
+    data: '{{event_data}}'
+    timestamp: '{{_timestamp}}'
 variables:
   test_mode: true
   max_test_agents: 1
-  echo_prefix: "ECHO:"
-
-# Performance tracking
+  echo_prefix: 'ECHO:'
 performance:
   runs: 0
   avg_response_time: null
   test_results: []
-
-# Learnings
 learnings:
-  - insight: "Simple patterns help debug orchestration issues"
-    confidence: 1.0
-    evidence: "Design principle"
+- insight: Simple patterns help debug orchestration issues
+  confidence: 1.0
+  evidence: Design principle

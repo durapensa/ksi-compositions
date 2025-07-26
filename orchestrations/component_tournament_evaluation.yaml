@@ -1,246 +1,145 @@
 name: component_tournament_evaluation
 type: orchestration
 version: 1.0.0
-description: |
-  Tournament-based evaluation system for comparing optimized components.
-  Uses pairwise comparisons with LLM-as-Judge to determine which versions perform best.
+description: 'Tournament-based evaluation system for comparing optimized components.
+
+  Uses pairwise comparisons with LLM-as-Judge to determine which versions perform
+  best.
+
+  '
 author: ksi_system
-timestamp: 2025-07-23T18:15:00Z
-
+timestamp: 2025-07-23 18:15:00+00:00
 variables:
-  component_variants: "{{component_variants}}"  # List of component paths to compare
-  evaluation_context: "{{evaluation_context|default:'Which component would perform better in real-world scenarios?'}}"
-  num_rounds: "{{num_rounds|default:1}}"  # Number of tournament rounds
-
+  component_variants: '{{component_variants}}'
+  evaluation_context: '{{evaluation_context|default:''Which component would perform
+    better in real-world scenarios?''}}'
+  num_rounds: '{{num_rounds|default:1}}'
 agents:
-  # Tournament Coordinator
   coordinator:
-    component: "components/personas/coordinators/tournament_coordinator"
+    component: components/personas/coordinators/tournament_coordinator
     vars:
-      agent_id: "tournament_coordinator"
-      prompt: |
-        You coordinate a tournament to evaluate component variants.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "tournament_initialized", "variants": {{component_variants|length}}, "rounds": {{num_rounds}}}}
-        
-        ## Tournament Structure:
-        - Variants: {{component_variants}}
-        - Evaluation: {{evaluation_context}}
-        - Rounds: {{num_rounds}}
-        
-        ## Process:
-        1. Set up tournament bracket
-        2. Coordinate pairwise comparisons
-        3. Track results and rankings
-        4. Determine winner(s)
-        
-        ## MANDATORY: Create tournament state:
-        {"event": "state:entity:create", "data": {"type": "tournament", "id": "component_tournament", "properties": {"variants": {{component_variants}}, "rounds_completed": 0, "rankings": {}}}}
+      agent_id: tournament_coordinator
+    prompt: 'You coordinate a tournament to evaluate component variants.
 
-  # Component Judge
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "tournament_initialized",
+      "variants": {{component_variants|length}}, "rounds": {{num_rounds}}}}
+
+
+      ## Tournament Structure:
+
+      - Variants: {{component_variants}}
+
+      - Evaluation: {{evaluation_context}}
+
+      - Rounds: {{num_rounds}}
+
+
+      ## Process:
+
+      1. Set up tournament bracket
+
+      2. Coordinate pairwise comparisons
+
+      3. Track results and rankings
+
+      4. Determine winner(s)
+
+
+      ## MANDATORY: Create tournament state:
+
+      {"event": "state:entity:create", "data": {"type": "tournament", "id": "component_tournament",
+      "properties": {"variants": {{component_variants}}, "rounds_completed": 0, "rankings":
+      {}}}}
+
+      '
   judge:
-    component: "components/personas/judges/optimization_technique_judge"
+    component: components/personas/judges/optimization_technique_judge
     vars:
-      agent_id: "component_judge"
-      comparison_focus: "component_effectiveness"
-
+      agent_id: component_judge
+      comparison_focus: component_effectiveness
 orchestration_logic:
-  strategy: |
-    ## Phase 1: Setup
-    STATE variants = {{component_variants}}
-    STATE rankings = {}
-    STATE comparison_results = []
-    
-    # Initialize rankings
-    FOREACH variant IN variants:
-      STATE rankings[variant] = {
-        wins: 0,
-        losses: 0,
-        score: 0.0,
-        comparisons: []
-      }
-    
-    ## Phase 2: Load Components
-    STATE loaded_components = {}
-    
-    FOREACH variant IN variants:
-      EVENT composition:get_component {
-        name: variant
-      } AS component
-      
-      STATE loaded_components[variant] = component
-    
-    ## Phase 3: Tournament Rounds
-    FOREACH round IN RANGE(1, {{num_rounds}} + 1):
-      TRACK {
-        event: "tournament_round_start",
-        round: round,
-        total_rounds: {{num_rounds}}
-      }
-      
-      # Generate all pairwise comparisons
-      STATE pairs = []
-      FOREACH i IN RANGE(0, LENGTH(variants)):
-        FOREACH j IN RANGE(i + 1, LENGTH(variants)):
-          STATE pairs = APPEND(pairs, [variants[i], variants[j]])
-      
-      # Run comparisons
-      FOREACH pair IN pairs:
-        STATE variant_a = pair[0]
-        STATE variant_b = pair[1]
-        
-        # Send to judge
-        SEND {
-          to: judge,
-          message: {
-            action: "compare_components",
-            component_a: {
-              name: variant_a,
-              content: loaded_components[variant_a].content,
-              type: loaded_components[variant_a].frontmatter.component_type
-            },
-            component_b: {
-              name: variant_b,
-              content: loaded_components[variant_b].content,
-              type: loaded_components[variant_b].frontmatter.component_type
-            },
-            context: "{{evaluation_context}}",
-            criteria: [
-              "clarity_of_purpose",
-              "effectiveness",
-              "practical_applicability",
-              "innovation"
-            ]
-          }
-        }
-        
-        AWAIT {
-          from: judge,
-          timeout: 120
-        } AS judgment
-        
-        # Update rankings
-        IF judgment.winner == "A":
-          STATE rankings[variant_a].wins = rankings[variant_a].wins + 1
-          STATE rankings[variant_b].losses = rankings[variant_b].losses + 1
-          STATE rankings[variant_a].comparisons = APPEND(rankings[variant_a].comparisons, {
-            opponent: variant_b,
-            result: "win",
-            reason: judgment.reasoning
-          })
-        ELSE:
-          STATE rankings[variant_b].wins = rankings[variant_b].wins + 1
-          STATE rankings[variant_a].losses = rankings[variant_a].losses + 1
-          STATE rankings[variant_b].comparisons = APPEND(rankings[variant_b].comparisons, {
-            opponent: variant_a,
-            result: "win",
-            reason: judgment.reasoning
-          })
-        
-        # Track comparison
-        STATE comparison_results = APPEND(comparison_results, {
-          round: round,
-          variant_a: variant_a,
-          variant_b: variant_b,
-          winner: judgment.winner == "A" ? variant_a : variant_b,
-          reasoning: judgment.reasoning,
-          confidence: judgment.confidence
-        })
-        
-        TRACK {
-          event: "comparison_complete",
-          round: round,
-          comparison: LENGTH(comparison_results),
-          winner: judgment.winner == "A" ? variant_a : variant_b
-        }
-      
-      # Update tournament state
-      EVENT state:entity:update {
-        id: "component_tournament",
-        properties: {
-          rounds_completed: round,
-          rankings: rankings,
-          last_updated: NOW()
-        }
-      }
-    
-    ## Phase 4: Calculate Final Rankings
-    STATE final_rankings = []
-    
-    FOREACH variant IN variants:
-      STATE win_rate = rankings[variant].wins / (rankings[variant].wins + rankings[variant].losses)
-      STATE rankings[variant].score = win_rate
-      
-      STATE final_rankings = APPEND(final_rankings, {
-        component: variant,
-        wins: rankings[variant].wins,
-        losses: rankings[variant].losses,
-        win_rate: win_rate,
-        details: rankings[variant].comparisons
-      })
-    
-    # Sort by win rate
-    STATE final_rankings = SORT(final_rankings, "win_rate", "DESC")
-    
-    ## Phase 5: Results
-    STATE winner = final_rankings[0].component
-    STATE runner_up = LENGTH(final_rankings) > 1 ? final_rankings[1].component : null
-    
-    TRACK {
-      event: "tournament_complete",
-      winner: winner,
-      runner_up: runner_up,
-      final_rankings: final_rankings,
-      total_comparisons: LENGTH(comparison_results)
-    }
-    
-    # Create result report
-    STATE result_report = {
-      tournament_id: "component_tournament",
-      evaluation_context: "{{evaluation_context}}",
-      rounds: {{num_rounds}},
-      participants: variants,
-      winner: {
-        component: winner,
-        stats: final_rankings[0]
-      },
-      runner_up: runner_up ? {
-        component: runner_up,
-        stats: final_rankings[1]
-      } : null,
-      full_rankings: final_rankings,
-      insights: EXTRACT_INSIGHTS(comparison_results)
-    }
-    
-    # Store final results
-    EVENT state:entity:create {
-      type: "tournament_results",
-      id: "results_component_tournament",
-      properties: result_report
-    }
-    
-    EVENT orchestration:request_termination {
-      reason: "Tournament evaluation complete",
-      winner: winner,
-      rankings: final_rankings
-    }
-
-# Helper functions
+  strategy: "## Phase 1: Setup\nSTATE variants = {{component_variants}}\nSTATE rankings\
+    \ = {}\nSTATE comparison_results = []\n\n# Initialize rankings\nFOREACH variant\
+    \ IN variants:\n  STATE rankings[variant] = {\n    wins: 0,\n    losses: 0,\n\
+    \    score: 0.0,\n    comparisons: []\n  }\n\n## Phase 2: Load Components\nSTATE\
+    \ loaded_components = {}\n\nFOREACH variant IN variants:\n  EVENT composition:get_component\
+    \ {\n    name: variant\n  } AS component\n  \n  STATE loaded_components[variant]\
+    \ = component\n\n## Phase 3: Tournament Rounds\nFOREACH round IN RANGE(1, {{num_rounds}}\
+    \ + 1):\n  TRACK {\n    event: \"tournament_round_start\",\n    round: round,\n\
+    \    total_rounds: {{num_rounds}}\n  }\n  \n  # Generate all pairwise comparisons\n\
+    \  STATE pairs = []\n  FOREACH i IN RANGE(0, LENGTH(variants)):\n    FOREACH j\
+    \ IN RANGE(i + 1, LENGTH(variants)):\n      STATE pairs = APPEND(pairs, [variants[i],\
+    \ variants[j]])\n  \n  # Run comparisons\n  FOREACH pair IN pairs:\n    STATE\
+    \ variant_a = pair[0]\n    STATE variant_b = pair[1]\n    \n    # Send to judge\n\
+    \    SEND {\n      to: judge,\n      message: {\n        action: \"compare_components\"\
+    ,\n        component_a: {\n          name: variant_a,\n          content: loaded_components[variant_a].content,\n\
+    \          type: loaded_components[variant_a].frontmatter.component_type\n   \
+    \     },\n        component_b: {\n          name: variant_b,\n          content:\
+    \ loaded_components[variant_b].content,\n          type: loaded_components[variant_b].frontmatter.component_type\n\
+    \        },\n        context: \"{{evaluation_context}}\",\n        criteria: [\n\
+    \          \"clarity_of_purpose\",\n          \"effectiveness\",\n          \"\
+    practical_applicability\",\n          \"innovation\"\n        ]\n      }\n   \
+    \ }\n    \n    AWAIT {\n      from: judge,\n      timeout: 120\n    } AS judgment\n\
+    \    \n    # Update rankings\n    IF judgment.winner == \"A\":\n      STATE rankings[variant_a].wins\
+    \ = rankings[variant_a].wins + 1\n      STATE rankings[variant_b].losses = rankings[variant_b].losses\
+    \ + 1\n      STATE rankings[variant_a].comparisons = APPEND(rankings[variant_a].comparisons,\
+    \ {\n        opponent: variant_b,\n        result: \"win\",\n        reason: judgment.reasoning\n\
+    \      })\n    ELSE:\n      STATE rankings[variant_b].wins = rankings[variant_b].wins\
+    \ + 1\n      STATE rankings[variant_a].losses = rankings[variant_a].losses + 1\n\
+    \      STATE rankings[variant_b].comparisons = APPEND(rankings[variant_b].comparisons,\
+    \ {\n        opponent: variant_a,\n        result: \"win\",\n        reason: judgment.reasoning\n\
+    \      })\n    \n    # Track comparison\n    STATE comparison_results = APPEND(comparison_results,\
+    \ {\n      round: round,\n      variant_a: variant_a,\n      variant_b: variant_b,\n\
+    \      winner: judgment.winner == \"A\" ? variant_a : variant_b,\n      reasoning:\
+    \ judgment.reasoning,\n      confidence: judgment.confidence\n    })\n    \n \
+    \   TRACK {\n      event: \"comparison_complete\",\n      round: round,\n    \
+    \  comparison: LENGTH(comparison_results),\n      winner: judgment.winner == \"\
+    A\" ? variant_a : variant_b\n    }\n  \n  # Update tournament state\n  EVENT state:entity:update\
+    \ {\n    id: \"component_tournament\",\n    properties: {\n      rounds_completed:\
+    \ round,\n      rankings: rankings,\n      last_updated: NOW()\n    }\n  }\n\n\
+    ## Phase 4: Calculate Final Rankings\nSTATE final_rankings = []\n\nFOREACH variant\
+    \ IN variants:\n  STATE win_rate = rankings[variant].wins / (rankings[variant].wins\
+    \ + rankings[variant].losses)\n  STATE rankings[variant].score = win_rate\n  \n\
+    \  STATE final_rankings = APPEND(final_rankings, {\n    component: variant,\n\
+    \    wins: rankings[variant].wins,\n    losses: rankings[variant].losses,\n  \
+    \  win_rate: win_rate,\n    details: rankings[variant].comparisons\n  })\n\n#\
+    \ Sort by win rate\nSTATE final_rankings = SORT(final_rankings, \"win_rate\",\
+    \ \"DESC\")\n\n## Phase 5: Results\nSTATE winner = final_rankings[0].component\n\
+    STATE runner_up = LENGTH(final_rankings) > 1 ? final_rankings[1].component : null\n\
+    \nTRACK {\n  event: \"tournament_complete\",\n  winner: winner,\n  runner_up:\
+    \ runner_up,\n  final_rankings: final_rankings,\n  total_comparisons: LENGTH(comparison_results)\n\
+    }\n\n# Create result report\nSTATE result_report = {\n  tournament_id: \"component_tournament\"\
+    ,\n  evaluation_context: \"{{evaluation_context}}\",\n  rounds: {{num_rounds}},\n\
+    \  participants: variants,\n  winner: {\n    component: winner,\n    stats: final_rankings[0]\n\
+    \  },\n  runner_up: runner_up ? {\n    component: runner_up,\n    stats: final_rankings[1]\n\
+    \  } : null,\n  full_rankings: final_rankings,\n  insights: EXTRACT_INSIGHTS(comparison_results)\n\
+    }\n\n# Store final results\nEVENT state:entity:create {\n  type: \"tournament_results\"\
+    ,\n  id: \"results_component_tournament\",\n  properties: result_report\n}\n\n\
+    EVENT orchestration:request_termination {\n  reason: \"Tournament evaluation complete\"\
+    ,\n  winner: winner,\n  rankings: final_rankings\n}\n"
 helpers:
-  EXTRACT_INSIGHTS: |
-    Analyze comparison results to identify:
+  EXTRACT_INSIGHTS: 'Analyze comparison results to identify:
+
     - Common strengths of winning components
+
     - Patterns in judge reasoning
+
     - Areas where components excel or struggle
 
+    '
 metadata:
   pattern_type: evaluation_tournament
   evaluation_method: pairwise_comparison
   judge_type: llm_as_judge
-  tags: ["evaluation", "tournament", "comparison", "components"]
-
+  tags:
+  - evaluation
+  - tournament
+  - comparison
+  - components
 performance:
-  expected_duration: "depends on number of variants and rounds"
-  comparisons_per_round: "n * (n-1) / 2 where n = number of variants"
-  resource_usage: "2 agents (coordinator + judge)"
+  expected_duration: depends on number of variants and rounds
+  comparisons_per_round: n * (n-1) / 2 where n = number of variants
+  resource_usage: 2 agents (coordinator + judge)

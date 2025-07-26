@@ -1,21 +1,20 @@
 agents:
   main_agent:
     component: components/core/base_single_agent
-    vars:
-      initial_prompt: '## Greeting Section
+    prompt: '## Greeting Section
 
 
-        Hello, Orchestration Agent! Welcome to the KSI system.
+      Hello, Orchestration Agent! Welcome to the KSI system.
 
 
-        Current mode: systematic
+      Current mode: systematic
 
 
-        ### Additional Features
+      ### Additional Features
 
-        - Feature 1: Enabled
+      - Feature 1: Enabled
 
-        - Feature 2: Disabled'
+      - Feature 2: Disabled'
 description: Generated orchestration pattern from component test/phase3/greeting_mixin
 metadata:
   component_metadata:
@@ -27,6 +26,10 @@ metadata:
   source_component: test/phase3/greeting_mixin
 name: test_greeting_orchestration
 orchestration_logic:
-  strategy: "# Generated orchestration from component: test/phase3/greeting_mixin\n                    \n                    SPAWN main_agent WITH initial_prompt=\"## Greeting Section\n\nHello, Orchestration Agent! Welcome to the KSI system.\n\nCurrent mode: systemati...\"\n                    AWAIT main_agent COMPLETION\n                    TRACK results\n                    CLEANUP all agents"
+  strategy: "# Generated orchestration from component: test/phase3/greeting_mixin\n\
+    \                    \n                    SPAWN main_agent WITH initial_prompt=\"\
+    ## Greeting Section\n\nHello, Orchestration Agent! Welcome to the KSI system.\n\
+    \nCurrent mode: systemati...\"\n                    AWAIT main_agent COMPLETION\n\
+    \                    TRACK results\n                    CLEANUP all agents"
 type: orchestration
 variables: '{"name": "Orchestration Agent", "mode": "systematic"}'

@@ -1,410 +1,273 @@
 name: hybrid_optimization_marketplace
 type: orchestration
 version: 1.0.0
-description: |
-  Meta-optimization framework that compares and combines different optimization techniques.
+description: 'Meta-optimization framework that compares and combines different optimization
+  techniques.
+
   Implements an "optimization marketplace" where DSPy, LLM-as-Judge, and hybrid approaches
+
   compete during bootstrapping to discover the best technique for each use case.
+
+  '
 author: ksi_system
-timestamp: 2025-01-18T14:00:00Z
-
-# Define optimization agents
+timestamp: 2025-01-18 14:00:00+00:00
 agents:
-  # Meta-Optimization Coordinator
   meta_coordinator:
-    component: "components/core/system_orchestrator"
+    component: components/core/system_orchestrator
     vars:
-      agent_id: "meta_coordinator"
-      prompt: |
-        You coordinate a marketplace of optimization techniques.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "meta_coordinator_initialized", "target": "{{target_component}}"}}
-        
-        Your role:
-        1. Run multiple optimization techniques in parallel
-        2. Compare their effectiveness empirically
-        3. Select the best approach for production optimization
-        4. Learn patterns about which techniques excel where
-        
-        ## MANDATORY: Track marketplace state:
-        {"event": "state:entity:create", "data": {"type": "marketplace_state", "id": "{{agent_id}}_market", "properties": {"techniques": ["dspy", "judge", "hybrid"], "phase": "comparison"}}}
+      agent_id: meta_coordinator
+    prompt: 'You coordinate a marketplace of optimization techniques.
 
-  # DSPy Optimization Agent
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "meta_coordinator_initialized",
+      "target": "{{target_component}}"}}
+
+
+      Your role:
+
+      1. Run multiple optimization techniques in parallel
+
+      2. Compare their effectiveness empirically
+
+      3. Select the best approach for production optimization
+
+      4. Learn patterns about which techniques excel where
+
+
+      ## MANDATORY: Track marketplace state:
+
+      {"event": "state:entity:create", "data": {"type": "marketplace_state", "id":
+      "{{agent_id}}_market", "properties": {"techniques": ["dspy", "judge", "hybrid"],
+      "phase": "comparison"}}}
+
+      '
   dspy_optimizer:
-    component: "components/core/system_single_agent"
+    component: components/core/system_single_agent
     vars:
-      agent_id: "dspy_optimizer"
-      prompt: |
-        You coordinate DSPy/MIPRO optimization through the KSI optimization service.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "dspy_optimizer_initialized"}}
-        
-        Use these optimization events:
-        - optimization:format_examples - Prepare training data
-        - optimization:get_framework_info - Query DSPy capabilities
-        - optimization:validate_setup - Check configuration
-        
-        Focus on:
-        1. Systematic prompt variations using DSPy's algorithms
-        2. Efficient bootstrapping with programmatic metrics
-        3. Bayesian optimization for parameter search
+      agent_id: dspy_optimizer
+    prompt: 'You coordinate DSPy/MIPRO optimization through the KSI optimization service.
 
-  # Judge-Based Optimizer
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "dspy_optimizer_initialized"}}
+
+
+      Use these optimization events:
+
+      - optimization:format_examples - Prepare training data
+
+      - optimization:get_framework_info - Query DSPy capabilities
+
+      - optimization:validate_setup - Check configuration
+
+
+      Focus on:
+
+      1. Systematic prompt variations using DSPy''s algorithms
+
+      2. Efficient bootstrapping with programmatic metrics
+
+      3. Bayesian optimization for parameter search
+
+      '
   judge_optimizer:
-    component: "components/core/system_orchestrator"
+    component: components/core/system_orchestrator
     vars:
-      agent_id: "judge_optimizer"
-      prompt: |
-        You run judge-based optimization using pairwise comparisons.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "judge_optimizer_initialized"}}
-        
-        Your approach:
-        1. Generate variants through creative exploration
-        2. Use pairwise judge comparisons for evaluation
-        3. Build Elo ratings from relative rankings
-        4. Extract patterns from judge feedback
+      agent_id: judge_optimizer
+    prompt: 'You run judge-based optimization using pairwise comparisons.
 
-  # Hybrid Optimizer
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "judge_optimizer_initialized"}}
+
+
+      Your approach:
+
+      1. Generate variants through creative exploration
+
+      2. Use pairwise judge comparisons for evaluation
+
+      3. Build Elo ratings from relative rankings
+
+      4. Extract patterns from judge feedback
+
+      '
   hybrid_optimizer:
-    component: "components/core/system_orchestrator"
+    component: components/core/system_orchestrator
     vars:
-      agent_id: "hybrid_optimizer"
-      prompt: |
-        You combine DSPy search with judge evaluation.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "hybrid_optimizer_initialized"}}
-        
-        Hybrid strategy:
-        1. Use DSPy for structured variant generation
-        2. Evaluate candidates with LLM judges
-        3. Feed judge insights back to DSPy
-        4. Iterate with both programmatic and semantic feedback
+      agent_id: hybrid_optimizer
+    prompt: 'You combine DSPy search with judge evaluation.
 
-  # Technique Evaluator
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "hybrid_optimizer_initialized"}}
+
+
+      Hybrid strategy:
+
+      1. Use DSPy for structured variant generation
+
+      2. Evaluate candidates with LLM judges
+
+      3. Feed judge insights back to DSPy
+
+      4. Iterate with both programmatic and semantic feedback
+
+      '
   technique_evaluator:
-    component: "components/personas/judges/optimization_technique_judge"
+    component: components/personas/judges/optimization_technique_judge
     vars:
-      agent_id: "technique_evaluator"
-      prompt_suffix: |
-        
+      agent_id: technique_evaluator
+      prompt_suffix: '
+
         Compare optimization techniques based on:
+
         - Quality of variants produced
+
         - Speed of convergence
+
         - Diversity of solutions
+
         - Robustness across domains
 
-# Configuration
+        '
 variables:
-  target_component: "{{target_component}}"
-  optimization_domain: "{{domain|default:'general'}}"  # game_theory, code_gen, creative, etc.
-  bootstrap_iterations: "{{bootstrap_iterations|default:5}}"
-  
-  # Technique configurations
-  enable_dspy: "{{enable_dspy|default:true}}"
-  enable_judge: "{{enable_judge|default:true}}"
-  enable_hybrid: "{{enable_hybrid|default:true}}"
-
+  target_component: '{{target_component}}'
+  optimization_domain: '{{domain|default:''general''}}'
+  bootstrap_iterations: '{{bootstrap_iterations|default:5}}'
+  enable_dspy: '{{enable_dspy|default:true}}'
+  enable_judge: '{{enable_judge|default:true}}'
+  enable_hybrid: '{{enable_hybrid|default:true}}'
 orchestration_logic:
-  strategy: |
-    ## Phase 1: Initialize Marketplace
-    STATE techniques = []
-    STATE technique_results = {}
-    STATE bootstrap_data = []
-    STATE domain_insights = {}
-    
-    TRACK {
-      phase: "marketplace_init",
-      target: "{{target_component}}",
-      domain: "{{optimization_domain}}",
-      enabled_techniques: {
-        dspy: {{enable_dspy}},
-        judge: {{enable_judge}},
-        hybrid: {{enable_hybrid}}
-      }
-    }
-    
-    # Load target component
-    EVENT composition:get_component {
-      name: "{{target_component}}"
-    } AS base_component
-    
-    ## Phase 2: Bootstrap Competition
-    TRACK {phase: "bootstrap_competition", message: "Running parallel optimization techniques"}
-    
-    # Prepare shared bootstrap data
-    STATE bootstrap_tasks = GENERATE_TASKS({{optimization_domain}}, 10)
-    
-    # Launch optimizers in parallel
-    STATE active_optimizers = []
-    
-    IF {{enable_dspy}}:
-      SPAWN dspy_optimizer
-      APPEND active_optimizers "dspy"
-      
-      SEND {
-        to: dspy_optimizer,
-        message: {
-          action: "bootstrap",
-          component: base_component,
-          tasks: bootstrap_tasks,
-          iterations: {{bootstrap_iterations}},
-          use_events: ["optimization:format_examples", "optimization:validate_setup"]
-        }
-      }
-    
-    IF {{enable_judge}}:
-      SPAWN judge_optimizer
-      APPEND active_optimizers "judge"
-      
-      SEND {
-        to: judge_optimizer,
-        message: {
-          action: "bootstrap",
-          component: base_component,
-          tasks: bootstrap_tasks,
-          iterations: {{bootstrap_iterations}},
-          judge_type: "pairwise_comparison"
-        }
-      }
-    
-    IF {{enable_hybrid}}:
-      SPAWN hybrid_optimizer
-      APPEND active_optimizers "hybrid"
-      
-      SEND {
-        to: hybrid_optimizer,
-        message: {
-          action: "bootstrap",
-          component: base_component,
-          tasks: bootstrap_tasks,
-          iterations: {{bootstrap_iterations}},
-          strategy: "dspy_search_judge_eval"
-        }
-      }
-    
-    # Collect bootstrap results
-    AWAIT {
-      from: active_optimizers,
-      event_pattern: "optimization:bootstrap_complete",
-      timeout: 300,
-      count: LENGTH(active_optimizers)
-    } AS bootstrap_results
-    
-    ## Phase 3: Empirical Comparison
-    TRACK {phase: "technique_comparison", message: "Evaluating optimization approaches"}
-    
-    # Extract top variants from each technique
-    FOREACH result IN bootstrap_results:
-      STATE technique_name = result.technique
-      STATE top_variants = SELECT_TOP(result.variants, 3)
-      
-      STORE technique_results[technique_name] = {
-        variants: top_variants,
-        metrics: result.metrics,
-        convergence_rate: result.convergence_rate,
-        diversity_score: CALCULATE_DIVERSITY(top_variants)
-      }
-    
-    # Cross-evaluate variants
-    STATE cross_eval_results = []
-    
-    FOREACH tech_a, data_a IN technique_results:
-      FOREACH tech_b, data_b IN technique_results:
-        IF tech_a != tech_b:
-          # Compare best variants from each technique
-          SEND {
-            to: technique_evaluator,
-            message: {
-              action: "compare_variants",
-              variant_a: data_a.variants[0],
-              variant_b: data_b.variants[0],
-              source_a: tech_a,
-              source_b: tech_b,
-              evaluation_tasks: SAMPLE(bootstrap_tasks, 3)
-            }
-          }
-          
-          AWAIT {
-            from: technique_evaluator,
-            timeout: 60
-          } AS comparison
-          
-          APPEND cross_eval_results comparison
-    
-    # Analyze technique performance
-    STATE technique_rankings = COMPUTE_RANKINGS(cross_eval_results)
-    STATE domain_winner = SELECT_BEST(technique_rankings)
-    
-    TRACK {
-      event: "bootstrap_winner",
-      domain: "{{optimization_domain}}",
-      winner: domain_winner,
-      rankings: technique_rankings,
-      insights: EXTRACT_INSIGHTS(cross_eval_results)
-    }
-    
-    ## Phase 4: Production Optimization
-    TRACK {phase: "production_optimization", selected_technique: domain_winner}
-    
-    # Run full optimization with winning technique
-    IF domain_winner == "dspy":
-      SEND {
-        to: dspy_optimizer,
-        message: {
-          action: "optimize_full",
-          component: base_component,
-          config: {
-            max_iterations: 20,
-            use_mipro_v2: true,
-            metric_threshold: 0.8
-          }
-        }
-      }
-    ELIF domain_winner == "judge":
-      SEND {
-        to: judge_optimizer,
-        message: {
-          action: "optimize_full",
-          component: base_component,
-          config: {
-            max_iterations: 15,
-            variants_per_iteration: 4,
-            judge_ensemble_size: 3
-          }
-        }
-      }
-    ELSE:  # hybrid
-      SEND {
-        to: hybrid_optimizer,
-        message: {
-          action: "optimize_full",
-          component: base_component,
-          config: {
-            dspy_iterations: 10,
-            judge_refinements: 5,
-            feedback_integration: "bidirectional"
-          }
-        }
-      }
-    
-    AWAIT {
-      from: domain_winner + "_optimizer",
-      event_pattern: "optimization:complete",
-      timeout: 600
-    } AS final_result
-    
-    ## Phase 5: Meta-Learning
-    TRACK {phase: "meta_learning", message: "Updating optimization knowledge"}
-    
-    # Record domain-technique mapping
-    STATE meta_insight = {
-      domain: "{{optimization_domain}}",
-      component_type: base_component.frontmatter.component_type,
-      winning_technique: domain_winner,
-      technique_scores: technique_rankings,
-      key_factors: ANALYZE_SUCCESS_FACTORS(cross_eval_results, domain_winner),
-      timestamp: NOW()
-    }
-    
-    # Update meta-optimization knowledge base
-    EVENT state:entity:create {
-      type: "optimization_insight",
-      id: "optimization_insight",
-      properties: meta_insight
-    }
-    
-    # Create optimized component
-    EVENT composition:create_component {
-      name: "{{target_component}}_{{domain_winner}}_optimized",
-      content: final_result.best_variant.content,
-      metadata: {
-        optimization_method: domain_winner,
-        original_component: "{{target_component}}",
-        domain: "{{optimization_domain}}",
-        performance_gain: final_result.improvement,
-        technique_comparison: technique_rankings,
-        meta_insights: meta_insight.key_factors
-      }
-    }
-    
-    # Generate marketplace report
-    STATE marketplace_summary = {
-      techniques_tested: active_optimizers,
-      bootstrap_winner: domain_winner,
-      production_results: final_result.metrics,
-      cross_evaluation_matrix: BUILD_MATRIX(cross_eval_results),
-      recommendations: {
-        domain: "{{optimization_domain}}",
-        preferred_technique: domain_winner,
-        secondary_technique: SELECT_SECOND(technique_rankings),
-        hybrid_potential: ASSESS_HYBRID_VALUE(technique_results)
-      }
-    }
-    
-    TRACK {
-      phase: "complete",
-      marketplace_summary: marketplace_summary,
-      optimized_component: "{{target_component}}_{{domain_winner}}_optimized"
-    }
-    
-    # Request termination
-    EVENT orchestration:request_termination {
-      reason: "Hybrid optimization marketplace complete",
-      results: {
-        selected_technique: domain_winner,
-        performance_comparison: technique_rankings,
-        meta_learning: meta_insight
-      }
-    }
-
-# Helper functions
+  strategy: "## Phase 1: Initialize Marketplace\nSTATE techniques = []\nSTATE technique_results\
+    \ = {}\nSTATE bootstrap_data = []\nSTATE domain_insights = {}\n\nTRACK {\n  phase:\
+    \ \"marketplace_init\",\n  target: \"{{target_component}}\",\n  domain: \"{{optimization_domain}}\"\
+    ,\n  enabled_techniques: {\n    dspy: {{enable_dspy}},\n    judge: {{enable_judge}},\n\
+    \    hybrid: {{enable_hybrid}}\n  }\n}\n\n# Load target component\nEVENT composition:get_component\
+    \ {\n  name: \"{{target_component}}\"\n} AS base_component\n\n## Phase 2: Bootstrap\
+    \ Competition\nTRACK {phase: \"bootstrap_competition\", message: \"Running parallel\
+    \ optimization techniques\"}\n\n# Prepare shared bootstrap data\nSTATE bootstrap_tasks\
+    \ = GENERATE_TASKS({{optimization_domain}}, 10)\n\n# Launch optimizers in parallel\n\
+    STATE active_optimizers = []\n\nIF {{enable_dspy}}:\n  SPAWN dspy_optimizer\n\
+    \  APPEND active_optimizers \"dspy\"\n  \n  SEND {\n    to: dspy_optimizer,\n\
+    \    message: {\n      action: \"bootstrap\",\n      component: base_component,\n\
+    \      tasks: bootstrap_tasks,\n      iterations: {{bootstrap_iterations}},\n\
+    \      use_events: [\"optimization:format_examples\", \"optimization:validate_setup\"\
+    ]\n    }\n  }\n\nIF {{enable_judge}}:\n  SPAWN judge_optimizer\n  APPEND active_optimizers\
+    \ \"judge\"\n  \n  SEND {\n    to: judge_optimizer,\n    message: {\n      action:\
+    \ \"bootstrap\",\n      component: base_component,\n      tasks: bootstrap_tasks,\n\
+    \      iterations: {{bootstrap_iterations}},\n      judge_type: \"pairwise_comparison\"\
+    \n    }\n  }\n\nIF {{enable_hybrid}}:\n  SPAWN hybrid_optimizer\n  APPEND active_optimizers\
+    \ \"hybrid\"\n  \n  SEND {\n    to: hybrid_optimizer,\n    message: {\n      action:\
+    \ \"bootstrap\",\n      component: base_component,\n      tasks: bootstrap_tasks,\n\
+    \      iterations: {{bootstrap_iterations}},\n      strategy: \"dspy_search_judge_eval\"\
+    \n    }\n  }\n\n# Collect bootstrap results\nAWAIT {\n  from: active_optimizers,\n\
+    \  event_pattern: \"optimization:bootstrap_complete\",\n  timeout: 300,\n  count:\
+    \ LENGTH(active_optimizers)\n} AS bootstrap_results\n\n## Phase 3: Empirical Comparison\n\
+    TRACK {phase: \"technique_comparison\", message: \"Evaluating optimization approaches\"\
+    }\n\n# Extract top variants from each technique\nFOREACH result IN bootstrap_results:\n\
+    \  STATE technique_name = result.technique\n  STATE top_variants = SELECT_TOP(result.variants,\
+    \ 3)\n  \n  STORE technique_results[technique_name] = {\n    variants: top_variants,\n\
+    \    metrics: result.metrics,\n    convergence_rate: result.convergence_rate,\n\
+    \    diversity_score: CALCULATE_DIVERSITY(top_variants)\n  }\n\n# Cross-evaluate\
+    \ variants\nSTATE cross_eval_results = []\n\nFOREACH tech_a, data_a IN technique_results:\n\
+    \  FOREACH tech_b, data_b IN technique_results:\n    IF tech_a != tech_b:\n  \
+    \    # Compare best variants from each technique\n      SEND {\n        to: technique_evaluator,\n\
+    \        message: {\n          action: \"compare_variants\",\n          variant_a:\
+    \ data_a.variants[0],\n          variant_b: data_b.variants[0],\n          source_a:\
+    \ tech_a,\n          source_b: tech_b,\n          evaluation_tasks: SAMPLE(bootstrap_tasks,\
+    \ 3)\n        }\n      }\n      \n      AWAIT {\n        from: technique_evaluator,\n\
+    \        timeout: 60\n      } AS comparison\n      \n      APPEND cross_eval_results\
+    \ comparison\n\n# Analyze technique performance\nSTATE technique_rankings = COMPUTE_RANKINGS(cross_eval_results)\n\
+    STATE domain_winner = SELECT_BEST(technique_rankings)\n\nTRACK {\n  event: \"\
+    bootstrap_winner\",\n  domain: \"{{optimization_domain}}\",\n  winner: domain_winner,\n\
+    \  rankings: technique_rankings,\n  insights: EXTRACT_INSIGHTS(cross_eval_results)\n\
+    }\n\n## Phase 4: Production Optimization\nTRACK {phase: \"production_optimization\"\
+    , selected_technique: domain_winner}\n\n# Run full optimization with winning technique\n\
+    IF domain_winner == \"dspy\":\n  SEND {\n    to: dspy_optimizer,\n    message:\
+    \ {\n      action: \"optimize_full\",\n      component: base_component,\n    \
+    \  config: {\n        max_iterations: 20,\n        use_mipro_v2: true,\n     \
+    \   metric_threshold: 0.8\n      }\n    }\n  }\nELIF domain_winner == \"judge\"\
+    :\n  SEND {\n    to: judge_optimizer,\n    message: {\n      action: \"optimize_full\"\
+    ,\n      component: base_component,\n      config: {\n        max_iterations:\
+    \ 15,\n        variants_per_iteration: 4,\n        judge_ensemble_size: 3\n  \
+    \    }\n    }\n  }\nELSE:  # hybrid\n  SEND {\n    to: hybrid_optimizer,\n   \
+    \ message: {\n      action: \"optimize_full\",\n      component: base_component,\n\
+    \      config: {\n        dspy_iterations: 10,\n        judge_refinements: 5,\n\
+    \        feedback_integration: \"bidirectional\"\n      }\n    }\n  }\n\nAWAIT\
+    \ {\n  from: domain_winner + \"_optimizer\",\n  event_pattern: \"optimization:complete\"\
+    ,\n  timeout: 600\n} AS final_result\n\n## Phase 5: Meta-Learning\nTRACK {phase:\
+    \ \"meta_learning\", message: \"Updating optimization knowledge\"}\n\n# Record\
+    \ domain-technique mapping\nSTATE meta_insight = {\n  domain: \"{{optimization_domain}}\"\
+    ,\n  component_type: base_component.frontmatter.component_type,\n  winning_technique:\
+    \ domain_winner,\n  technique_scores: technique_rankings,\n  key_factors: ANALYZE_SUCCESS_FACTORS(cross_eval_results,\
+    \ domain_winner),\n  timestamp: NOW()\n}\n\n# Update meta-optimization knowledge\
+    \ base\nEVENT state:entity:create {\n  type: \"optimization_insight\",\n  id:\
+    \ \"optimization_insight\",\n  properties: meta_insight\n}\n\n# Create optimized\
+    \ component\nEVENT composition:create_component {\n  name: \"{{target_component}}_{{domain_winner}}_optimized\"\
+    ,\n  content: final_result.best_variant.content,\n  metadata: {\n    optimization_method:\
+    \ domain_winner,\n    original_component: \"{{target_component}}\",\n    domain:\
+    \ \"{{optimization_domain}}\",\n    performance_gain: final_result.improvement,\n\
+    \    technique_comparison: technique_rankings,\n    meta_insights: meta_insight.key_factors\n\
+    \  }\n}\n\n# Generate marketplace report\nSTATE marketplace_summary = {\n  techniques_tested:\
+    \ active_optimizers,\n  bootstrap_winner: domain_winner,\n  production_results:\
+    \ final_result.metrics,\n  cross_evaluation_matrix: BUILD_MATRIX(cross_eval_results),\n\
+    \  recommendations: {\n    domain: \"{{optimization_domain}}\",\n    preferred_technique:\
+    \ domain_winner,\n    secondary_technique: SELECT_SECOND(technique_rankings),\n\
+    \    hybrid_potential: ASSESS_HYBRID_VALUE(technique_results)\n  }\n}\n\nTRACK\
+    \ {\n  phase: \"complete\",\n  marketplace_summary: marketplace_summary,\n  optimized_component:\
+    \ \"{{target_component}}_{{domain_winner}}_optimized\"\n}\n\n# Request termination\n\
+    EVENT orchestration:request_termination {\n  reason: \"Hybrid optimization marketplace\
+    \ complete\",\n  results: {\n    selected_technique: domain_winner,\n    performance_comparison:\
+    \ technique_rankings,\n    meta_learning: meta_insight\n  }\n}\n"
 helpers:
-  GENERATE_TASKS: |
-    # Generate domain-appropriate evaluation tasks
-    # game_theory → strategic scenarios
-    # code_gen → programming challenges
-    # creative → writing prompts
-    
-  CALCULATE_DIVERSITY: |
-    # Measure semantic diversity of variants
-    # Higher diversity → more exploration
-    
-  COMPUTE_RANKINGS: |
-    # Aggregate pairwise comparisons into rankings
+  GENERATE_TASKS: "# Generate domain-appropriate evaluation tasks\n# game_theory \u2192\
+    \ strategic scenarios\n# code_gen \u2192 programming challenges\n# creative \u2192\
+    \ writing prompts\n"
+  CALCULATE_DIVERSITY: "# Measure semantic diversity of variants\n# Higher diversity\
+    \ \u2192 more exploration\n"
+  COMPUTE_RANKINGS: '# Aggregate pairwise comparisons into rankings
+
     # Use Bradley-Terry or similar model
-    
-  EXTRACT_INSIGHTS: |
-    # Identify why certain techniques excel
+
+    '
+  EXTRACT_INSIGHTS: '# Identify why certain techniques excel
+
     # Pattern recognition across comparisons
-    
-  ANALYZE_SUCCESS_FACTORS: |
-    # Deep dive into winning technique's advantages
+
+    '
+  ANALYZE_SUCCESS_FACTORS: '# Deep dive into winning technique''s advantages
+
     # What made it succeed in this domain?
 
-# Metadata
+    '
 metadata:
   pattern_type: meta_optimization
   optimization_approach: technique_marketplace
   evaluation_method: empirical_comparison
   capabilities_demonstrated:
-    - multi_technique_comparison
-    - meta_learning
-    - hybrid_optimization
-    - domain_adaptation
-    - empirical_selection
-  tags: ["meta_optimization", "marketplace", "dspy", "llm_judge", "hybrid", "comparison"]
-
-# Performance expectations
+  - multi_technique_comparison
+  - meta_learning
+  - hybrid_optimization
+  - domain_adaptation
+  - empirical_selection
+  tags:
+  - meta_optimization
+  - marketplace
+  - dspy
+  - llm_judge
+  - hybrid
+  - comparison
 performance:
-  expected_duration: "30-60 minutes"
-  resource_usage: "6-10 concurrent agents"
+  expected_duration: 30-60 minutes
+  resource_usage: 6-10 concurrent agents
   success_metrics:
-    technique_selection: "Clear winner emerges from bootstrap"
-    performance_gain: "> 20% improvement over baseline"
-    meta_learning: "Domain-technique mappings discovered"
-    hybrid_value: "Identifies when hybrid approaches excel"
+    technique_selection: Clear winner emerges from bootstrap
+    performance_gain: '> 20% improvement over baseline'
+    meta_learning: Domain-technique mappings discovered
+    hybrid_value: Identifies when hybrid approaches excel

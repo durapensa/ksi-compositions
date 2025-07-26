@@ -3,14 +3,13 @@ type: orchestration
 version: 1.0.0
 description: Test JSON emission with Claude 4 optimized instructions
 author: claude
-
 agents:
   tester:
     component: components/behaviors/testing/json_test_v4_claude4_optimized
-    vars:
-      prompt: |
-        Please emit this JSON event:
-        {"event": "orchestration:track", "data": {"variation": "v4", "test": "claude4_optimized"}}
+    prompt: 'Please emit this JSON event:
 
+      {"event": "orchestration:track", "data": {"variation": "v4", "test": "claude4_optimized"}}
+
+      '
 metadata:
   purpose: claude4_optimized_testing

@@ -3,22 +3,31 @@ type: orchestration
 version: 1.0.0
 description: Simple test of JSON event extraction from agent responses
 author: claude
-
 agents:
   json_tester:
     component: components/behaviors/testing/json_test_agent
-    vars:
-      prompt: |
-        Please demonstrate JSON event emission by:
-        
-        1. First say "Testing JSON extraction"
-        2. Then emit this event: {"event": "orchestration:track", "data": {"test": "started", "timestamp": "2025-07-16"}}
-        3. Wait a moment
-        4. Emit another: {"event": "orchestration:track", "data": {"test": "completed", "score": 100}}
-        5. Say "Test complete"
-        
-        Remember: Include the actual JSON objects in your response!
+    prompt: 'Please demonstrate JSON event emission by:
 
+
+      1. First say "Testing JSON extraction"
+
+      2. Then emit this event: {"event": "orchestration:track", "data": {"test": "started",
+      "timestamp": "2025-07-16"}}
+
+      3. Wait a moment
+
+      4. Emit another: {"event": "orchestration:track", "data": {"test": "completed",
+      "score": 100}}
+
+      5. Say "Test complete"
+
+
+      Remember: Include the actual JSON objects in your response!
+
+      '
 metadata:
   purpose: testing
-  tags: ["test", "json", "minimal"]
+  tags:
+  - test
+  - json
+  - minimal

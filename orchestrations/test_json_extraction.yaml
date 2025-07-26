@@ -3,18 +3,21 @@ type: orchestration
 version: 1.0.0
 description: Minimal test to verify JSON event extraction from agent responses
 author: claude
-
 agents:
   json_test:
-    component: "components/core/system_single_agent"
-    vars:
-      prompt: |
-        Please emit this exact JSON event in your response:
-        
-        {"event": "orchestration:track", "data": {"test": "success", "timestamp": "2025-07-16"}}
-        
-        Just include the JSON object somewhere in your response text.
+    component: components/core/system_single_agent
+    prompt: 'Please emit this exact JSON event in your response:
 
+
+      {"event": "orchestration:track", "data": {"test": "success", "timestamp": "2025-07-16"}}
+
+
+      Just include the JSON object somewhere in your response text.
+
+      '
 metadata:
   purpose: testing
-  tags: ["test", "json", "minimal"]
+  tags:
+  - test
+  - json
+  - minimal

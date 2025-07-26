@@ -1,125 +1,97 @@
 name: simple_message_passing
-type: orchestration  
+type: orchestration
 version: 1.0.0
-description: |
-  Test basic agent-to-agent communication from Pragmatic Agent Evolution Plan Step 2A.
-  Two agents passing one message, then back-and-forth conversation.
-author: ksi_system
-timestamp: 2025-07-24T21:00:00Z
+description: 'Test basic agent-to-agent communication from Pragmatic Agent Evolution
+  Plan Step 2A.
 
-# Define just 2 agents for simplicity
+  Two agents passing one message, then back-and-forth conversation.
+
+  '
+author: ksi_system
+timestamp: 2025-07-24 21:00:00+00:00
 agents:
   researcher:
-    component: "components/core/base_agent"
+    component: components/core/base_agent
     vars:
-      agent_id: "researcher"
-      prompt: |
-        You are a researcher agent testing basic communication.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "researcher_ready"}}
-        
-        Your task: Research a simple topic and share findings with the analyzer.
-        When you find something interesting, communicate directly:
-        
-        ## MANDATORY: To send messages, emit:
-        {"event": "message:send", "data": {"to": "analyzer", "from": "researcher", "content": "I found that [your finding]. What patterns do you see?"}}
-        
-        Start by researching: "What are the benefits of cooperation in systems?"
+      agent_id: researcher
+    prompt: 'You are a researcher agent testing basic communication.
 
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "researcher_ready"}}
+
+
+      Your task: Research a simple topic and share findings with the analyzer.
+
+      When you find something interesting, communicate directly:
+
+
+      ## MANDATORY: To send messages, emit:
+
+      {"event": "message:send", "data": {"to": "analyzer", "from": "researcher", "content":
+      "I found that [your finding]. What patterns do you see?"}}
+
+
+      Start by researching: "What are the benefits of cooperation in systems?"
+
+      '
   analyzer:
-    component: "components/core/base_agent"
+    component: components/core/base_agent
     vars:
-      agent_id: "analyzer"
-      prompt: |
-        You are an analyzer agent testing basic communication.
-        
-        ## MANDATORY: Start with:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "analyzer_ready"}}
-        
-        Your task: Wait for findings from the researcher, then analyze them.
-        When you receive findings, analyze patterns and respond:
-        
-        ## MANDATORY: To send responses, emit:
-        {"event": "message:send", "data": {"to": "researcher", "from": "analyzer", "content": "The pattern I see is [your analysis]. Can you verify this?"}}
-        
-        Wait for the researcher's message before responding.
+      agent_id: analyzer
+    prompt: 'You are an analyzer agent testing basic communication.
 
-# Simple orchestration - just spawn agents and let them communicate
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "analyzer_ready"}}
+
+
+      Your task: Wait for findings from the researcher, then analyze them.
+
+      When you receive findings, analyze patterns and respond:
+
+
+      ## MANDATORY: To send responses, emit:
+
+      {"event": "message:send", "data": {"to": "researcher", "from": "analyzer", "content":
+      "The pattern I see is [your analysis]. Can you verify this?"}}
+
+
+      Wait for the researcher''s message before responding.
+
+      '
 orchestration_logic:
-  strategy: |
-    ## Phase 1: Initialize Communication Test
-    TRACK {
-      phase: "initialization",
-      event: "communication_test_started",
-      agents: ["researcher", "analyzer"]
-    }
-    
-    # Wait for both agents to be ready
-    AWAIT {
-      event_pattern: "agent:status",
-      filter: {status: ["researcher_ready", "analyzer_ready"]},
-      count: 2,
-      timeout: 60
-    }
-    
-    TRACK {
-      event: "agents_ready",
-      message: "Both agents initialized, communication should begin"
-    }
-    
-    ## Phase 2: Monitor Communication
-    # Wait for the first message from researcher
-    AWAIT {
-      event_pattern: "message:send",
-      filter: {from: "researcher"},
-      count: 1,
-      timeout: 120
-    } AS first_message
-    
-    TRACK {
-      event: "first_message_sent",
-      message: first_message.content,
-      from: first_message.from,
-      to: first_message.to
-    }
-    
-    # Wait for response from analyzer
-    AWAIT {
-      event_pattern: "message:send", 
-      filter: {from: "analyzer"},
-      count: 1,
-      timeout: 120
-    } AS response_message
-    
-    TRACK {
-      event: "response_received",
-      message: response_message.content,
-      from: response_message.from,
-      to: response_message.to
-    }
-    
-    ## Phase 3: Test Complete
-    TRACK {
-      event: "communication_test_complete",
-      success: true,
-      messages_exchanged: 2,
-      communication_pattern: "researcher_initiated"
-    }
-    
-    EVENT orchestration:request_termination {
-      reason: "Simple message passing test complete",
-      result: "Successfully demonstrated basic agent communication",
-      messages_exchanged: 2
-    }
-
+  strategy: "## Phase 1: Initialize Communication Test\nTRACK {\n  phase: \"initialization\"\
+    ,\n  event: \"communication_test_started\",\n  agents: [\"researcher\", \"analyzer\"\
+    ]\n}\n\n# Wait for both agents to be ready\nAWAIT {\n  event_pattern: \"agent:status\"\
+    ,\n  filter: {status: [\"researcher_ready\", \"analyzer_ready\"]},\n  count: 2,\n\
+    \  timeout: 60\n}\n\nTRACK {\n  event: \"agents_ready\",\n  message: \"Both agents\
+    \ initialized, communication should begin\"\n}\n\n## Phase 2: Monitor Communication\n\
+    # Wait for the first message from researcher\nAWAIT {\n  event_pattern: \"message:send\"\
+    ,\n  filter: {from: \"researcher\"},\n  count: 1,\n  timeout: 120\n} AS first_message\n\
+    \nTRACK {\n  event: \"first_message_sent\",\n  message: first_message.content,\n\
+    \  from: first_message.from,\n  to: first_message.to\n}\n\n# Wait for response\
+    \ from analyzer\nAWAIT {\n  event_pattern: \"message:send\", \n  filter: {from:\
+    \ \"analyzer\"},\n  count: 1,\n  timeout: 120\n} AS response_message\n\nTRACK\
+    \ {\n  event: \"response_received\",\n  message: response_message.content,\n \
+    \ from: response_message.from,\n  to: response_message.to\n}\n\n## Phase 3: Test\
+    \ Complete\nTRACK {\n  event: \"communication_test_complete\",\n  success: true,\n\
+    \  messages_exchanged: 2,\n  communication_pattern: \"researcher_initiated\"\n\
+    }\n\nEVENT orchestration:request_termination {\n  reason: \"Simple message passing\
+    \ test complete\",\n  result: \"Successfully demonstrated basic agent communication\"\
+    ,\n  messages_exchanged: 2\n}\n"
 metadata:
   pattern_type: communication_test
   complexity: minimal
   test_focus: agent_to_agent_messaging
-  tags: ["communication", "basic", "test", "message_passing"]
-
+  tags:
+  - communication
+  - basic
+  - test
+  - message_passing
 performance:
-  expected_duration: "2-3 minutes"
-  resource_usage: "2 agents concurrent"
-  success_criteria: "Both agents emit status and message events"
+  expected_duration: 2-3 minutes
+  resource_usage: 2 agents concurrent
+  success_criteria: Both agents emit status and message events

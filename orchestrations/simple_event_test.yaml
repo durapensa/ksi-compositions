@@ -1,27 +1,26 @@
 name: simple_event_test
 type: orchestration
 version: 1.0.0
-description: |
-  Simplest possible test for event emission.
-  Returns only JSON events in a single line.
-author: test_system
+description: 'Simplest possible test for event emission.
 
+  Returns only JSON events in a single line.
+
+  '
+author: test_system
 agents:
   simple_tester:
-    component: "components/core/system_single_agent"
-    vars:
-      prompt: |
-        Return EXACTLY this text, nothing more:
-        
-        {"event": "test:hello", "data": {"message": "Event emission working!"}}
+    component: components/core/system_single_agent
+    prompt: 'Return EXACTLY this text, nothing more:
 
+
+      {"event": "test:hello", "data": {"message": "Event emission working!"}}
+
+      '
 metadata:
   tags:
-    - test
-    - minimal
-
+  - test
+  - minimal
 orchestration_logic:
   description: Test event emission
   strategy: Return single JSON event
-
 variables: {}

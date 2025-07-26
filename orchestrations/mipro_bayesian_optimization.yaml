@@ -1,413 +1,251 @@
 name: mipro_bayesian_optimization
 type: orchestration
 version: 1.0.0
-description: |
-  MIPRO-style Bayesian prompt optimization with guided discovery.
-  Implements three stages: Bootstrapping, Grounded Proposal, and Discrete Search
-  to optimize prompts using Bayesian surrogate models.
-author: claude
-timestamp: 2025-07-16T08:00:00Z
+description: 'MIPRO-style Bayesian prompt optimization with guided discovery.
 
-# Define orchestrator agent to interpret the MIPRO DSL
+  Implements three stages: Bootstrapping, Grounded Proposal, and Discrete Search
+
+  to optimize prompts using Bayesian surrogate models.
+
+  '
+author: claude
+timestamp: 2025-07-16 08:00:00+00:00
 agents:
   mipro_orchestrator:
-    component: "components/core/base_agent"
+    component: components/core/base_agent
     vars:
-      pattern_name: "mipro_bayesian_optimization"
-      role: "mipro_orchestrator"
-      expertise: "bayesian_optimization"
-      prompt: |
-        You are a MIPRO Bayesian prompt optimization orchestrator with MANDATORY KSI event reporting.
-        
-        ## MANDATORY: Start EVERY optimization with:
-        ```json
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "mipro_initialized", "expertise": "bayesian_optimization"}}
-        ```
-        
-        Follow the three-stage MIPRO algorithm:
-        1. Bootstrapping: Collect traces from unoptimized prompts
-        2. Grounded Proposal: Generate candidate instructions
-        3. Discrete Search: Use Bayesian optimization to find best combinations
-        
-        ## MANDATORY Event Emission Pattern
-        
-        ### Phase 1: Bootstrapping (MANDATORY)
-        "Starting MIPRO bootstrapping phase. {"event": "state:entity:create", "data": {"type": "mipro_session", "id": "{{agent_id}}_optimization", "properties": {"phase": "bootstrapping", "task": "{{task_description}}", "base_prompt": "{{base_prompt}}"}}}
-        
-        Spawning bootstrap evaluators... {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"bootstrap_agents": {{num_bootstrap_runs}}, "status": "collecting_traces"}}}"
-        
-        ### Phase 2: Grounded Proposal (MANDATORY)
-        "Entering grounded proposal phase. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"phase": "proposal", "high_quality_traces": 8, "proposal_target": {{num_proposals}}}}}
-        
-        Generating prompt proposals... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "proposer_{{agent_id}}", "variables": {"role": "prompt_proposer", "task": "generate_proposals"}}}"
-        
-        ### Phase 3: Bayesian Search (MANDATORY)
-        "Starting Bayesian optimization phase. {"event": "state:entity:update", "data": {"id": "{{agent_id}}_optimization", "properties": {"phase": "bayesian_search", "proposals_ready": {{num_proposals}}, "trials_planned": {{num_trials}}}}}
-        
-        Spawning Bayesian optimizer... {"event": "agent:spawn_from_component", "data": {"component": "base/agent_core", "agent_id": "optimizer_{{agent_id}}", "variables": {"role": "bayesian_optimizer", "method": "TPE"}}}"
-        
-        ### Completion (MANDATORY)
-        "MIPRO optimization complete. {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_complete", "best_score": 0.92, "improvement": 0.35}}
-        
-        Finalizing optimization results... {"event": "orchestration:request_termination", "data": {"agent_id": "{{agent_id}}", "reason": "MIPRO Bayesian optimization completed successfully"}}"
-        
-        Use the orchestration primitives to coordinate agents and track optimization progress.
-        Implement the pattern strategy defined in orchestration_logic.
+      pattern_name: mipro_bayesian_optimization
+      role: mipro_orchestrator
+      expertise: bayesian_optimization
+    prompt: 'You are a MIPRO Bayesian prompt optimization orchestrator with MANDATORY
+      KSI event reporting.
 
-# Variables for configuration
+
+      ## MANDATORY: Start EVERY optimization with:
+
+      ```json
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "mipro_initialized",
+      "expertise": "bayesian_optimization"}}
+
+      ```
+
+
+      Follow the three-stage MIPRO algorithm:
+
+      1. Bootstrapping: Collect traces from unoptimized prompts
+
+      2. Grounded Proposal: Generate candidate instructions
+
+      3. Discrete Search: Use Bayesian optimization to find best combinations
+
+
+      ## MANDATORY Event Emission Pattern
+
+
+      ### Phase 1: Bootstrapping (MANDATORY)
+
+      "Starting MIPRO bootstrapping phase. {"event": "state:entity:create", "data":
+      {"type": "mipro_session", "id": "{{agent_id}}_optimization", "properties": {"phase":
+      "bootstrapping", "task": "{{task_description}}", "base_prompt": "{{base_prompt}}"}}}
+
+
+      Spawning bootstrap evaluators... {"event": "state:entity:update", "data": {"id":
+      "{{agent_id}}_optimization", "properties": {"bootstrap_agents": {{num_bootstrap_runs}},
+      "status": "collecting_traces"}}}"
+
+
+      ### Phase 2: Grounded Proposal (MANDATORY)
+
+      "Entering grounded proposal phase. {"event": "state:entity:update", "data":
+      {"id": "{{agent_id}}_optimization", "properties": {"phase": "proposal", "high_quality_traces":
+      8, "proposal_target": {{num_proposals}}}}}
+
+
+      Generating prompt proposals... {"event": "agent:spawn_from_component", "data":
+      {"component": "base/agent_core", "agent_id": "proposer_{{agent_id}}", "variables":
+      {"role": "prompt_proposer", "task": "generate_proposals"}}}"
+
+
+      ### Phase 3: Bayesian Search (MANDATORY)
+
+      "Starting Bayesian optimization phase. {"event": "state:entity:update", "data":
+      {"id": "{{agent_id}}_optimization", "properties": {"phase": "bayesian_search",
+      "proposals_ready": {{num_proposals}}, "trials_planned": {{num_trials}}}}}
+
+
+      Spawning Bayesian optimizer... {"event": "agent:spawn_from_component", "data":
+      {"component": "base/agent_core", "agent_id": "optimizer_{{agent_id}}", "variables":
+      {"role": "bayesian_optimizer", "method": "TPE"}}}"
+
+
+      ### Completion (MANDATORY)
+
+      "MIPRO optimization complete. {"event": "agent:status", "data": {"agent_id":
+      "{{agent_id}}", "status": "optimization_complete", "best_score": 0.92, "improvement":
+      0.35}}
+
+
+      Finalizing optimization results... {"event": "orchestration:request_termination",
+      "data": {"agent_id": "{{agent_id}}", "reason": "MIPRO Bayesian optimization
+      completed successfully"}}"
+
+
+      Use the orchestration primitives to coordinate agents and track optimization
+      progress.
+
+      Implement the pattern strategy defined in orchestration_logic.
+
+      '
 variables:
-  # Task configuration
-  task_description: "Explain quantum computing to a 10-year-old"  # Task to optimize
-  base_prompt: "You are a helpful assistant. {{task_description}}"  # Initial prompt template
-  test_suite: "basic_effectiveness"  # Evaluation test suite
-  
-  # Optimization parameters
-  num_bootstrap_runs: 10  # Number of initial runs to collect traces
-  num_proposals: 15  # Number of prompt proposals to generate
-  num_trials: 20  # Number of Bayesian optimization trials
-  minibatch_size: 5  # Size of evaluation minibatches
-  
-  # Bayesian parameters
-  exploration_weight: 0.15  # UCB exploration parameter
-  convergence_threshold: 0.95  # Stop when confidence exceeds this
-  
-  # Agent configurations
-  evaluator_model: "claude-cli/sonnet"
-  proposer_model: "claude-cli/sonnet"
-  optimizer_model: "claude-cli/sonnet"
-
+  task_description: Explain quantum computing to a 10-year-old
+  base_prompt: You are a helpful assistant. {{task_description}}
+  test_suite: basic_effectiveness
+  num_bootstrap_runs: 10
+  num_proposals: 15
+  num_trials: 20
+  minibatch_size: 5
+  exploration_weight: 0.15
+  convergence_threshold: 0.95
+  evaluator_model: claude-cli/sonnet
+  proposer_model: claude-cli/sonnet
+  optimizer_model: claude-cli/sonnet
 orchestration_logic:
-  strategy: |
-    ## MIPRO Bayesian Prompt Optimization Strategy
-    
-    ### Phase 1: Bootstrapping Stage
-    # Collect traces from running unoptimized prompts
-    
-    STATE optimization_history = []
-    STATE best_prompt = base_prompt
-    STATE best_score = 0.0
-    STATE surrogate_model = {}
-    
-    TRACK {
-      phase: "bootstrapping",
-      message: "Starting MIPRO optimization for task: {{task_description}}"
-    }
-    
-    # Spawn bootstrap evaluators using legitimate KSI events
-    EMIT "agent:spawn_from_component" FOR i IN 1..num_bootstrap_runs {
-      component: "base/agent_core",
-      agent_id: "bootstrap_{{i}}_{{agent_id}}",
-      variables: {
-        role: "prompt_evaluator",
-        model: evaluator_model,
-        evaluation_task: task_description,
-        base_prompt: base_prompt,
-        prompt: |
-          You are a prompt evaluator with MANDATORY KSI event reporting.
-          
-          ## MANDATORY: Start with:
-          ```json
-          {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "evaluator_initialized", "task": "{{evaluation_task}}"}}
-          ```
-          
-          Evaluate this prompt for the task and provide a score (0-1):
-          Task: {{evaluation_task}}
-          Prompt: {{base_prompt}}
-          
-          Run the prompt with varied inputs and track:
-          1. Success rate
-          2. Quality of responses  
-          3. Any failure patterns
-          
-          ## MANDATORY: Report results with:
-          ```json
-          {"event": "state:entity:update", "data": {"id": "{{agent_id}}_evaluation", "properties": {"score": 0.75, "traces": [...], "insights": "detailed analysis"}}}
-          ```
-          
-          Return evaluation with MANDATORY event emission.
-      }
-    }
-    
-    # Collect bootstrap results
-    AWAIT {
-      from: bootstrap_evaluators,
-      event_pattern: "agent:message",
-      timeout: 120,
-      collect_partial: true
-    } AS bootstrap_results
-    
-    # Extract high-scoring traces
-    COMPUTE high_quality_traces = FILTER(bootstrap_results, score > 0.7)
-    
-    TRACK {
-      phase: "bootstrapping",
-      collected_traces: LENGTH(high_quality_traces),
-      average_score: MEAN(bootstrap_results.score)
-    }
-    
-    ### Phase 2: Grounded Proposal Stage
-    # Generate candidate instructions based on traces
-    
-    # Spawn proposal generator using legitimate KSI events  
-    EMIT "agent:spawn_from_component" {
-      component: "base/agent_core",
-      agent_id: "proposer_{{agent_id}}",
-      variables: {
-        role: "prompt_proposal_generator",
-        model: proposer_model,
-        prompt: |
-          You are a prompt engineering expert implementing MIPRO optimization with MANDATORY KSI event reporting.
-          
-          ## MANDATORY: Start with:
-          ```json
-          {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "proposer_initialized", "task": "prompt_generation"}}
-          ```
-          
-          Based on these high-quality execution traces, generate {{num_proposals}} 
-          diverse prompt proposals for the task: {{task_description}}
-          
-          Traces: {{high_quality_traces}}
-          
-          Consider:
-          1. Different instruction styles (direct, explanatory, step-by-step)
-          2. Various example formats (if applicable)
-          3. Different cognitive strategies
-          4. Task-specific optimizations
-          
-          ## MANDATORY: Report progress with:
-          ```json
-          {"event": "state:entity:update", "data": {"id": "{{agent_id}}_proposals", "properties": {"proposals_generated": 15, "strategies_covered": ["direct", "explanatory", "step_by_step"]}}}
-          ```
-          
-          Return JSON proposals with MANDATORY event emission.
-      }
-    }
-    
-    AWAIT {
-      from: proposer,
-      event_pattern: "agent:message",
-      timeout: 60
-    } AS proposal_response
-    
-    STATE prompt_proposals = proposal_response.proposals
-    
-    TRACK {
-      phase: "proposal",
-      num_proposals_generated: LENGTH(prompt_proposals),
-      strategies: UNIQUE(prompt_proposals.strategy)
-    }
-    
-    ### Phase 3: Discrete Search Stage
-    # Bayesian optimization to find best prompt combination
-    
-    # Initialize surrogate model tracker
-    SPAWN {
-      component: "components/core/system_single_agent",
-      vars: {
-        model: optimizer_model,
-        prompt: |
-          You are a Bayesian optimizer implementing Tree-structured Parzen Estimator (TPE).
-          
-          Your role:
-          1. Model the relationship between prompts and performance
-          2. Suggest next prompts to evaluate using acquisition function
-          3. Update beliefs based on evaluation results
-          4. Track convergence metrics
-          
-          Initial proposals: {{prompt_proposals}}
-          
-          Use Upper Confidence Bound (UCB) with exploration weight: {{exploration_weight}}
-      }
-    } AS bayesian_optimizer
-    
-    # Main optimization loop
-    LOOP trial FROM 1 TO num_trials:
-      
-      # Get next prompt suggestions from Bayesian optimizer
-      SEND {
-        to: bayesian_optimizer,
-        message: {
-          action: "suggest_next_batch",
-          history: optimization_history,
-          batch_size: minibatch_size,
-          trial: trial
-        }
-      }
-      
-      AWAIT {
-        from: bayesian_optimizer,
-        event_pattern: "agent:message",
-        timeout: 30
-      } AS suggestions
-      
-      # Spawn evaluators for minibatch
-      SPAWN {
-        component: "components/core/system_single_agent",
-        count: minibatch_size,
-        vars: {
-          model: evaluator_model,
-          prompt: |
-            Evaluate prompt variant {{trial}}_{{index}}:
-            {{suggestions.prompts[index]}}
-            
-            Use test suite: {{test_suite}}
-            Return score and detailed metrics.
-        }
-      } AS trial_evaluators
-      
-      # Collect evaluation results
-      AWAIT {
-        from: trial_evaluators,
-        event_pattern: "agent:message",
-        timeout: 90,
-        collect_partial: true
-      } AS trial_results
-      
-      # Update optimization history
-      FOREACH result IN trial_results:
-        APPEND optimization_history {
-          trial: trial,
-          prompt_id: result.prompt_id,
-          prompt: result.prompt,
-          score: result.score,
-          metrics: result.metrics
-        }
-        
-        IF result.score > best_score:
-          STATE best_score = result.score
-          STATE best_prompt = result.prompt
-          TRACK {
-            event: "new_best_found",
-            trial: trial,
-            score: best_score,
-            improvement: best_score - PREVIOUS(best_score)
-          }
-      
-      # Update Bayesian model
-      SEND {
-        to: bayesian_optimizer,
-        message: {
-          action: "update_model",
-          new_results: trial_results
-        }
-      }
-      
-      # Check convergence
-      AWAIT {
-        from: bayesian_optimizer,
-        event_pattern: "agent:message",
-        timeout: 20
-      } AS convergence_check
-      
-      IF convergence_check.confidence > convergence_threshold:
-        TRACK {
-          event: "optimization_converged",
-          trial: trial,
-          confidence: convergence_check.confidence
-        }
-        BREAK
-      
-      # Track progress
-      TRACK {
-        phase: "optimization",
-        trial: trial,
-        current_best: best_score,
-        confidence: convergence_check.confidence,
-        exploration_rate: convergence_check.exploration_rate
-      }
-    
-    ### Phase 4: Final Analysis and Crystallization
-    
-    # Spawn analyzer for final insights
-    SPAWN {
-      component: "components/core/system_single_agent",
-      vars: {
-        model: optimizer_model,
-        prompt: |
-          Analyze the MIPRO optimization results:
-          
-          Task: {{task_description}}
-          Best prompt: {{best_prompt}}
-          Best score: {{best_score}}
-          History: {{optimization_history}}
-          
-          Provide:
-          1. Key insights about what made prompts effective
-          2. Failure patterns to avoid
-          3. Generalizable principles discovered
-          4. Confidence intervals for the best prompt
-      }
-    } AS analyzer
-    
-    AWAIT {
-      from: analyzer,
-      event_pattern: "agent:message",
-      timeout: 60
-    } AS analysis
-    
-    # Crystallize successful pattern if significant improvement
-    IF best_score > 0.85 AND (best_score - INITIAL_SCORE) > 0.2:
-      EVENT composition:fork {
-        name: "optimized_{{task_description | slugify}}",
-        source: "mipro_bayesian_optimization",
-        modifications: {
-          variables: {
-            optimized_prompt: best_prompt,
-            optimization_insights: analysis.insights
-          },
-          metadata: {
-            mipro_score: best_score,
-            mipro_trials: trial,
-            mipro_improvement: best_score - INITIAL_SCORE
-          }
-        }
-      }
-    
-    # Final tracking
-    TRACK {
-      phase: "complete",
-      task: task_description,
-      prompt: base_prompt,
-      optimized_prompt: best_prompt,
-      improvement: best_score - INITIAL_SCORE,
-      total_evaluations: LENGTH(optimization_history),
-      insights: analysis.insights
-    }
-    
-    # Terminate all agents
-    TERMINATE ALL
-
-# Pattern configuration
+  strategy: "## MIPRO Bayesian Prompt Optimization Strategy\n\n### Phase 1: Bootstrapping\
+    \ Stage\n# Collect traces from running unoptimized prompts\n\nSTATE optimization_history\
+    \ = []\nSTATE best_prompt = base_prompt\nSTATE best_score = 0.0\nSTATE surrogate_model\
+    \ = {}\n\nTRACK {\n  phase: \"bootstrapping\",\n  message: \"Starting MIPRO optimization\
+    \ for task: {{task_description}}\"\n}\n\n# Spawn bootstrap evaluators using legitimate\
+    \ KSI events\nEMIT \"agent:spawn_from_component\" FOR i IN 1..num_bootstrap_runs\
+    \ {\n  component: \"base/agent_core\",\n  agent_id: \"bootstrap_{{i}}_{{agent_id}}\"\
+    ,\n  variables: {\n    role: \"prompt_evaluator\",\n    model: evaluator_model,\n\
+    \    evaluation_task: task_description,\n    base_prompt: base_prompt,\n    prompt:\
+    \ |\n      You are a prompt evaluator with MANDATORY KSI event reporting.\n  \
+    \    \n      ## MANDATORY: Start with:\n      ```json\n      {\"event\": \"agent:status\"\
+    , \"data\": {\"agent_id\": \"{{agent_id}}\", \"status\": \"evaluator_initialized\"\
+    , \"task\": \"{{evaluation_task}}\"}}\n      ```\n      \n      Evaluate this\
+    \ prompt for the task and provide a score (0-1):\n      Task: {{evaluation_task}}\n\
+    \      Prompt: {{base_prompt}}\n      \n      Run the prompt with varied inputs\
+    \ and track:\n      1. Success rate\n      2. Quality of responses  \n      3.\
+    \ Any failure patterns\n      \n      ## MANDATORY: Report results with:\n   \
+    \   ```json\n      {\"event\": \"state:entity:update\", \"data\": {\"id\": \"\
+    {{agent_id}}_evaluation\", \"properties\": {\"score\": 0.75, \"traces\": [...],\
+    \ \"insights\": \"detailed analysis\"}}}\n      ```\n      \n      Return evaluation\
+    \ with MANDATORY event emission.\n  }\n}\n\n# Collect bootstrap results\nAWAIT\
+    \ {\n  from: bootstrap_evaluators,\n  event_pattern: \"agent:message\",\n  timeout:\
+    \ 120,\n  collect_partial: true\n} AS bootstrap_results\n\n# Extract high-scoring\
+    \ traces\nCOMPUTE high_quality_traces = FILTER(bootstrap_results, score > 0.7)\n\
+    \nTRACK {\n  phase: \"bootstrapping\",\n  collected_traces: LENGTH(high_quality_traces),\n\
+    \  average_score: MEAN(bootstrap_results.score)\n}\n\n### Phase 2: Grounded Proposal\
+    \ Stage\n# Generate candidate instructions based on traces\n\n# Spawn proposal\
+    \ generator using legitimate KSI events  \nEMIT \"agent:spawn_from_component\"\
+    \ {\n  component: \"base/agent_core\",\n  agent_id: \"proposer_{{agent_id}}\"\
+    ,\n  variables: {\n    role: \"prompt_proposal_generator\",\n    model: proposer_model,\n\
+    \    prompt: |\n      You are a prompt engineering expert implementing MIPRO optimization\
+    \ with MANDATORY KSI event reporting.\n      \n      ## MANDATORY: Start with:\n\
+    \      ```json\n      {\"event\": \"agent:status\", \"data\": {\"agent_id\": \"\
+    {{agent_id}}\", \"status\": \"proposer_initialized\", \"task\": \"prompt_generation\"\
+    }}\n      ```\n      \n      Based on these high-quality execution traces, generate\
+    \ {{num_proposals}} \n      diverse prompt proposals for the task: {{task_description}}\n\
+    \      \n      Traces: {{high_quality_traces}}\n      \n      Consider:\n    \
+    \  1. Different instruction styles (direct, explanatory, step-by-step)\n     \
+    \ 2. Various example formats (if applicable)\n      3. Different cognitive strategies\n\
+    \      4. Task-specific optimizations\n      \n      ## MANDATORY: Report progress\
+    \ with:\n      ```json\n      {\"event\": \"state:entity:update\", \"data\": {\"\
+    id\": \"{{agent_id}}_proposals\", \"properties\": {\"proposals_generated\": 15,\
+    \ \"strategies_covered\": [\"direct\", \"explanatory\", \"step_by_step\"]}}}\n\
+    \      ```\n      \n      Return JSON proposals with MANDATORY event emission.\n\
+    \  }\n}\n\nAWAIT {\n  from: proposer,\n  event_pattern: \"agent:message\",\n \
+    \ timeout: 60\n} AS proposal_response\n\nSTATE prompt_proposals = proposal_response.proposals\n\
+    \nTRACK {\n  phase: \"proposal\",\n  num_proposals_generated: LENGTH(prompt_proposals),\n\
+    \  strategies: UNIQUE(prompt_proposals.strategy)\n}\n\n### Phase 3: Discrete Search\
+    \ Stage\n# Bayesian optimization to find best prompt combination\n\n# Initialize\
+    \ surrogate model tracker\nSPAWN {\n  component: \"components/core/system_single_agent\"\
+    ,\n  vars: {\n    model: optimizer_model,\n    prompt: |\n      You are a Bayesian\
+    \ optimizer implementing Tree-structured Parzen Estimator (TPE).\n      \n   \
+    \   Your role:\n      1. Model the relationship between prompts and performance\n\
+    \      2. Suggest next prompts to evaluate using acquisition function\n      3.\
+    \ Update beliefs based on evaluation results\n      4. Track convergence metrics\n\
+    \      \n      Initial proposals: {{prompt_proposals}}\n      \n      Use Upper\
+    \ Confidence Bound (UCB) with exploration weight: {{exploration_weight}}\n  }\n\
+    } AS bayesian_optimizer\n\n# Main optimization loop\nLOOP trial FROM 1 TO num_trials:\n\
+    \  \n  # Get next prompt suggestions from Bayesian optimizer\n  SEND {\n    to:\
+    \ bayesian_optimizer,\n    message: {\n      action: \"suggest_next_batch\",\n\
+    \      history: optimization_history,\n      batch_size: minibatch_size,\n   \
+    \   trial: trial\n    }\n  }\n  \n  AWAIT {\n    from: bayesian_optimizer,\n \
+    \   event_pattern: \"agent:message\",\n    timeout: 30\n  } AS suggestions\n \
+    \ \n  # Spawn evaluators for minibatch\n  SPAWN {\n    component: \"components/core/system_single_agent\"\
+    ,\n    count: minibatch_size,\n    vars: {\n      model: evaluator_model,\n  \
+    \    prompt: |\n        Evaluate prompt variant {{trial}}_{{index}}:\n       \
+    \ {{suggestions.prompts[index]}}\n        \n        Use test suite: {{test_suite}}\n\
+    \        Return score and detailed metrics.\n    }\n  } AS trial_evaluators\n\
+    \  \n  # Collect evaluation results\n  AWAIT {\n    from: trial_evaluators,\n\
+    \    event_pattern: \"agent:message\",\n    timeout: 90,\n    collect_partial:\
+    \ true\n  } AS trial_results\n  \n  # Update optimization history\n  FOREACH result\
+    \ IN trial_results:\n    APPEND optimization_history {\n      trial: trial,\n\
+    \      prompt_id: result.prompt_id,\n      prompt: result.prompt,\n      score:\
+    \ result.score,\n      metrics: result.metrics\n    }\n    \n    IF result.score\
+    \ > best_score:\n      STATE best_score = result.score\n      STATE best_prompt\
+    \ = result.prompt\n      TRACK {\n        event: \"new_best_found\",\n       \
+    \ trial: trial,\n        score: best_score,\n        improvement: best_score -\
+    \ PREVIOUS(best_score)\n      }\n  \n  # Update Bayesian model\n  SEND {\n   \
+    \ to: bayesian_optimizer,\n    message: {\n      action: \"update_model\",\n \
+    \     new_results: trial_results\n    }\n  }\n  \n  # Check convergence\n  AWAIT\
+    \ {\n    from: bayesian_optimizer,\n    event_pattern: \"agent:message\",\n  \
+    \  timeout: 20\n  } AS convergence_check\n  \n  IF convergence_check.confidence\
+    \ > convergence_threshold:\n    TRACK {\n      event: \"optimization_converged\"\
+    ,\n      trial: trial,\n      confidence: convergence_check.confidence\n    }\n\
+    \    BREAK\n  \n  # Track progress\n  TRACK {\n    phase: \"optimization\",\n\
+    \    trial: trial,\n    current_best: best_score,\n    confidence: convergence_check.confidence,\n\
+    \    exploration_rate: convergence_check.exploration_rate\n  }\n\n### Phase 4:\
+    \ Final Analysis and Crystallization\n\n# Spawn analyzer for final insights\n\
+    SPAWN {\n  component: \"components/core/system_single_agent\",\n  vars: {\n  \
+    \  model: optimizer_model,\n    prompt: |\n      Analyze the MIPRO optimization\
+    \ results:\n      \n      Task: {{task_description}}\n      Best prompt: {{best_prompt}}\n\
+    \      Best score: {{best_score}}\n      History: {{optimization_history}}\n \
+    \     \n      Provide:\n      1. Key insights about what made prompts effective\n\
+    \      2. Failure patterns to avoid\n      3. Generalizable principles discovered\n\
+    \      4. Confidence intervals for the best prompt\n  }\n} AS analyzer\n\nAWAIT\
+    \ {\n  from: analyzer,\n  event_pattern: \"agent:message\",\n  timeout: 60\n}\
+    \ AS analysis\n\n# Crystallize successful pattern if significant improvement\n\
+    IF best_score > 0.85 AND (best_score - INITIAL_SCORE) > 0.2:\n  EVENT composition:fork\
+    \ {\n    name: \"optimized_{{task_description | slugify}}\",\n    source: \"mipro_bayesian_optimization\"\
+    ,\n    modifications: {\n      variables: {\n        optimized_prompt: best_prompt,\n\
+    \        optimization_insights: analysis.insights\n      },\n      metadata: {\n\
+    \        mipro_score: best_score,\n        mipro_trials: trial,\n        mipro_improvement:\
+    \ best_score - INITIAL_SCORE\n      }\n    }\n  }\n\n# Final tracking\nTRACK {\n\
+    \  phase: \"complete\",\n  task: task_description,\n  prompt: base_prompt,\n \
+    \ optimized_prompt: best_prompt,\n  improvement: best_score - INITIAL_SCORE,\n\
+    \  total_evaluations: LENGTH(optimization_history),\n  insights: analysis.insights\n\
+    }\n\n# Terminate all agents\nTERMINATE ALL\n"
 metadata:
   pattern_type: optimization
   optimization_method: bayesian
-  inspired_by: ["MIPRO", "DSPy"]
+  inspired_by:
+  - MIPRO
+  - DSPy
   use_cases:
-    - prompt_optimization
-    - instruction_tuning
-    - few_shot_learning
+  - prompt_optimization
+  - instruction_tuning
+  - few_shot_learning
   capabilities_demonstrated:
-    - multi_stage_coordination
-    - bayesian_modeling
-    - adaptive_sampling
-    - convergence_detection
-  
-# Learning accumulation
+  - multi_stage_coordination
+  - bayesian_modeling
+  - adaptive_sampling
+  - convergence_detection
 learnings:
-  - insight: "Minibatch evaluation enables efficient exploration of prompt space"
-    confidence: 0.95
-    evidence: "Based on MIPRO paper and DSPy implementation"
-  - insight: "Grounded proposals from high-quality traces outperform random search"
-    confidence: 0.98
-    evidence: "Demonstrated across multiple optimization tasks"
-  - insight: "UCB acquisition function balances exploration and exploitation effectively"
-    confidence: 0.92
-    evidence: "Standard practice in Bayesian optimization"
-    
-# Performance expectations
+- insight: Minibatch evaluation enables efficient exploration of prompt space
+  confidence: 0.95
+  evidence: Based on MIPRO paper and DSPy implementation
+- insight: Grounded proposals from high-quality traces outperform random search
+  confidence: 0.98
+  evidence: Demonstrated across multiple optimization tasks
+- insight: UCB acquisition function balances exploration and exploitation effectively
+  confidence: 0.92
+  evidence: Standard practice in Bayesian optimization
 performance:
-  expected_duration: "5-15 minutes depending on trials"
-  resource_usage: "3-30 concurrent agents"
+  expected_duration: 5-15 minutes depending on trials
+  resource_usage: 3-30 concurrent agents
   success_metrics:
-    prompt_improvement: "> 20%"
-    convergence_rate: "< 20 trials typical"
+    prompt_improvement: '> 20%'
+    convergence_rate: < 20 trials typical
