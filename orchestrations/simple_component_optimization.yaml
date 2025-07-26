@@ -1,112 +1,34 @@
+---
 name: simple_component_optimization
 type: orchestration
+description: Simple orchestration to test component optimization with DSL executor
 version: 1.0.0
-description: 'Simple orchestration that allows agents to optimize components using
-  DSPy/MIPROv2.
 
-  Designed for bootstrapping component optimization with minimal complexity.
-
-  '
-author: ksi_system
-timestamp: 2025-07-23 18:00:00+00:00
-variables:
-  target_component: '{{target_component}}'
-  optimization_objective: '{{optimization_objective|default:''Improve clarity and
-    effectiveness''}}'
-  max_trials: '{{max_trials|default:5}}'
-  evaluation_metric: '{{evaluation_metric|default:''effectiveness''}}'
 agents:
-  optimizer:
-    component: components/personas/developers/optimization_engineer
+  executor:
+    component: "components/core/base_agent"
     vars:
-      agent_id: optimization_coordinator
-    prompt: 'You coordinate optimization of {{target_component}} using DSPy/MIPROv2.
+      initial_prompt: |
+        You are a DSL executor optimizing a component. You have self_improver capabilities.
+        
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "role": "optimization_executor"}}
+        
+        Your task: Test optimization system by emitting these events:
+        
+        1. Emit initialization:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "starting_optimization", "target": "test_component"}}
+        
+        2. Start optimization:
+        {"event": "optimization:async", "data": {"component": "test_component", "framework": "dspy", "config": {"optimizer": "mipro", "num_trials": 1, "test_mode": true}}}
+        
+        3. Report completion:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_started", "message": "Test optimization initiated"}}
+        
+        Emit all three events directly as JSON. Do not describe or explain.
 
-
-      ## MANDATORY: Start with status:
-
-      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_started",
-      "target": "{{target_component}}"}}
-
-
-      ## Optimization Context:
-
-      - Target: {{target_component}}
-
-      - Objective: {{optimization_objective}}
-
-      - Max trials: {{max_trials}}
-
-      - Metric: {{evaluation_metric}}
-
-
-      ## Your Process:
-
-      1. Load the target component
-
-      2. Start DSPy optimization with proper parameters
-
-      3. Monitor optimization progress
-
-      4. Evaluate results
-
-      5. Create optimized component version
-
-
-      ## MANDATORY: Track optimization state:
-
-      {"event": "state:entity:create", "data": {"type": "optimization_state", "id":
-      "opt_state_{{target_component}}", "properties": {"phase": "initializing", "trials":
-      0, "best_score": 0.0}}}
-
-      '
-orchestration_logic:
-  strategy: "## Phase 1: Load Target Component\nEVENT composition:get_component {\n\
-    \  name: \"{{target_component}}\"\n} AS target\n\nSTATE optimization_config =\
-    \ {\n  framework: \"dspy\",\n  objective: \"{{optimization_objective}}\",\n  metric:\
-    \ \"{{evaluation_metric}}\",\n  max_trials: {{max_trials}}\n}\n\n## Phase 2: Start\
-    \ Optimization\nEVENT optimization:async {\n  framework: \"dspy\",\n  target:\
-    \ \"{{target_component}}\",\n  objective: \"{{optimization_objective}}\",\n  config:\
-    \ optimization_config\n} AS opt_job\n\nSTATE optimization_id = opt_job.optimization_id\n\
-    \nTRACK {\n  event: \"optimization_started\",\n  optimization_id: optimization_id,\n\
-    \  target: \"{{target_component}}\"\n}\n\n## Phase 3: Monitor Progress (check\
-    \ every 30 seconds)\nSTATE complete = false\nSTATE check_count = 0\nSTATE max_checks\
-    \ = 20  # 10 minutes max\n\nWHILE NOT complete AND check_count < max_checks:\n\
-    \  WAIT 30  # seconds\n  \n  EVENT optimization:status {\n    optimization_id:\
-    \ optimization_id\n  } AS status\n  \n  IF status.status == \"completed\" OR status.status\
-    \ == \"failed\":\n    STATE complete = true\n  ELSE:\n    STATE check_count =\
-    \ check_count + 1\n    \n    # Update progress\n    EVENT state:entity:update\
-    \ {\n      id: \"opt_state_{{target_component}}\",\n      properties: {\n    \
-    \    phase: status.status,\n        trials: status.progress.trial_progress.trials_completed\
-    \ OR 0,\n        best_score: status.progress.trial_progress.best_score OR 0.0\n\
-    \      }\n    }\n    \n    TRACK {\n      event: \"optimization_progress\",\n\
-    \      optimization_id: optimization_id,\n      status: status.status,\n     \
-    \ trials_completed: status.progress.trial_progress.trials_completed\n    }\n\n\
-    ## Phase 4: Handle Results\nIF status.status == \"completed\":\n  EVENT optimization:get_result\
-    \ {\n    optimization_id: optimization_id\n  } AS result\n  \n  # Create optimized\
-    \ component\n  EVENT composition:create_component {\n    name: \"{{target_component}}_optimized\"\
-    ,\n    content: result.optimized_content,\n    metadata: {\n      optimization_method:\
-    \ \"dspy_miprov2\",\n      optimization_id: optimization_id,\n      objective:\
-    \ \"{{optimization_objective}}\",\n      improvement_score: result.improvement_score,\n\
-    \      original_component: \"{{target_component}}\"\n    }\n  } AS new_component\n\
-    \  \n  TRACK {\n    event: \"optimization_complete\",\n    optimization_id: optimization_id,\n\
-    \    new_component: new_component.name,\n    improvement: result.improvement_score\n\
-    \  }\n  \n  # Final status update\n  EVENT state:entity:update {\n    id: \"opt_state_{{target_component}}\"\
-    ,\n    properties: {\n      phase: \"completed\",\n      optimized_component:\
-    \ new_component.name,\n      final_score: result.improvement_score\n    }\n  }\n\
-    \nELSE:\n  TRACK {\n    event: \"optimization_failed\",\n    optimization_id:\
-    \ optimization_id,\n    reason: status.error OR \"timeout\"\n  }\n\n## Phase 5:\
-    \ Cleanup\nEVENT orchestration:request_termination {\n  reason: \"Optimization\
-    \ workflow complete\",\n  optimization_id: optimization_id,\n  success: complete\
-    \ AND status.status == \"completed\"\n}\n"
-metadata:
-  pattern_type: component_optimization
-  optimization_framework: dspy_miprov2
-  tags:
-  - optimization
-  - dspy
-  - component
-  - bootstrap
-performance:
-  expected_duration: 5-15 minutes
-  resource_usage: 1 coordinator agent + optimization subprocess
+orchestration_logic: |
+  Simple single-agent optimization pattern:
+  1. Agent initializes
+  2. Agent starts optimization via events
+  3. Agent reports status

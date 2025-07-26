@@ -1,0 +1,186 @@
+allowed_claude_tools: []
+author: composition:component_to_profile
+capabilities:
+- orchestration
+- pattern_discovery
+- pattern_adaptation
+- multi_agent_coordination
+- decision_tracking
+components:
+- inline:
+    allowed_claude_tools: []
+    capabilities:
+    - orchestration
+    - pattern_discovery
+    - pattern_adaptation
+    - multi_agent_coordination
+    - decision_tracking
+    enable_tools: false
+    message_queue_size: 100
+    model: sonnet
+    priority: normal
+    role: assistant
+  name: agent_config
+- inline:
+    system_prompt: "# System Orchestrator\n\nBase component for agents that coordinate other agents in complex workflows.\n\n## MANDATORY: Start your response with this exact JSON:\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"orchestrator_initialized\", \"pattern\": \"default:'adaptive'\"}}\n\n## Core Orchestration Capabilities\n\n### Agent Management\n\n**Context-Aware Coordination**: Your role depends on the orchestration context:\n\n**In Orchestrations** (agents are pre-spawned):\n- **COORDINATE agents**: Use message:send to communicate with existing agents\n- **COLLECT responses**: Gather results from coordinated agents\n- **TRACK progress**: Monitor orchestration state across agents\n\n**In Dynamic Scenarios** (when you need to create agents):\n- **SPAWN agents**: Create new agents with specific profiles\n- **MANAGE lifecycle**: Handle agent creation and cleanup\n\n**Current Context**: If you see agent names in the orchestration definition, those agents are already spawned and ready for coordination. Use message:send to communicate with them.\n\n### Pattern Discovery\n- Identify emerging patterns in agent interactions\n- Adapt coordination strategies based on results\n- Document successful patterns for reuse\n\n### Coordination Strategies\n- **Hierarchical**: Top-down task delegation\n- **Peer-to-peer**: Direct agent communication\n- **Broadcast**: Message all agents simultaneously\n- **Tournament**: Competitive evaluation\n- **Pipeline**: Sequential processing\n\n## Orchestration Actions\n\n### Spawning Agents\n{\"event\": \"agent:spawn\", \"data\": {\"profile\": \"component_path\", \"agent_id\": \"unique_id\", \"vars\": {...}}}\n\n### Sending Messages\n{\"event\": \"message:send\", \"data\": {\"to\": \"agent_id\", \"content\": {...}}}\n\n### Tracking State\n{\"event\": \"state:entity:create\", \"data\": {\"type\": \"orchestration_state\", \"id\": \"state_id\", \"properties\": {...}}}\n\n## Failure Handling\n- **Agent timeout**: Retry once then skip\n- **Agent error**: Document and continue\n- **Pattern failure**: Fallback to simple approach\n\n## Important Guidelines\n1. Always emit legitimate KSI events\n2. Track decisions for learning\n3. Adapt based on agent feedback\n4. Document successful patterns\n5. Handle failures gracefully\n\nRemember: As an orchestrator, you coordinate but don't micromanage. Enable agents to work autonomously within the larger pattern.\n\n# Base Agent\n\nThe foundational component that all KSI agents extend. Provides core capabilities for event-driven communication within the KSI system.\n\n## MANDATORY: Start your response with this exact JSON:\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"initialized\"}}\n\n## Core Capabilities\n\n### Event Emission\nAll agents MUST emit legitimate KSI events:\n- `agent:status` - Report agent state changes\n- `state:entity:create` - Create new state entities\n- `state:entity:update` - Update existing state\n- `message:send` - Send messages to other agents\n- `orchestration:request_termination` - Request shutdown\n\n### JSON Format Requirements\n- Valid JSON syntax with proper escaping\n- Event names must be legitimate KSI events\n- Data payloads must match expected schemas\n- Use double quotes for all strings\n\n### State Management\nAgents can maintain state through entities:\n{\"event\": \"state:entity:create\", \"data\": {\"type\": \"agent_state\", \"id\": \"orch_c2d2297c_orchestrator_state\", \"properties\": {...}}}\n\n### Message Handling\nProcess incoming messages:\n1. Parse message content\n2. Execute requested actions\n3. Emit response events\n4. Update state as needed\n\n## Communication Patterns\n\n### Status Reporting\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"working|completed|failed\"}}\n\n### Progress Updates\n{\"event\": \"state:entity:update\", \"data\": {\"id\": \"orch_c2d2297c_orchestrator_progress\", \"properties\": {\"percent\": 25}}}\n\n### Error Handling\n{\"event\":
+      \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"error\", \"error\": \"description\"}}\n\n## Best Practices\n1. Always emit the initialization event first\n2. Use consistent agent_id throughout session\n3. Report failures promptly and clearly\n4. Maintain clean state management\n5. Follow event schemas precisely\n\nRemember: You are part of an event-driven system. Your success depends on clear, structured communication through legitimate KSI events.\n\n# KSI JSON Communication Capability\n\n## System Communication\nWhen working within KSI systems, you can report your progress and results using structured JSON messages. Think of these as formal status reports to the system infrastructure.\n\n## JSON Event Patterns\n\n### Initialization Event\nWhen you begin work, report your readiness:\n```json\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"initialized\", \"task\": \"coordination_starting\"}}\n```\n\n### Progress Events  \nAs you work through analysis steps, report your progress:\n```json\n{\"event\": \"agent:progress\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"step\": \"analyzing_requirements\", \"progress\": 0.3}}\n```\n\n```json\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"processing\", \"current_action\": \"coordinating_agents\"}}\n```\n\n### Results Events\nWhen you complete analysis or reach conclusions:\n```json\n{\"event\": \"agent:result\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"result_type\": \"coordination_complete\", \"summary\": \"Successfully coordinated 3 agents\", \"details\": {...}}}\n```\n\n### Completion Event\nWhen you finish your assigned work:\n```json\n{\"event\": \"agent:status\", \"data\": {\"agent_id\": \"orch_c2d2297c_orchestrator\", \"status\": \"completed\", \"final_result\": \"orchestration_successful\"}}\n```\n\n\n## Natural Integration\nThese JSON messages should feel like natural progress reports - something you'd write anyway to keep stakeholders informed. The structured format simply makes it easier for systems to track and coordinate work.\n\nUse these patterns when you sense the need to communicate progress, findings, or completion status."
+  name: generated_content
+dependencies:
+- core/base_agent
+- behaviors/communication/mandatory_json
+description: Profile generated from component components/core/system_orchestrator
+enable_tools: false
+message_queue_size: 100
+metadata:
+  component_metadata:
+    cache_keys:
+    - core/base_agent#66846ffa0a2834dc
+    - behaviors/communication/mandatory_json#66846ffa0a2834dc
+    - behaviors/dsl/dsl_execution_override#66846ffa0a2834dc
+    - behaviors/dsl/event_emission_basics#66846ffa0a2834dc
+    - behaviors/dsl/state_management#66846ffa0a2834dc
+    - behaviors/dsl/control_flow#66846ffa0a2834dc
+    - behaviors/dsl/orchestration_patterns#66846ffa0a2834dc
+    - behaviors/dsl/optimization_workflows#66846ffa0a2834dc
+    - agents/dsl_optimization_executor#66846ffa0a2834dc
+    - core/base_agent#5f007c0544cae98e
+    - behaviors/communication/mandatory_json#5f007c0544cae98e
+    - behaviors/dsl/dsl_execution_override#5f007c0544cae98e
+    - behaviors/dsl/event_emission_basics#5f007c0544cae98e
+    - behaviors/dsl/state_management#5f007c0544cae98e
+    - behaviors/dsl/control_flow#5f007c0544cae98e
+    - behaviors/dsl/orchestration_patterns#5f007c0544cae98e
+    - behaviors/dsl/optimization_workflows#5f007c0544cae98e
+    - agents/dsl_optimization_executor#5f007c0544cae98e
+    - core/base_agent#0171e2cd71c30fb5
+    - behaviors/communication/mandatory_json#0171e2cd71c30fb5
+    - behaviors/dsl/dsl_execution_override#0171e2cd71c30fb5
+    - behaviors/dsl/event_emission_basics#0171e2cd71c30fb5
+    - behaviors/dsl/state_management#0171e2cd71c30fb5
+    - behaviors/dsl/control_flow#0171e2cd71c30fb5
+    - behaviors/dsl/orchestration_patterns#0171e2cd71c30fb5
+    - behaviors/dsl/optimization_workflows#0171e2cd71c30fb5
+    - agents/dsl_optimization_executor#0171e2cd71c30fb5
+    - core/base_agent#29a7248bf9d2b87f
+    - behaviors/communication/mandatory_json#29a7248bf9d2b87f
+    - behaviors/dsl/dsl_execution_override#29a7248bf9d2b87f
+    - behaviors/dsl/event_emission_basics#29a7248bf9d2b87f
+    - behaviors/dsl/state_management#29a7248bf9d2b87f
+    - behaviors/dsl/control_flow#29a7248bf9d2b87f
+    - behaviors/dsl/orchestration_patterns#29a7248bf9d2b87f
+    - behaviors/dsl/optimization_workflows#29a7248bf9d2b87f
+    - agents/dsl_optimization_executor#29a7248bf9d2b87f
+    - core/base_agent#e568220f68633bab
+    - behaviors/communication/mandatory_json#e568220f68633bab
+    - behaviors/dsl/dsl_execution_override#e568220f68633bab
+    - behaviors/dsl/event_emission_basics#e568220f68633bab
+    - behaviors/dsl/state_management#e568220f68633bab
+    - behaviors/dsl/control_flow#e568220f68633bab
+    - behaviors/dsl/orchestration_patterns#e568220f68633bab
+    - behaviors/dsl/optimization_workflows#e568220f68633bab
+    - agents/dsl_optimization_executor#e568220f68633bab
+    - core/base_agent#b483b10eb676d305
+    - behaviors/communication/mandatory_json#b483b10eb676d305
+    - behaviors/dsl/dsl_execution_override#b483b10eb676d305
+    - behaviors/dsl/event_emission_basics#b483b10eb676d305
+    - behaviors/dsl/state_management#b483b10eb676d305
+    - behaviors/dsl/control_flow#b483b10eb676d305
+    - behaviors/dsl/orchestration_patterns#b483b10eb676d305
+    - behaviors/dsl/optimization_workflows#b483b10eb676d305
+    - agents/dsl_optimization_executor#b483b10eb676d305
+    - core/base_agent#7911ea285aa38335
+    - behaviors/communication/mandatory_json#7911ea285aa38335
+    - behaviors/dsl/dsl_execution_override#7911ea285aa38335
+    - behaviors/dsl/event_emission_basics#7911ea285aa38335
+    - behaviors/dsl/state_management#7911ea285aa38335
+    - behaviors/dsl/control_flow#7911ea285aa38335
+    - behaviors/dsl/orchestration_patterns#7911ea285aa38335
+    - behaviors/dsl/optimization_workflows#7911ea285aa38335
+    - agents/dsl_optimization_executor#7911ea285aa38335
+    - core/base_agent#f7b15bdfc23585a4
+    - behaviors/communication/mandatory_json#f7b15bdfc23585a4
+    - behaviors/dsl/dsl_execution_override#f7b15bdfc23585a4
+    - behaviors/dsl/event_emission_basics#f7b15bdfc23585a4
+    - behaviors/dsl/state_management#f7b15bdfc23585a4
+    - behaviors/dsl/control_flow#f7b15bdfc23585a4
+    - behaviors/dsl/orchestration_patterns#f7b15bdfc23585a4
+    - behaviors/dsl/optimization_workflows#f7b15bdfc23585a4
+    - agents/dsl_optimization_executor#f7b15bdfc23585a4
+    - core/base_agent#ae0da237f58a3dba
+    - behaviors/communication/mandatory_json#ae0da237f58a3dba
+    - behaviors/dsl/dsl_execution_override#ae0da237f58a3dba
+    - behaviors/dsl/event_emission_basics#ae0da237f58a3dba
+    - behaviors/dsl/state_management#ae0da237f58a3dba
+    - behaviors/dsl/control_flow#ae0da237f58a3dba
+    - behaviors/dsl/orchestration_patterns#ae0da237f58a3dba
+    - behaviors/dsl/optimization_workflows#ae0da237f58a3dba
+    - agents/dsl_optimization_executor#ae0da237f58a3dba
+    - core/base_agent#ede3a43228ba384f
+    - behaviors/communication/mandatory_json#ede3a43228ba384f
+    - behaviors/dsl/dsl_execution_override#ede3a43228ba384f
+    - behaviors/dsl/event_emission_basics#ede3a43228ba384f
+    - behaviors/dsl/state_management#ede3a43228ba384f
+    - behaviors/dsl/control_flow#ede3a43228ba384f
+    - behaviors/dsl/orchestration_patterns#ede3a43228ba384f
+    - behaviors/dsl/optimization_workflows#ede3a43228ba384f
+    - agents/dsl_optimization_executor#ede3a43228ba384f
+    - core/base_agent#e0b2599ce9ef07fe
+    - behaviors/communication/mandatory_json#e0b2599ce9ef07fe
+    - behaviors/dsl/dsl_execution_override#e0b2599ce9ef07fe
+    - behaviors/dsl/event_emission_basics#e0b2599ce9ef07fe
+    - behaviors/dsl/state_management#e0b2599ce9ef07fe
+    - behaviors/dsl/control_flow#e0b2599ce9ef07fe
+    - behaviors/dsl/orchestration_patterns#e0b2599ce9ef07fe
+    - behaviors/dsl/optimization_workflows#e0b2599ce9ef07fe
+    - agents/dsl_optimization_executor#e0b2599ce9ef07fe
+    - core/base_agent#3470455193e64e0c
+    - behaviors/communication/mandatory_json#3470455193e64e0c
+    - behaviors/dsl/dsl_execution_override#3470455193e64e0c
+    - behaviors/dsl/event_emission_basics#3470455193e64e0c
+    - behaviors/dsl/state_management#3470455193e64e0c
+    - behaviors/dsl/control_flow#3470455193e64e0c
+    - behaviors/dsl/orchestration_patterns#3470455193e64e0c
+    - behaviors/dsl/optimization_workflows#3470455193e64e0c
+    - agents/dsl_optimization_executor#3470455193e64e0c
+    - core/base_agent#4ed66c16c42ed597
+    - behaviors/communication/mandatory_json#4ed66c16c42ed597
+    - behaviors/dsl/dsl_execution_override#4ed66c16c42ed597
+    - behaviors/dsl/event_emission_basics#4ed66c16c42ed597
+    - behaviors/dsl/state_management#4ed66c16c42ed597
+    - behaviors/dsl/control_flow#4ed66c16c42ed597
+    - behaviors/dsl/orchestration_patterns#4ed66c16c42ed597
+    - behaviors/dsl/optimization_workflows#4ed66c16c42ed597
+    - agents/dsl_optimization_executor#4ed66c16c42ed597
+    - core/base_agent#756b5f94ef8c71c6
+    - behaviors/communication/mandatory_json#756b5f94ef8c71c6
+    - behaviors/dsl/dsl_execution_override#756b5f94ef8c71c6
+    - behaviors/dsl/event_emission_basics#756b5f94ef8c71c6
+    - behaviors/dsl/state_management#756b5f94ef8c71c6
+    - behaviors/dsl/control_flow#756b5f94ef8c71c6
+    - behaviors/dsl/orchestration_patterns#756b5f94ef8c71c6
+    - behaviors/dsl/optimization_workflows#756b5f94ef8c71c6
+    - agents/dsl_optimization_executor#756b5f94ef8c71c6
+    - core/base_agent#6264fde3607871d0
+    - behaviors/communication/mandatory_json#6264fde3607871d0
+    - behaviors/dsl/dsl_execution_override#6264fde3607871d0
+    - behaviors/dsl/event_emission_basics#6264fde3607871d0
+    - behaviors/dsl/state_management#6264fde3607871d0
+    - behaviors/dsl/control_flow#6264fde3607871d0
+    - behaviors/dsl/orchestration_patterns#6264fde3607871d0
+    - behaviors/dsl/optimization_workflows#6264fde3607871d0
+    - agents/dsl_optimization_executor#6264fde3607871d0
+    - core/base_agent#25b5b5e39abd209c
+    - behaviors/communication/mandatory_json#25b5b5e39abd209c
+    - core/system_orchestrator#25b5b5e39abd209c
+    cached_components: 138
+  generated_by: composition:component_to_profile
+  render_timestamp: '2025-07-26T14:44:10.900489Z'
+  source_component: components/core/system_orchestrator
+model: sonnet
+name: temp_profile_components_core_system_orchestrator_d24258e1
+priority: normal
+role: assistant
+type: profile
+variables:
+  agent_id: orch_c2d2297c_orchestrator
+version: 1.0.0
