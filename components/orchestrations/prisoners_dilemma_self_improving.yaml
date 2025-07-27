@@ -1,0 +1,135 @@
+name: prisoners_dilemma_self_improving
+component_type: orchestration
+version: 1.1.0
+description: 'Enhanced Prisoner''s Dilemma that triggers optimization of player strategies
+
+  when cooperation rates fall below threshold. A simple example of self-improving
+
+  orchestration built on proven patterns.
+
+  '
+author: ksi_system
+timestamp: 2025-07-23 21:00:00+00:00
+extends: prisoners_dilemma_judge_evaluation
+variables:
+  num_rounds: '{{num_rounds|default:20}}'
+  cooperation_threshold: '{{cooperation_threshold|default:0.6}}'
+  optimization_enabled: '{{optimization_enabled|default:true}}'
+  player_model: claude-cli/sonnet
+  judge_model: claude-cli/sonnet
+agents:
+  performance_monitor:
+    component: components/core/base_agent
+    vars:
+      agent_id: performance_monitor
+    prompt: 'You monitor game outcomes and trigger optimization when needed.
+
+
+      ## MANDATORY: Start with:
+
+      {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "monitor_initialized"}}
+
+
+      Track cooperation rates and strategy effectiveness.
+
+      When cooperation falls below {{cooperation_threshold}}, recommend optimization.
+
+      '
+orchestration_logic:
+  strategy: "## Phases 1-3: Inherited from parent (Initialize, Play Game, Judge Evaluation)\n\
+    {{inherit:phases_1_to_3}}\n\n## Phase 4: Performance Analysis & Self-Improvement\n\
+    STATE cooperation_rate = CALCULATE_COOPERATION_RATE(game_history)\nSTATE mutual_cooperation_rounds\
+    \ = COUNT(game_history, outcome == \"mutual_cooperation\")\nSTATE defection_spirals\
+    \ = COUNT_DEFECTION_SPIRALS(game_history)\n\nTRACK {\n  phase: \"performance_analysis\"\
+    ,\n  cooperation_rate: cooperation_rate,\n  mutual_cooperation: mutual_cooperation_rounds,\n\
+    \  defection_spirals: defection_spirals,\n  threshold: {{cooperation_threshold}}\n\
+    }\n\n# Store game results for learning\nEVENT state:entity:create {\n  type: \"\
+    game_result\",\n  id: \"pd_result_{{TIMESTAMP()}}\",\n  properties: {\n    cooperation_rate:\
+    \ cooperation_rate,\n    strategies: {\n      player_a: \"adaptive_cooperator\"\
+    ,\n      player_b: \"tit_for_tat\"\n    },\n    game_history: game_history,\n\
+    \    insights: EXTRACT_STRATEGIC_INSIGHTS(game_history)\n  }\n}\n\n## Phase 5:\
+    \ Conditional Optimization\nIF {{optimization_enabled}} AND cooperation_rate <\
+    \ {{cooperation_threshold}}:\n  TRACK {\n    event: \"optimization_triggered\"\
+    ,\n    reason: \"low_cooperation\",\n    current_rate: cooperation_rate,\n   \
+    \ target_rate: {{cooperation_threshold}}\n  }\n  \n  # Analyze which strategy\
+    \ needs improvement\n  STATE player_a_defections = COUNT(game_history, player_a.action\
+    \ == \"defect\")\n  STATE player_b_defections = COUNT(game_history, player_b.action\
+    \ == \"defect\")\n  \n  STATE optimization_target = null\n  STATE optimization_objective\
+    \ = \"\"\n  \n  IF player_a_defections > player_b_defections * 1.5:\n    STATE\
+    \ optimization_target = \"components/personas/game_players/adaptive_cooperator\"\
+    \n    STATE optimization_objective = \"Reduce defection rate while maintaining\
+    \ strategic flexibility. Improve cooperation emergence and forgiveness mechanisms.\"\
+    \n  ELIF player_b_defections > player_a_defections * 1.5:\n    STATE optimization_target\
+    \ = \"components/personas/game_players/tit_for_tat\"\n    STATE optimization_objective\
+    \ = \"Enhance forgiveness probability and add noise tolerance. Reduce retaliation\
+    \ cycles.\"\n  ELSE:\n    # Both need work - optimize the one with lower individual\
+    \ score\n    STATE optimization_target = player_a_score < player_b_score ? \n\
+    \      \"components/personas/game_players/adaptive_cooperator\" : \n      \"components/personas/game_players/tit_for_tat\"\
+    \n    STATE optimization_objective = \"Improve ability to establish and maintain\
+    \ mutual cooperation. Break defection spirals more effectively.\"\n  \n  # Trigger\
+    \ optimization\n  EVENT orchestration:start {\n    pattern: \"orchestrations/simple_component_optimization\"\
+    ,\n    vars: {\n      target_component: optimization_target,\n      optimization_objective:\
+    \ optimization_objective,\n      max_trials: 5,\n      evaluation_metric: \"cooperation_emergence\"\
+    \n    }\n  } AS optimization_job\n  \n  TRACK {\n    event: \"optimization_started\"\
+    ,\n    target: optimization_target,\n    objective: optimization_objective,\n\
+    \    optimization_id: optimization_job.orchestration_id\n  }\n  \n  # Create learning\
+    \ record\n  EVENT state:entity:create {\n    type: \"pd_optimization_trigger\"\
+    ,\n    id: \"pd_opt_{{TIMESTAMP()}}\",\n    properties: {\n      game_result_id:\
+    \ \"pd_result_{{TIMESTAMP()}}\",\n      cooperation_rate: cooperation_rate,\n\
+    \      optimization_target: optimization_target,\n      optimization_job: optimization_job.orchestration_id,\n\
+    \      hypothesis: \"Optimizing \" + optimization_target + \" will improve cooperation\"\
+    \n    }\n  }\n\nELSE:\n  TRACK {\n    event: \"optimization_not_needed\",\n  \
+    \  cooperation_rate: cooperation_rate,\n    reason: cooperation_rate >= {{cooperation_threshold}}\
+    \ ? \"threshold_met\" : \"optimization_disabled\"\n  }\n\n## Phase 6: Meta-Learning\n\
+    # Query past optimizations to learn what works\nEVENT state:entity:query {\n \
+    \ type: \"pd_optimization_trigger\",\n  limit: 10,\n  sort: {timestamp: -1}\n\
+    } AS past_optimizations\n\nIF LENGTH(past_optimizations) > 3:\n  STATE optimization_patterns\
+    \ = ANALYZE_OPTIMIZATION_OUTCOMES(past_optimizations)\n  \n  TRACK {\n    event:\
+    \ \"meta_learning\",\n    patterns_found: optimization_patterns.successful_strategies,\n\
+    \    avg_improvement: optimization_patterns.average_cooperation_gain,\n    best_strategy:\
+    \ optimization_patterns.most_effective_optimization\n  }\n  \n  # Store meta-insights\n\
+    \  EVENT state:entity:create {\n    type: \"pd_meta_insights\",\n    id: \"pd_meta_{{TIMESTAMP()}}\"\
+    ,\n    properties: {\n      total_games_analyzed: LENGTH(past_optimizations),\n\
+    \      successful_optimizations: optimization_patterns.success_count,\n      key_insights:\
+    \ optimization_patterns.insights,\n      recommended_defaults: optimization_patterns.recommended_strategies\n\
+    \    }\n  }\n\n## Phase 7: Report & Termination\nSTATE final_report = {\n  game_outcome:\
+    \ {\n    final_scores: {a: player_a_score, b: player_b_score},\n    cooperation_rate:\
+    \ cooperation_rate,\n    winner: player_a_score > player_b_score ? \"player_a\"\
+    \ : \"player_b\"\n  },\n  optimization: {\n    triggered: optimization_target\
+    \ != null,\n    target: optimization_target,\n    reason: optimization_objective\n\
+    \  },\n  learning: {\n    game_recorded: true,\n    past_games_analyzed: LENGTH(past_optimizations),\n\
+    \    meta_insights_generated: LENGTH(past_optimizations) > 3\n  }\n}\n\nTRACK\
+    \ {\n  event: \"pd_complete\",\n  report: final_report\n}\n\nEVENT orchestration:request_termination\
+    \ {\n  reason: \"Prisoner's Dilemma complete with learning\",\n  cooperation_achieved:\
+    \ cooperation_rate,\n  optimization_triggered: optimization_target != null,\n\
+    \  report: final_report\n}\n"
+helpers:
+  CALCULATE_COOPERATION_RATE: 'Count rounds where both players cooperated divided
+    by total rounds
+
+    '
+  COUNT_DEFECTION_SPIRALS: 'Count sequences of 3+ consecutive mutual defections
+
+    '
+  EXTRACT_STRATEGIC_INSIGHTS: 'Identify key decision points, strategy shifts, and
+    cooperation breakdowns
+
+    '
+  ANALYZE_OPTIMIZATION_OUTCOMES: 'Compare cooperation rates before/after optimization
+    across games
+
+    '
+metadata:
+  pattern_type: self_improving_game
+  optimization_integration: simple
+  learning_mechanism: state_based
+  parent_pattern: prisoners_dilemma_judge_evaluation
+  tags:
+  - game_theory
+  - self_improvement
+  - optimization
+  - learning
+performance:
+  expected_duration: 5-10 minutes for game, +15 minutes if optimization triggered
+  resource_usage: 4 agents for game, +1 orchestration if optimizing
+  improvement_expected: 10-30% cooperation rate increase after optimization

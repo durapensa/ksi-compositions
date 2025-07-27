@@ -1,5 +1,5 @@
 name: simple_agent_coordination
-type: orchestration
+component_type: orchestration
 version: 1.0.0
 description: Basic agent-to-agent coordination without complex turn_taking
 author: ksi

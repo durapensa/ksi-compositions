@@ -1,0 +1,89 @@
+name: level0_state_management
+component_type: orchestration
+version: 1.0.0
+description: |
+  Level 0 test: State management using natural language.
+  Tests if agents can track and update state through verbal descriptions.
+  No DSL STATE commands - pure natural language state tracking.
+author: ksi_system
+timestamp: 2025-01-18T00:00:00Z
+
+agents:
+  # State manager using natural language
+  state_manager:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "state_manager"
+      prompt: |
+        You manage state for a simple shopping cart using natural language.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "state_manager_ready"}}
+        
+        Your task:
+        1. Start with an empty cart
+        2. Add 3 apples at $0.50 each
+        3. Add 2 bananas at $0.30 each
+        4. Remove 1 apple
+        5. Calculate the total
+        
+        Track the cart contents in your responses. No special syntax needed.
+        
+        ## MANDATORY: Report state changes:
+        {"event": "state:entity:update", "data": {"id": "shopping_cart", "properties": {"items": [...], "total": N}}}
+
+  state_validator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "state_validator"
+      prompt: |
+        You validate state transitions.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "validator_ready"}}
+        
+        Monitor the state manager's updates and verify:
+        1. State transitions are logical
+        2. Calculations are correct
+        3. Nothing is lost or duplicated
+        
+        ## MANDATORY: Report validation:
+        {"event": "state:entity:create", "data": {"type": "validation", "id": "state_check", "properties": {"valid": true/false, "final_total": N, "errors": []}}}
+
+  # Observer for measuring natural language state tracking
+  observer:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "state_observer"
+      prompt: |
+        You measure how well agents track state using natural language.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "observer_ready"}}
+        
+        Evaluate:
+        1. Clarity of state descriptions
+        2. Accuracy of state tracking
+        3. Consistency across updates
+        4. Computational correctness
+        
+        ## MANDATORY: Report measurement:
+        {"event": "state:entity:create", "data": {"type": "test_result", "id": "level0_state", "properties": {"success": true/false, "clarity_score": N, "accuracy_score": N, "notes": "..."}}}
+
+variables:
+  test_name: "Natural Language State Management"
+  test_level: 0
+  initial_state: "empty cart"
+  expected_final_total: 1.70
+
+metadata:
+  test_category: pre_dsl_baseline
+  skills_tested:
+    - state_tracking
+    - arithmetic_computation
+    - sequential_updates
+    - natural_language_precision
+  success_criteria:
+    - correct_final_state
+    - accurate_calculations
+    - clear_state_descriptions

@@ -1,5 +1,5 @@
 ---
-type: evaluation_suite
+component_type: evaluation_suite
 name: basic_effectiveness
 version: 1.0.0
 description: Basic test suite for composition effectiveness

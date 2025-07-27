@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: document_analyzer
 version: 1.0.0
 description: Specialized analyst for distributed document processing and analysis

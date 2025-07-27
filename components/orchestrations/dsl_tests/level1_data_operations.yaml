@@ -1,0 +1,186 @@
+name: level1_data_operations
+component_type: orchestration
+version: 1.0.0
+description: |
+  Level 1 test: Atomic DSL data operations.
+  Tests interpretation of EXTRACT, FILTER, SELECT, and data manipulation commands.
+  Validates that agents understand data processing patterns naturally.
+author: ksi_system
+timestamp: 2025-01-18T00:00:00Z
+
+agents:
+  # Data processor
+  data_processor:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "data_processor"
+      prompt: |
+        You execute DSL data operations using your intelligence.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "data_processor_ready"}}
+        
+        Data operations should be intuitive:
+        - EXTRACT means pull out values
+        - FILTER means select matching items
+        - SELECT means choose specific items
+        
+        Apply common sense to data manipulation.
+
+  # Data validator
+  validator:
+    component: "components/core/base_agent"
+    vars:
+      agent_id: "data_validator"
+      prompt: |
+        You validate data operation results.
+        
+        ## MANDATORY: Start with:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "validator_ready"}}
+        
+        Check:
+        1. Were extractions accurate?
+        2. Did filters work correctly?
+        3. Are selections logical?
+        4. Is data integrity maintained?
+        
+        ## MANDATORY: Report validation:
+        {"event": "state:entity:create", "data": {"type": "data_validation", "id": "data_ops_result", "properties": {"operations_count": N, "accuracy_score": N, "data_integrity": true/false}}}
+
+variables:
+  test_name: "DSL Data Operations"
+  test_level: 1
+  
+  # Test dataset
+  sample_data:
+    users:
+      - {id: 1, name: "Alice", age: 25, score: 85}
+      - {id: 2, name: "Bob", age: 30, score: 92}
+      - {id: 3, name: "Charlie", age: 35, score: 78}
+      - {id: 4, name: "Diana", age: 28, score: 96}
+    
+    transactions:
+      - {id: "t1", user_id: 1, amount: 100, category: "food"}
+      - {id: "t2", user_id: 2, amount: 50, category: "transport"}
+      - {id: "t3", user_id: 1, amount: 200, category: "shopping"}
+      - {id: "t4", user_id: 3, amount: 75, category: "food"}
+
+# Test execution patterns
+orchestration_logic:
+  # Basic extraction test
+  extraction_test: |
+    STATE dataset = {{sample_data}}
+    
+    TRACK {phase: "extraction_start"}
+    
+    # Extract specific fields
+    STATE names = EXTRACT(dataset.users, name)
+    STATE high_scores = EXTRACT(dataset.users WHERE score > 80, name)
+    STATE total_transactions = EXTRACT(dataset.transactions, amount)
+    
+    TRACK {
+      names: names,
+      high_scorers: high_scores,
+      transaction_amounts: total_transactions
+    }
+  
+  # Filtering test
+  filtering_test: |
+    STATE dataset = {{sample_data}}
+    
+    TRACK {phase: "filtering_start"}
+    
+    # Filter by conditions
+    STATE adults = FILTER(dataset.users, age >= 30)
+    STATE food_transactions = FILTER(dataset.transactions, category == "food")
+    STATE big_spenders = FILTER(dataset.transactions, amount > 100)
+    
+    TRACK {
+      adult_count: LENGTH(adults),
+      food_purchases: LENGTH(food_transactions),
+      big_purchases: LENGTH(big_spenders)
+    }
+  
+  # Selection and aggregation test
+  aggregation_test: |
+    STATE dataset = {{sample_data}}
+    
+    TRACK {phase: "aggregation_start"}
+    
+    # Select and compute
+    STATE top_scorer = SELECT_MAX(dataset.users, score)
+    STATE average_age = AVERAGE(dataset.users, age)
+    STATE total_spent = SUM(dataset.transactions, amount)
+    
+    # Group operations
+    STATE spending_by_user = GROUP_BY(dataset.transactions, user_id, SUM(amount))
+    STATE categories = DISTINCT(dataset.transactions, category)
+    
+    TRACK {
+      champion: top_scorer.name,
+      avg_age: average_age,
+      total_volume: total_spent,
+      user_totals: spending_by_user,
+      categories: categories
+    }
+  
+  # Complex data pipeline test
+  pipeline_test: |
+    STATE dataset = {{sample_data}}
+    
+    TRACK {phase: "pipeline_start"}
+    
+    # Multi-step processing
+    STATE active_users = FILTER(dataset.users, score > 80)
+    STATE their_names = EXTRACT(active_users, name)
+    STATE their_transactions = FILTER(dataset.transactions, user_id IN EXTRACT(active_users, id))
+    STATE summary = GROUP_BY(their_transactions, user_id, {
+      total: SUM(amount),
+      count: COUNT(),
+      categories: DISTINCT(category)
+    })
+    
+    TRACK {
+      pipeline_result: {
+        active_users: their_names,
+        transaction_summary: summary
+      }
+    }
+
+expected_results:
+  extraction:
+    names: ["Alice", "Bob", "Charlie", "Diana"]
+    high_scorers: ["Alice", "Bob", "Diana"]
+    total_amounts: [100, 50, 200, 75]
+  filtering:
+    adults: 2
+    food_transactions: 2
+    big_purchases: 1
+  aggregation:
+    champion: "Diana"
+    avg_age: 29.5
+    total_volume: 425
+  pipeline:
+    active_users: ["Alice", "Bob", "Diana"]
+    summary_entries: 2
+
+metadata:
+  test_category: atomic_dsl_primitives
+  dsl_constructs_tested:
+    - EXTRACT
+    - FILTER
+    - SELECT_MAX
+    - GROUP_BY
+    - AVERAGE/SUM
+    - Complex_pipelines
+  data_operations:
+    - field_extraction
+    - conditional_filtering
+    - aggregation
+    - grouping
+    - pipeline_processing
+  success_criteria:
+    - accurate_calculations
+    - correct_filtering
+    - proper_aggregation
+    - data_pipeline_integrity

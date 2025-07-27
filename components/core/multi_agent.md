@@ -1,5 +1,5 @@
 ---
-type: core
+component_type: core
 name: multi_agent
 version: 1.0.0
 description: Base component for agents with multi-agent communication and coordination capabilities

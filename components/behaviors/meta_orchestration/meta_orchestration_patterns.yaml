@@ -1,0 +1,235 @@
+name: meta_orchestration_pattern
+component_type: behavior
+version: 1.0.0
+description: |
+  Meta-orchestration patterns for orchestrators that manage other orchestrators.
+  Provides DSL patterns for system-wide optimization and hierarchical orchestration control.
+author: ksi-system
+extends: null
+
+metadata:
+  tags:
+    - meta-orchestration
+    - orchestrator-management
+    - system-optimization
+    - hierarchical-control
+  capabilities_required:
+    - orchestration:start
+    - orchestration:query
+    - agent:list
+    - agent:spawn
+    - monitor:get_status
+    - composition:discover
+    - evaluation:prompt
+    - state:set
+    - state:get
+
+# Meta-orchestration transformers
+transformers:
+  # Orchestration performance monitoring
+  - name: "orchestration_performance_tracking"
+    source: "orchestration:completed"
+    target: "meta:performance_update"
+    mapping:
+      orchestration_id: "{{orchestration_id}}"
+      pattern: "{{pattern}}"
+      duration: "{{duration}}"
+      agent_count: "{{agent_count}}"
+      success_rate: "{{success_rate}}"
+      timestamp: "{{_timestamp}}"
+    description: "Track orchestration performance for meta-optimization"
+
+  # Orchestration failure analysis
+  - name: "orchestration_failure_analysis"
+    source: "orchestration:failed"
+    target: "meta:failure_analysis"
+    mapping:
+      orchestration_id: "{{orchestration_id}}"
+      pattern: "{{pattern}}"
+      failure_reason: "{{error}}"
+      failed_agents: "{{failed_agents}}"
+      timestamp: "{{_timestamp}}"
+    description: "Analyze orchestration failures for pattern improvement"
+
+  # Dynamic orchestration spawning
+  - name: "meta_orchestration_spawn"
+    source: "meta:spawn_orchestration"
+    target: "orchestration:start"
+    mapping:
+      pattern: "{{optimal_pattern}}"
+      vars: "{{vars}}"
+      meta_context:
+        spawned_by: "meta_orchestrator"
+        optimization_goal: "{{goal}}"
+        parent_orchestration: "{{parent_id}}"
+    description: "Spawn optimized orchestrations based on meta-analysis"
+
+  # Orchestration modification
+  - name: "orchestration_runtime_modification"
+    source: "meta:modify_orchestration"
+    target: "orchestration:modify"
+    condition: "orchestration_id exists and modifications exists"
+    mapping:
+      orchestration_id: "{{orchestration_id}}"
+      modifications: "{{modifications}}"
+      reason: "{{optimization_reason}}"
+    description: "Modify running orchestrations for optimization"
+
+# Meta-orchestration patterns for agent DSL
+orchestration_logic:
+  patterns:
+    orchestration_landscape_analysis:
+      description: "Monitor and analyze the orchestration landscape"
+      usage: |
+        # Get system-wide orchestration status
+        EMIT "monitor:get_status" WITH:
+          include_orchestrations: true
+          include_performance_metrics: true
+        
+        # Analyze patterns for optimization opportunities
+        FOR each active_orchestration:
+          ASSESS performance_metrics
+          IDENTIFY bottlenecks
+          DETERMINE optimization_potential
+
+    adaptive_orchestration_spawning:
+      description: "Dynamically spawn optimized orchestrations"
+      usage: |
+        # Analyze current system load and requirements
+        ASSESS system_capacity
+        IDENTIFY optimal_patterns
+        
+        # Spawn orchestration with best-fit pattern
+        EMIT "orchestration:start" WITH:
+          pattern: selected_optimal_pattern
+          vars:
+            optimization_goal: performance_target
+            parent_orchestrator: my_agent_id
+            
+    orchestration_hierarchy_management:
+      description: "Coordinate multiple levels of orchestrations"
+      usage: |
+        # Create orchestration hierarchy
+        SPAWN meta_orchestrator AS parent
+        SPAWN domain_orchestrators AS children OF parent
+        SPAWN task_orchestrators AS children OF domain_orchestrators
+        
+        # Coordinate across hierarchy
+        EMIT "meta:coordinate_hierarchy" WITH:
+          levels: [meta, domain, task]
+          coordination_strategy: "consensus"
+
+    performance_optimization:
+      description: "Continuously optimize orchestration performance"
+      usage: |
+        # Monitor performance continuously
+        WHEN orchestration_completed:
+          ANALYZE performance_data
+          UPDATE performance_models
+          
+        # Apply optimizations
+        IF performance < threshold:
+          IDENTIFY optimization_strategies
+          APPLY runtime_modifications
+          
+    failure_recovery_orchestration:
+      description: "Handle orchestration failures and recovery"
+      usage: |
+        WHEN orchestration_failed:
+          ANALYZE failure_patterns
+          DETERMINE recovery_strategy
+          
+          IF recoverable:
+            RESTART orchestration WITH modifications
+          ELSE:
+            ESCALATE to_human_oversight
+
+# Meta-orchestration strategies
+meta_strategies:
+  hierarchical_optimization:
+    description: "Optimize orchestrations in hierarchical layers"
+    pattern: |
+      1. Meta-level: Global optimization decisions
+      2. Domain-level: Domain-specific optimizations
+      3. Task-level: Individual task optimizations
+      4. Cross-layer coordination and feedback
+
+  adaptive_resource_allocation:
+    description: "Dynamically allocate resources across orchestrations"
+    pattern: |
+      1. Monitor resource utilization
+      2. Predict resource needs
+      3. Reallocate resources based on priority
+      4. Scale orchestrations up/down as needed
+
+  pattern_evolution:
+    description: "Evolve orchestration patterns based on performance"
+    pattern: |
+      1. Collect performance data from all orchestrations
+      2. Identify successful patterns
+      3. Generate pattern variations
+      4. Test and validate improvements
+      5. Deploy evolved patterns
+
+  system_wide_coordination:
+    description: "Coordinate all orchestrations as a unified system"
+    pattern: |
+      1. Maintain global orchestration state
+      2. Coordinate resource allocation
+      3. Manage inter-orchestration dependencies
+      4. Optimize system-wide performance
+
+variables:
+  performance_threshold: 0.8
+  optimization_interval: 300  # seconds
+  max_orchestration_depth: 4
+  resource_allocation_strategy: "dynamic"
+
+# Usage examples
+examples:
+  - name: "System optimization cycle"
+    pattern: |
+      # Continuous optimization loop
+      WHILE system_active:
+        ANALYZE orchestration_landscape
+        IDENTIFY optimization_opportunities
+        
+        IF opportunities_found:
+          PLAN optimization_strategy
+          EXECUTE optimizations
+          MONITOR results
+          
+        SLEEP optimization_interval
+
+  - name: "Hierarchical orchestration management"
+    pattern: |
+      # Spawn hierarchy of orchestrators
+      SPAWN "domain_orchestrator" FOR each domain
+      
+      # Coordinate domain orchestrators
+      EMIT "meta:coordinate_domains" WITH:
+        domains: active_domains
+        coordination_mode: "collaborative"
+        
+      # Monitor and optimize hierarchy
+      CONTINUOUSLY:
+        ASSESS hierarchy_performance
+        OPTIMIZE coordination_patterns
+
+  - name: "Adaptive orchestration deployment"
+    pattern: |
+      # Analyze current workload
+      ASSESS current_workload_patterns
+      SELECT optimal_orchestration_pattern
+      
+      # Deploy with monitoring
+      EMIT "orchestration:start" WITH:
+        pattern: optimal_pattern
+        monitoring:
+          performance_tracking: true
+          failure_detection: true
+          optimization_triggers: true
+          
+      # Continuous adaptation
+      MONITOR orchestration_performance
+      ADAPT pattern_parameters BASED ON results

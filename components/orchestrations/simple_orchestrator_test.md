@@ -1,6 +1,6 @@
 ---
 name: simple_orchestrator_test
-type: orchestration
+component_type: orchestration
 version: 1.0.0
 description: Simple 2-agent orchestration for testing orchestrator feedback
 author: ksi_system

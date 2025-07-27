@@ -1,5 +1,5 @@
 name: pattern_discovery
-type: capability
+component_type: capability
 version: 1.0.0
 description: "Pattern discovery and adaptation capabilities for intelligent orchestration"
 author: ksi

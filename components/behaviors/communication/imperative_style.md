@@ -1,5 +1,5 @@
 ---
-type: behavior
+component_type: behavior
 name: imperative_style
 version: 1.0.0
 author: ksi_system

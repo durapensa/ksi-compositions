@@ -1,6 +1,6 @@
 ---
 name: test_claude_orchestrator
-type: orchestration
+component_type: orchestration
 version: 1.0.0
 description: Test orchestration with Claude Code as orchestrator agent
 author: test_system

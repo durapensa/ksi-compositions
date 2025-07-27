@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: strategic_reasoner
 version: 1.0.0
 description: Advanced game theory player with deep strategic reasoning capabilities

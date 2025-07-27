@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: ksi_business_analyst
 version: 1.0.0
 author: ksi_system

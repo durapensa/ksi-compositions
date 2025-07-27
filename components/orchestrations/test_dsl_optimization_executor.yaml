@@ -1,0 +1,170 @@
+name: test_dsl_optimization_executor
+component_type: orchestration
+version: 1.0.0
+description: |
+  Test orchestration demonstrating DSL-based optimization execution.
+  Replaces Python bootstrap with agent-driven optimization pipeline.
+  Shows the transition from ksi_optimization_pipeline.py to pure agent execution.
+author: ksi_system
+timestamp: 2025-01-26 18:00:00+00:00
+
+agents:
+  dsl_executor:
+    profile: dsl_optimization_executor_profile
+    vars:
+      initial_prompt: |
+        You are executing a complete optimization pipeline using DSL patterns.
+        
+        ## Your Task:
+        Optimize the component "{{target_component}}" using the MIPRO pattern with tournament validation.
+        
+        ## Workflow to Execute:
+        1. **MIPRO Optimization Phase**:
+           - Start optimization with {{num_trials}} trials
+           - Monitor progress every 30 seconds
+           - Track completion status
+        
+        2. **Tournament Setup Phase**:
+           - Spawn original component as variant
+           - Spawn optimized component as variant
+           - Create manual baseline variant
+        
+        3. **Tournament Execution Phase**:
+           - Test each variant with: "{{test_prompt}}"
+           - Collect responses and metrics
+        
+        4. **Judge Evaluation Phase**:
+           - Spawn LLM judge
+           - Submit all results for evaluation
+           - Apply learnings
+        
+        ## CRITICAL: Direct Execution
+        Execute the MIPRO Optimization Pattern from your training.
+        Emit all events directly - you have self_improver capabilities.
+        
+        Begin immediately with Phase 1.
+
+variables:
+  target_component: "{{component|default:personas/simple_analyst}}"
+  num_trials: "{{trials|default:5}}"
+  test_prompt: "{{prompt|default:Analyze quarterly revenue: Q1=$1.2M, Q2=$1.5M, Q3=$1.3M, Q4=$1.8M}}"
+  max_duration_minutes: "{{max_duration|default:15}}"
+
+orchestration_logic:
+  strategy: |
+    # Initialize orchestration tracking
+    EVENT state:entity:create {
+      type: "dsl_optimization_test",
+      id: "test_{{TIMESTAMP()}}",
+      properties: {
+        executor: "dsl_executor",
+        target: "{{target_component}}",
+        start_time: "{{TIMESTAMP()}}",
+        python_bootstrap: false,
+        status: "initializing"
+      }
+    }
+    
+    # Wait for executor initialization
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {role: "dsl_optimization_executor"},
+      timeout: 30
+    }
+    
+    # The DSL executor will now:
+    # 1. Execute the MIPRO optimization pattern
+    # 2. Monitor optimization progress
+    # 3. Setup and run tournament
+    # 4. Coordinate judge evaluation
+    # 5. Apply improvements
+    
+    # Monitor key milestones
+    PARALLEL:
+      BRANCH optimization_tracking:
+        AWAIT {
+          event_pattern: "optimization:async",
+          timeout: 60
+        } AS opt_started
+        
+        TRACK {
+          event: "optimization_started",
+          optimization_id: opt_started.optimization_id,
+          method: "MIPRO via DSL executor"
+        }
+      
+      BRANCH tournament_tracking:
+        AWAIT {
+          event_pattern: "agent:spawn_from_component",
+          filter: {agent_id: CONTAINS("variant")},
+          timeout: {{max_duration_minutes}} * 60
+        } AS tournament_setup
+        
+        TRACK {
+          event: "tournament_phase_started",
+          variants_spawning: true
+        }
+      
+      BRANCH completion_tracking:
+        AWAIT {
+          event_pattern: "optimization:progress",
+          filter: {phase: "complete"},
+          timeout: {{max_duration_minutes}} * 60
+        } AS pipeline_complete
+        
+        TRACK {
+          event: "pipeline_completed",
+          total_duration: DURATION(pipeline_complete.timestamp),
+          success: true
+        }
+    
+    # Give executor time to complete
+    WAIT {{max_duration_minutes}} * 60
+    
+    # Collect final results
+    EVENT state:entity:query {
+      type: "optimization_result"
+    } AS results
+    
+    # Summary report
+    EVENT state:entity:create {
+      type: "dsl_executor_test_summary",
+      id: "summary_{{TIMESTAMP()}}",
+      properties: {
+        test_completed: true,
+        optimization_results: results.count,
+        python_bootstrap_replaced: true,
+        executor_pattern: "DSL-based MIPRO with tournament",
+        duration: DURATION("{{TIMESTAMP()}}")
+      }
+    }
+    
+    TRACK {
+      event: "dsl_executor_test_complete",
+      success: true,
+      message: "Successfully executed optimization pipeline via DSL instead of Python bootstrap"
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "DSL optimization executor test complete",
+      replaced_bootstrap: "ksi_optimization_pipeline.py",
+      executor_used: "dsl_optimization_executor"
+    }
+
+metadata:
+  pattern_type: bootstrap_replacement_test
+  replaces: ksi_optimization_pipeline.py
+  demonstrates: agent_driven_optimization
+  complexity: high
+  tags:
+    - optimization
+    - dsl_execution
+    - bootstrap_transition
+    - mipro
+    - tournament
+
+performance:
+  expected_duration: 10-15 minutes
+  agent_count: 1 executor + spawned variants + judge
+  optimization_subprocess: 1 MIPRO process
+  key_metric: Successful pipeline completion without Python

@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 mixins:
   - personas/business_analyst
   - components/capabilities/imperative_ksi_communication

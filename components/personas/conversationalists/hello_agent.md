@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: hello_agent  
 version: 1.0.0
 description: Friendly conversationalist who greets warmly

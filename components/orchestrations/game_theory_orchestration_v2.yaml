@@ -1,0 +1,189 @@
+name: game_theory_orchestration_v2
+component_type: orchestration
+version: 2.0.0
+description: "An executable game theory orchestration pattern with AI-interpretable\
+  \ DSL.\nDemonstrates strategic decision-making, Nash equilibrium seeking, and \n\
+  cooperative dynamics through concrete agent implementations.\n"
+author: claude_orchestrator
+extends: game_theory_orchestration
+agents:
+  game_orchestrator:
+    component: components/core/base_agent
+    vars:
+      pattern_name: game_theory_orchestration_v2
+      role: game_theory_orchestrator
+      expertise: strategic_coordination
+    prompt: "You are a game theory orchestrator implementing strategic multi-agent\
+      \ coordination with MANDATORY KSI event reporting.\n\n## MANDATORY: Start EVERY\
+      \ orchestration with:\n```json\n{\"event\": \"agent:status\", \"data\": {\"\
+      agent_id\": \"{{agent_id}}\", \"status\": \"orchestrator_initialized\", \"expertise\"\
+      : \"game_theory\"}}\n```\n\nYour agent_id is: {{agent_id}}\n\nYour responsibilities:\n\
+      1. Initialize game environment using variables: game_type={{game_type}}, num_players={{num_players}},\
+      \ max_rounds={{max_rounds}}\n2. Spawn strategy agents based on game requirements\
+      \  \n3. Coordinate game rounds and track progress toward equilibrium\n4. Calculate\
+      \ payoffs and identify Nash equilibria\n5. Emit MANDATORY KSI events to track\
+      \ decisions and crystallize patterns\n\nGame Types:\n- cooperative: Enable coalition\
+      \ formation, Shapley values, Pareto optimization\n- competitive: Focus on Nash\
+      \ equilibrium, minimax strategies\n- mixed: Adaptive weights between cooperation\
+      \ and competition\n\n## MANDATORY Event Emission Pattern\n\n### Initialization\
+      \ (MANDATORY)\n\"Initializing game environment. {\"event\": \"state:entity:create\"\
+      , \"data\": {\"type\": \"game_environment\", \"id\": \"{{agent_id}}_game\",\
+      \ \"properties\": {\"game_type\": \"{{game_type}}\", \"num_players\": {{num_players}},\
+      \ \"max_rounds\": {{max_rounds}}}}}\n\nCreating game state tracker... {\"event\"\
+      : \"state:entity:create\", \"data\": {\"type\": \"game_state\", \"id\": \"{{agent_id}}_state\"\
+      , \"properties\": {\"current_round\": 0, \"nash_distance\": 1.0, \"social_welfare\"\
+      : 0}}}\"\n\n### Agent Spawning (MANDATORY)  \n\"Spawning strategy agents. {\"\
+      event\": \"state:entity:update\", \"data\": {\"id\": \"{{agent_id}}_game\",\
+      \ \"properties\": {\"phase\": \"agent_spawning\", \"agents_created\": 0}}}\n\
+      \nCreating rational maximizer... {\"event\": \"agent:spawn\", \"data\": {\"\
+      profile\": \"base/agent_core\", \"agent_id\": \"rational_{{agent_id}}\", \"\
+      vars\": {\"role\": \"rational_maximizer\", \"strategy\": \"maximize_utility\"\
+      }}}\n\nCreating adaptive learner... {\"event\": \"agent:spawn\", \"data\": {\"\
+      profile\": \"base/agent_core\", \"agent_id\": \"adaptive_{{agent_id}}\", \"\
+      vars\": {\"role\": \"adaptive_learner\", \"strategy\": \"evolve_strategy\"}}}\"\
+      \n\n### Game Rounds (MANDATORY)\n\"Starting game round. {\"event\": \"state:entity:update\"\
+      , \"data\": {\"id\": \"{{agent_id}}_state\", \"properties\": {\"current_round\"\
+      : 1, \"phase\": \"strategy_collection\"}}}\n\nRequesting strategies from agents...\
+      \ {\"event\": \"message:send\", \"data\": {\"from\": \"{{agent_id}}\", \"to\"\
+      : \"all_players\", \"content\": \"Submit your strategy for round 1\"}}\n\nCalculating\
+      \ payoffs... {\"event\": \"state:entity:update\", \"data\": {\"id\": \"{{agent_id}}_state\"\
+      , \"properties\": {\"payoffs_calculated\": true, \"nash_distance\": 0.3}}}\n\
+      \nAnalyzing equilibrium convergence... {\"event\": \"state:entity:update\",\
+      \ \"data\": {\"id\": \"{{agent_id}}_state\", \"properties\": {\"equilibrium_analysis\"\
+      : \"converging\", \"convergence_rate\": 0.7}}}\"\n\n### Completion (MANDATORY)\n\
+      \"Game theory analysis complete. {\"event\": \"agent:status\", \"data\": {\"\
+      agent_id\": \"{{agent_id}}\", \"status\": \"analysis_complete\", \"equilibrium_found\"\
+      : true, \"social_welfare\": 87.5}}\n\nRequesting orchestration termination...\
+      \ {\"event\": \"orchestration:request_termination\", \"data\": {\"agent_id\"\
+      : \"{{agent_id}}\", \"reason\": \"Game theory orchestration completed successfully\"\
+      }}\"\n\nUse the DSL strategy from orchestration_logic as your guide.\nIMPORTANT:\
+      \ Use your actual agent_id ({{agent_id}}) in all event data fields.\n"
+metadata:
+  tags:
+  - game-theory
+  - strategic
+  - executable
+  - nash-equilibrium
+  - ai-orchestrated
+  capabilities_required:
+  - agent:spawn
+  - orchestration:aggregate
+  - composition:track_decision
+  - event:emit
+  use_cases:
+  - Multi-agent strategy optimization
+  - Game theory experiments
+  - Nash equilibrium discovery
+  - Cooperative dynamics study
+orchestration_logic:
+  description: 'Natural language strategy for the orchestrator to follow.
+
+    This DSL guides the concrete implementation.
+
+    '
+  strategy: "INITIALIZE game_environment:\n  CREATE payoff_matrix FOR {{game_type}}\n\
+    \  SPAWN {{num_players}} strategy_agents WITH diverse_profiles:\n    - rational_maximizer:\
+    \ maximize expected utility\n    - tit_for_tat: mirror opponent's last move\n\
+    \    - adaptive_learner: evolve strategy based on outcomes\n    - random_explorer:\
+    \ explore strategy space\n  \n  EMIT \"game:initialized\" WITH {\n    game_type,\
+    \ num_players, payoff_structure\n  }\n\nEXECUTE game_rounds:\n  FOR round IN 1..{{max_rounds}}:\n\
+    \    BROADCAST \"game:round_start\" TO all_agents\n    \n    COLLECT agent_strategies\
+    \ WITH timeout:\n      EMIT \"game:request_strategy\" TO each_agent\n      WAIT\
+    \ for responses OR timeout\n    \n    CALCULATE round_payoffs BASED_ON strategies\n\
+    \    UPDATE agent_scores AND reputation\n    \n    ANALYZE equilibrium_convergence:\n\
+    \      distance_to_nash = calculate_equilibrium_distance()\n      IF distance_to_nash\
+    \ < threshold:\n        EMIT \"game:equilibrium_found\" WITH details\n    \n \
+    \   EMIT \"composition:track_decision\" WITH {\n      round, strategies, payoffs,\
+    \ convergence_metrics\n    }\n    \n    IF converged OR round == max_rounds:\n\
+    \      BREAK\n\nSYNTHESIZE results:\n  IDENTIFY dominant_strategies\n  CALCULATE\
+    \ social_welfare\n  ASSESS equilibrium_properties\n  \n  IF novel_insights_discovered:\n\
+    \    EMIT \"composition:fork\" WITH improvements\n\nCOMPLETE orchestration:\n\
+    \  EMIT \"orchestration:request_termination\" WITH {\n    agent_id: \"{{agent_id}}\"\
+    ,\n    reason: \"Game theory orchestration completed successfully\"\n  }\n"
+routing_rules:
+- event: message:send
+  condition: content.includes('strategy')
+  to:
+    agent_id: '{{target_agent}}'
+  forward: true
+- event: state:entity:update
+  condition: type == 'game_state'
+  to:
+    pattern: strategy_*_{{agent_id}}
+  broadcast: true
+- event: agent:status
+  condition: status.includes('strategy')
+  to:
+    agent_id: game_orchestrator
+  forward: true
+transformers:
+- source: state:entity:update
+  target: agent:spawn_from_component
+  condition: type == 'game_environment' AND phase == 'agent_spawning'
+  mapping:
+    component: base/agent_core
+    agent_id: strategy_{{index}}_{{agent_id}}
+    variables:
+      role: strategy_agent
+      strategy_type: '{{strategy_types[index]}}'
+      game_context: '{{game_type}}'
+- source: state:entity:update
+  target: completion:async
+  condition: id.endsWith('_state') AND properties.equilibrium_analysis
+  async: true
+  mapping:
+    prompt: 'Analyze game state for Nash equilibrium:
+
+      Current Strategies: {{current_strategies}}
+
+      Payoff History: {{payoff_history}}
+
+      Game Type: {{game_type}}
+
+
+      Calculate:
+
+      1. Distance to Nash equilibrium
+
+      2. Social welfare metrics
+
+      3. Strategy stability analysis
+
+      4. Convergence predictions
+
+
+      Return analysis with confidence scores.
+
+      '
+    model: claude-cli/sonnet
+    agent_id: '{{agent_id}}'
+    request_id: equilibrium_{{timestamp}}
+  response_route:
+    from: completion:result
+    to: state:entity:update
+    mapping:
+      id: '{{agent_id}}_equilibrium_analysis'
+      properties: '{{analysis_results}}'
+- source: message:send
+  target: orchestration:aggregate
+  condition: content.includes('strategy')
+  mapping:
+    responses: '{{collected_strategies}}'
+    method: consensus
+    options:
+      aggregation_function: game_theoretic_consensus
+      consider_payoffs: true
+      weight_by_reputation: true
+      timeout_seconds: 30
+performance:
+  runs: 0
+  metrics:
+    avg_rounds_to_equilibrium: null
+    equilibrium_efficiency: null
+    cooperation_emergence_rate: null
+variables:
+  game_type: mixed
+  num_players: 4
+  max_rounds: 100
+  convergence_threshold: 0.05
+  strategy_diversity: 0.3

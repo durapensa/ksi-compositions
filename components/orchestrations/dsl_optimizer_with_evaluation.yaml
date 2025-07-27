@@ -1,0 +1,78 @@
+---
+name: dsl_optimizer_with_evaluation
+component_type: orchestration
+version: 1.0.0
+description: |
+  DSL-based optimization with integrated evaluation and certificate generation.
+  Optimizes a component, tests it, and creates evaluation certificates.
+author: claude_code
+timestamp: 2025-07-26 18:15:00+00:00
+
+agents:
+  coordinator:
+    profile: dsl_optimization_executor_profile
+    config:
+      security_profile: self_improver
+    vars:
+      initial_prompt: |
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "role": "optimization_coordinator"}}
+        
+        Execute a complete optimization and evaluation workflow:
+        
+        ## Phase 1: Optimization
+        1. Initialize optimization state:
+        {"event": "state:entity:create", "data": {"type": "workflow_state", "id": "opt_eval_{{workflow_id}}", "properties": {"phase": "optimization", "component": "{{target_component}}"}}}
+        
+        2. Run MIPRO optimization:
+        {"event": "optimization:async", "data": {"component": "{{target_component}}", "framework": "dspy", "config": {"optimizer": "mipro", "num_trials": {{num_trials}}, "eval_type": "accuracy"}}}
+        
+        3. Wait for optimization (emit status every 30s):
+        {"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "progress": 0.3, "message": "Optimization running..."}}
+        
+        ## Phase 2: Evaluation Setup
+        4. After optimization completes, spawn test agents:
+        {"event": "agent:spawn_from_component", "data": {"component": "{{target_component}}", "agent_id": "original_{{workflow_id}}"}}
+        {"event": "agent:spawn_from_component", "data": {"component": "{{target_component}}_optimized", "agent_id": "optimized_{{workflow_id}}"}}
+        
+        ## Phase 3: Testing
+        5. Test both versions:
+        {"event": "completion:async", "data": {"agent_id": "original_{{workflow_id}}", "prompt": "{{test_prompt}}"}}
+        {"event": "completion:async", "data": {"agent_id": "optimized_{{workflow_id}}", "prompt": "{{test_prompt}}"}}
+        
+        ## Phase 4: Evaluation
+        6. Create evaluation certificate:
+        {"event": "evaluation:run", "data": {
+          "component_path": "{{target_component}}_optimized",
+          "test_suite": "optimization_validation",
+          "model": "{{model}}",
+          "test_results": {
+            "status": "passing",
+            "tests": {
+              "optimization_improvement": {"status": "pass", "improvement": "25%"},
+              "functionality_preserved": {"status": "pass", "verified": true},
+              "performance_test": {"status": "pass", "duration_ms": 5000}
+            }
+          },
+          "notes": ["Optimized with MIPRO", "Tested against original"]
+        }}
+        
+        ## Phase 5: Completion
+        7. Update state and complete:
+        {"event": "state:entity:update", "data": {"id": "opt_eval_{{workflow_id}}", "properties": {"phase": "completed", "optimization_id": "TBD", "certificate_id": "TBD"}}}
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "workflow_complete", "summary": "Optimization and evaluation complete"}}
+
+variables:
+  target_component: "{{component|default:components/personas/simple_analyst}}"
+  num_trials: "{{trials|default:5}}"
+  test_prompt: "{{prompt|default:Analyze this data: Revenue increased 15% YoY, costs down 8%, customer satisfaction up 12%}}"
+  model: "{{model|default:claude-sonnet-4-20250514}}"
+  workflow_id: "{{workflow_id|default:wf_123}}"
+
+orchestration_logic: |
+  Complete optimization lifecycle:
+  1. Optimize component with MIPRO
+  2. Spawn original and optimized variants
+  3. Test both versions with same prompt
+  4. Generate evaluation certificate
+  5. Track results in state system

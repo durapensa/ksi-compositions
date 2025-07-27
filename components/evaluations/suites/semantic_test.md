@@ -1,5 +1,5 @@
 ---
-type: evaluation_suite
+component_type: evaluation_suite
 name: semantic_test
 version: 1.0.0
 description: Test suite for semantic behavior evaluation using LLM

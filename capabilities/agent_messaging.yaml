@@ -1,5 +1,5 @@
 name: agent_messaging
-type: capability
+component_type: capability
 version: 1.0.0
 description: "Inter-agent communication and coordination capabilities"
 author: ksi

@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: summary_reporter
 version: 1.0.0
 description: Communication specialist focused on synthesis and comprehensive reporting

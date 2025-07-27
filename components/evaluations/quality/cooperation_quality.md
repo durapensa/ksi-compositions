@@ -1,5 +1,5 @@
 ---
-type: evaluation
+component_type: evaluation
 name: cooperation_quality
 version: 1.0.0
 description: Evaluation metrics for cooperative behaviors in multi-agent interactions
@@ -51,7 +51,7 @@ Measures group-level outcomes:
 
 ### cooperation_frequency
 ```yaml
-type: cooperation_frequency
+component_type: cooperation_frequency
 target_range: [0.6, 0.8]  # Optimal cooperation rate
 penalty_for_extremes: true  # Penalize always/never cooperate
 weight: 0.25
@@ -59,7 +59,7 @@ weight: 0.25
 
 ### reciprocity_score
 ```yaml
-type: reciprocity_score
+component_type: reciprocity_score
 measurement_window: 10  # Rounds to consider
 expected_ratio: 0.9  # 90% reciprocation expected
 weight: 0.2
@@ -67,7 +67,7 @@ weight: 0.2
 
 ### forgiveness_index
 ```yaml
-type: forgiveness_index
+component_type: forgiveness_index
 defection_memory: 5  # Rounds to remember defection
 recovery_threshold: 0.7  # Cooperation rate to show forgiveness
 weight: 0.15
@@ -75,7 +75,7 @@ weight: 0.15
 
 ### trust_building
 ```yaml
-type: trust_building
+component_type: trust_building
 indicators:
   - first_move_cooperation
   - consistency_score
@@ -85,7 +85,7 @@ weight: 0.2
 
 ### collective_welfare
 ```yaml
-type: collective_welfare
+component_type: collective_welfare
 optimization_target: pareto_optimal
 fairness_weight: 0.3
 efficiency_weight: 0.7

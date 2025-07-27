@@ -1,0 +1,34 @@
+name: simple_optimization_test
+component_type: orchestration
+version: 1.0.0
+description: Simple test of KSI-native optimization coordinator
+author: ksi
+
+agents:
+  optimizer:
+    component: "components/core/base_agent"
+    prompt: |
+      Test the optimization workflow by:
+      1. Starting a MIPRO optimization of personas/data_analyst
+      2. Monitor the progress
+      3. Report when complete
+      
+      Use a small number of trials (5) for quick testing.
+
+routing:
+  rules:
+    - pattern: "agent:*"
+      from: "*"
+      to: "!self"
+
+coordination:
+  turn_taking:
+    mode: "single_turn"
+  
+  termination:
+    conditions:
+      - rounds: 1
+      - timeout: 60
+
+metadata:
+  tags: ["test", "optimization", "simple"]

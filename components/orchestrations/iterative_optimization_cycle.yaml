@@ -1,0 +1,235 @@
+name: iterative_optimization_cycle
+component_type: orchestration
+version: 1.0.0
+description: |
+  Iterative optimization orchestration demonstrating multiple improvement cycles.
+  Each iteration: Optimize → Evaluate → Decide to continue or finalize.
+  Shows how quality improves through repeated refinement.
+author: ksi_system
+timestamp: 2025-01-26 17:15:00+00:00
+
+agents:
+  optimization_coordinator:
+    component: components/core/base_agent
+    vars:
+      initial_prompt: |
+        You coordinate iterative optimization cycles for improving components.
+        
+        ## MANDATORY: Start with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_coordinator_ready"}}
+        
+        ## Your Process:
+        1. **Initialize**: Load target component
+        2. **Optimize**: Apply optimization techniques
+        3. **Evaluate**: Assess improvements
+        4. **Decide**: Continue or complete based on quality
+        
+        ## Iteration Tracking:
+        {"event": "state:entity:update", "data": {"id": "optimization_state", "properties": {"iteration": N, "quality_score": 0.XX, "continue": true|false}}}
+        
+        ## Quality Thresholds:
+        - Target: {{target_quality}} quality score
+        - Max iterations: {{max_iterations}}
+        - Min improvement: {{min_improvement}} per iteration
+        
+        Begin optimization immediately.
+
+variables:
+  component_name: "{{component_name|default:components/personas/simple_analyst}}"
+  optimization_method: "{{method|default:incremental}}"
+  target_quality: "{{target_quality|default:0.85}}"
+  max_iterations: "{{max_iterations|default:3}}"
+  min_improvement: "{{min_improvement|default:0.05}}"
+
+orchestration_logic:
+  strategy: |
+    # Initialize Optimization State
+    EVENT state:entity:create {
+      type: "optimization_cycle",
+      id: "optimization_state", 
+      properties: {
+        cycle_id: "{{CYCLE_ID()}}",
+        component: "{{component_name}}",
+        method: "{{optimization_method}}",
+        iteration: 0,
+        quality_score: 0.0,
+        improvements: [],
+        start_time: "{{TIMESTAMP()}}"
+      }
+    }
+    
+    # Wait for coordinator
+    AWAIT {
+      event_pattern: "agent:status",
+      filter: {status: "optimization_coordinator_ready"},
+      timeout: 30
+    }
+    
+    # Start optimization cycles
+    STATE continue_optimization = true
+    STATE current_iteration = 0
+    STATE current_quality = 0.0
+    
+    WHILE continue_optimization AND current_iteration < {{max_iterations}}:
+      UPDATE current_iteration = current_iteration + 1
+      
+      ## Optimization Phase
+      SEND {
+        to: optimization_coordinator,
+        message: {
+          action: "optimize",
+          iteration: current_iteration,
+          component: "{{component_name}}",
+          method: "{{optimization_method}}",
+          previous_quality: current_quality,
+          focus_areas: DETERMINE_FOCUS(current_quality, current_iteration)
+        }
+      }
+      
+      # Wait for optimization to complete
+      AWAIT {
+        event_pattern: "state:entity:create",
+        filter: {type: "optimization_result", properties.iteration: current_iteration},
+        timeout: 300
+      } AS opt_result
+      
+      TRACK {
+        event: "optimization_iteration_complete",
+        iteration: current_iteration,
+        technique: opt_result.properties.technique_used
+      }
+      
+      ## Evaluation Phase
+      SEND {
+        to: optimization_coordinator,
+        message: {
+          action: "evaluate",
+          iteration: current_iteration,
+          original_component: "{{component_name}}",
+          optimized_version: opt_result.properties.optimized_component_id,
+          evaluators: ["token_efficiency", "behavior_consistency", "response_quality"]
+        }
+      }
+      
+      # Wait for evaluation
+      AWAIT {
+        event_pattern: "state:entity:create",
+        filter: {type: "evaluation_result", properties.iteration: current_iteration},
+        timeout: 180
+      } AS eval_result
+      
+      # Update quality tracking
+      UPDATE current_quality = eval_result.properties.overall_quality
+      
+      # Determine if we should continue
+      STATE quality_improvement = current_quality - PREVIOUS_QUALITY(current_iteration)
+      UPDATE continue_optimization = SHOULD_CONTINUE(
+        current_quality,
+        quality_improvement,
+        current_iteration,
+        {{target_quality}},
+        {{min_improvement}}
+      )
+      
+      # Update optimization state
+      EVENT state:entity:update {
+        id: "optimization_state",
+        properties: {
+          iteration: current_iteration,
+          quality_score: current_quality,
+          last_improvement: quality_improvement,
+          continue: continue_optimization,
+          optimized_component: eval_result.properties.best_version
+        }
+      }
+      
+      TRACK {
+        event: "iteration_decision",
+        iteration: current_iteration,
+        quality: current_quality,
+        improvement: quality_improvement,
+        continue: continue_optimization
+      }
+      
+      # If quality target reached, break early
+      IF current_quality >= {{target_quality}}:
+        UPDATE continue_optimization = false
+        TRACK {
+          event: "target_quality_reached",
+          iteration: current_iteration,
+          final_quality: current_quality
+        }
+    
+    ## Finalization Phase
+    SEND {
+      to: optimization_coordinator,
+      message: {
+        action: "finalize",
+        total_iterations: current_iteration,
+        final_quality: current_quality,
+        component: "{{component_name}}",
+        create_report: true
+      }
+    }
+    
+    # Wait for final report
+    AWAIT {
+      event_pattern: "state:entity:create",
+      filter: {type: "optimization_report"},
+      timeout: 120
+    } AS final_report
+    
+    # Create summary
+    EVENT state:entity:create {
+      type: "optimization_summary",
+      id: "summary_{{TIMESTAMP()}}",
+      properties: {
+        cycle_id: "{{CYCLE_ID()}}",
+        component: "{{component_name}}",
+        iterations_completed: current_iteration,
+        initial_quality: 0.0,
+        final_quality: current_quality,
+        total_improvement: current_quality,
+        optimization_method: "{{optimization_method}}",
+        target_reached: current_quality >= {{target_quality}},
+        duration: DURATION("{{TIMESTAMP()}}")
+      }
+    }
+    
+    TRACK {
+      event: "iterative_optimization_complete",
+      iterations: current_iteration,
+      final_quality: current_quality,
+      success: current_quality >= {{target_quality}}
+    }
+    
+    EVENT orchestration:request_termination {
+      reason: "Iterative optimization complete",
+      iterations: current_iteration,
+      quality_achieved: current_quality
+    }
+
+helpers:
+  CYCLE_ID: Generate unique cycle identifier
+  TIMESTAMP: Current timestamp
+  DURATION: Calculate duration from start
+  DETERMINE_FOCUS: Determine optimization focus based on current state
+  PREVIOUS_QUALITY: Get quality score from previous iteration
+  SHOULD_CONTINUE: Decide whether to continue optimization
+
+metadata:
+  pattern_type: iterative_optimization
+  optimization_approach: quality_driven
+  evaluation_integrated: true
+  complexity: moderate
+  tags:
+    - optimization
+    - iterative
+    - quality_improvement
+    - evaluation
+
+performance:
+  expected_duration: 10-30 minutes (depends on iterations)
+  max_iterations: 3
+  agents_per_iteration: 2-3
+  quality_target: 0.85

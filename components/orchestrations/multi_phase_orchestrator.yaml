@@ -1,0 +1,132 @@
+name: multi_phase_orchestrator
+component_type: orchestration
+version: 1.0.0
+description: 'Multi-phase orchestration pattern with a central orchestrator agent
+  coordinating
+
+  subagents through 4 distinct phases. Demonstrates longer-running orchestrations
+
+  with phase-based coordination, state management, and orchestrator control.
+
+  '
+author: ksi_system
+timestamp: 2025-01-24 21:30:00+00:00
+agents:
+  orchestrator:
+    component: components/core/base_agent
+    vars:
+      agent_id: orchestrator
+    prompt: "You are the central orchestrator coordinating a multi-phase research\
+      \ and development workflow.\n\n## MANDATORY: Start with:\n{\"event\": \"agent:status\"\
+      , \"data\": {\"agent_id\": \"{{agent_id}}\", \"status\": \"orchestrator_initialized\"\
+      , \"total_phases\": 4}}\n\nYour role: Coordinate agents through 4 phases:\n\
+      - Phase 1: Discovery (research agents)\n- Phase 2: Analysis (analyst agents)\
+      \  \n- Phase 3: Design (architect agents)\n- Phase 4: Implementation (developer\
+      \ agents)\n\n## MANDATORY: Track phase transitions:\n{\"event\": \"state:entity:update\"\
+      , \"data\": {\"id\": \"orchestration_state\", \"properties\": {\"current_phase\"\
+      : N, \"phase_status\": \"starting|in_progress|complete\", \"timestamp\": \"\
+      {{TIMESTAMP()}}\"}}}\n\n## MANDATORY: When spawning phase agents, emit:\n{\"\
+      event\": \"agent:spawn_from_component\", \"data\": {\"component\": \"components/core/base_agent\"\
+      , \"agent_id\": \"phase_N_agent_X\", \"prompt\": \"[specific task for this agent]\"\
+      }}\n\nMonitor progress and coordinate phase transitions based on completion\
+      \ signals.\n"
+variables:
+  research_topic: '{{research_topic|default:Optimizing multi-agent coordination patterns}}'
+  num_researchers: '{{num_researchers|default:2}}'
+  num_analysts: '{{num_analysts|default:2}}'
+  num_architects: '{{num_architects|default:1}}'
+  num_developers: '{{num_developers|default:2}}'
+orchestration_logic:
+  strategy: "## Phase 0: Initialize Orchestration State\nEVENT state:entity:create\
+    \ {\n  type: \"orchestration_state\",\n  id: \"orchestration_state\",\n  properties:\
+    \ {\n    orchestration_id: \"{{ORCHESTRATION_ID()}}\",\n    total_phases: 4,\n\
+    \    current_phase: 0,\n    phase_status: \"initializing\",\n    start_time: \"\
+    {{TIMESTAMP()}}\",\n    research_topic: \"{{research_topic}}\"\n  }\n}\n\nTRACK\
+    \ {\n  phase: \"initialization\",\n  event: \"multi_phase_orchestration_started\"\
+    ,\n  orchestrator: \"orchestrator\",\n  total_phases: 4,\n  topic: \"{{research_topic}}\"\
+    \n}\n\n# Wait for orchestrator to initialize\nAWAIT {\n  event_pattern: \"agent:status\"\
+    ,\n  filter: {agent_id: \"orchestrator\", status: \"orchestrator_initialized\"\
+    },\n  timeout: 60\n}\n\n## Phase 1: Discovery Phase\nSEND {\n  to: orchestrator,\n\
+    \  message: {\n    action: \"begin_phase\",\n    phase: 1,\n    phase_name: \"\
+    Discovery\",\n    instructions: \"Spawn {{num_researchers}} research agents to\
+    \ investigate: {{research_topic}}\",\n    expected_outputs: \"research_findings\"\
+    \n  }\n}\n\n# Update state to phase 1\nEVENT state:entity:update {\n  id: \"orchestration_state\"\
+    ,\n  properties: {\n    current_phase: 1,\n    phase_status: \"in_progress\",\n\
+    \    phase_1_start: \"{{TIMESTAMP()}}\"\n  }\n}\n\n# Wait for research phase completion\n\
+    AWAIT {\n  event_pattern: \"state:entity:create\",\n  filter: {type: \"phase_completion\"\
+    , properties.phase: 1},\n  timeout: 300\n} AS phase_1_complete\n\nTRACK {\n  event:\
+    \ \"phase_1_complete\",\n  findings_collected: phase_1_complete.properties.outputs_count,\n\
+    \  duration: CALCULATE_DURATION(phase_1_complete.properties.start_time, phase_1_complete.properties.end_time)\n\
+    }\n\n## Phase 2: Analysis Phase\nSEND {\n  to: orchestrator,\n  message: {\n \
+    \   action: \"begin_phase\",\n    phase: 2,\n    phase_name: \"Analysis\",\n \
+    \   instructions: \"Spawn {{num_analysts}} analyst agents to process research\
+    \ findings\",\n    input_from_phase: 1,\n    expected_outputs: \"analysis_insights\"\
+    \n  }\n}\n\nEVENT state:entity:update {\n  id: \"orchestration_state\",\n  properties:\
+    \ {\n    current_phase: 2,\n    phase_status: \"in_progress\",\n    phase_2_start:\
+    \ \"{{TIMESTAMP()}}\"\n  }\n}\n\n# Wait for analysis completion\nAWAIT {\n  event_pattern:\
+    \ \"state:entity:create\",\n  filter: {type: \"phase_completion\", properties.phase:\
+    \ 2},\n  timeout: 300\n} AS phase_2_complete\n\nTRACK {\n  event: \"phase_2_complete\"\
+    ,\n  insights_generated: phase_2_complete.properties.outputs_count,\n  key_patterns:\
+    \ phase_2_complete.properties.key_findings\n}\n\n## Phase 3: Design Phase\nSEND\
+    \ {\n  to: orchestrator,\n  message: {\n    action: \"begin_phase\",\n    phase:\
+    \ 3,\n    phase_name: \"Design\",\n    instructions: \"Spawn {{num_architects}}\
+    \ architect agent(s) to design solutions based on analysis\",\n    input_from_phase:\
+    \ 2,\n    expected_outputs: \"design_specifications\"\n  }\n}\n\nEVENT state:entity:update\
+    \ {\n  id: \"orchestration_state\",\n  properties: {\n    current_phase: 3,\n\
+    \    phase_status: \"in_progress\",\n    phase_3_start: \"{{TIMESTAMP()}}\"\n\
+    \  }\n}\n\n# Wait for design completion\nAWAIT {\n  event_pattern: \"state:entity:create\"\
+    ,\n  filter: {type: \"phase_completion\", properties.phase: 3},\n  timeout: 300\n\
+    } AS phase_3_complete\n\nTRACK {\n  event: \"phase_3_complete\",\n  designs_created:\
+    \ phase_3_complete.properties.outputs_count,\n  architecture_type: phase_3_complete.properties.solution_type\n\
+    }\n\n## Phase 4: Implementation Phase\nSEND {\n  to: orchestrator,\n  message:\
+    \ {\n    action: \"begin_phase\",\n    phase: 4,\n    phase_name: \"Implementation\"\
+    ,\n    instructions: \"Spawn {{num_developers}} developer agents to implement\
+    \ the designed solution\",\n    input_from_phase: 3,\n    expected_outputs: \"\
+    implementation_artifacts\"\n  }\n}\n\nEVENT state:entity:update {\n  id: \"orchestration_state\"\
+    ,\n  properties: {\n    current_phase: 4,\n    phase_status: \"in_progress\",\n\
+    \    phase_4_start: \"{{TIMESTAMP()}}\"\n  }\n}\n\n# Wait for implementation completion\n\
+    AWAIT {\n  event_pattern: \"state:entity:create\",\n  filter: {type: \"phase_completion\"\
+    , properties.phase: 4},\n  timeout: 300\n} AS phase_4_complete\n\nTRACK {\n  event:\
+    \ \"phase_4_complete\",\n  artifacts_created: phase_4_complete.properties.outputs_count,\n\
+    \  implementation_status: phase_4_complete.properties.status\n}\n\n## Final: Orchestration\
+    \ Summary\n# Query final state\nEVENT state:entity:get {\n  entity_id: \"orchestration_state\"\
+    ,\n  entity_type: \"orchestration_state\"\n} AS final_state\n\n# Query all phase\
+    \ outputs\nEVENT state:entity:query {\n  type: \"phase_output\"\n} AS all_outputs\n\
+    \n# Create final report\nEVENT state:entity:create {\n  type: \"orchestration_report\"\
+    ,\n  id: \"report_{{TIMESTAMP()}}\",\n  properties: {\n    orchestration_id: final_state.orchestration_id,\n\
+    \    total_duration: CALCULATE_DURATION(final_state.start_time, \"{{TIMESTAMP()}}\"\
+    ),\n    phases_completed: 4,\n    total_agents_spawned: SUM_AGENTS(all_outputs),\n\
+    \    outputs_generated: LENGTH(all_outputs),\n    research_topic: \"{{research_topic}}\"\
+    ,\n    success: true\n  }\n}\n\nTRACK {\n  event: \"multi_phase_complete\",\n\
+    \  total_phases: 4,\n  orchestrator_managed: true,\n  pattern: \"phased_coordination\"\
+    ,\n  duration: CALCULATE_DURATION(final_state.start_time, \"{{TIMESTAMP()}}\"\
+    )\n}\n\nEVENT orchestration:request_termination {\n  reason: \"Multi-phase orchestration\
+    \ complete\",\n  phases_completed: 4,\n  orchestrator_pattern: \"central_coordinator\"\
+    ,\n  total_agents: SUM_AGENTS(all_outputs),\n  success: true\n}\n"
+helpers:
+  CALCULATE_DURATION: 'Calculate time difference between timestamps
+
+    '
+  SUM_AGENTS: 'Sum total agents across all phase outputs
+
+    '
+  LENGTH: 'Count items in array
+
+    '
+metadata:
+  pattern_type: multi_phase_orchestration
+  coordination_method: orchestrator_based
+  complexity: advanced
+  phases: 4
+  test_focus: long_running_coordination
+  tags:
+  - orchestration
+  - multi_phase
+  - orchestrator
+  - coordination
+  - state_management
+performance:
+  expected_duration: 10-20 minutes
+  resource_usage: 1 orchestrator + 2-7 phase agents
+  state_entities_created: ~15-25 entities
+  success_criteria: All 4 phases complete with orchestrator coordination

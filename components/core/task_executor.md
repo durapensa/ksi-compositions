@@ -1,7 +1,7 @@
 ---
-type: core
+component_type: core
 extends: base/agent_core
-type: component
+component_type: component
 name: task_executor
 description: Systematic task execution with mandatory decomposition and validation
 version: 2.0.0

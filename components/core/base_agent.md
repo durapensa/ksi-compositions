@@ -1,9 +1,11 @@
 ---
-type: core
+component_type: core
 name: base_agent
 version: 1.0.0
 description: Foundation component for all KSI agents
 author: ksi_system
+dependencies:
+  - behaviors/core/system_agent_override
 capabilities:
   - json_emission
   - event_handling

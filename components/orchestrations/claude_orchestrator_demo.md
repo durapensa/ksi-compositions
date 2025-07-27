@@ -1,6 +1,6 @@
 ---
 name: claude_orchestrator_demo
-type: orchestration
+component_type: orchestration
 version: 1.0.0
 description: Comprehensive demo of Claude Code as orchestrator with multi-agent coordination
 author: ksi_system

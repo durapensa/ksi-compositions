@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: insight_analyst
 version: 1.0.0
 description: Analytical specialist focused on pattern recognition and insight generation from research data

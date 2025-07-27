@@ -1,5 +1,5 @@
 name: test_parent_orchestrator
-type: orchestration
+component_type: orchestration
 version: 1.0.0
 description: Parent orchestration that spawns child orchestrations
 author: test_system

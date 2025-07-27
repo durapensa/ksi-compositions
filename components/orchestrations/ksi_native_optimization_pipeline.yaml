@@ -1,0 +1,165 @@
+name: ksi_native_optimization_pipeline
+component_type: orchestration
+version: 1.0.0
+description: Fully KSI-native optimization pipeline with tournament evaluation
+author: ksi
+
+variables:
+  component_to_optimize: "personas/data_analyst"
+  optimization_framework: "dspy"
+  test_prompt: "Analyze this data set and identify key trends: [12, 15, 18, 14, 22, 19, 25, 21, 28, 30]"
+  num_trials: 10
+  orchestrator_agent_id: "ksi_optimization_orchestrator"
+
+agents:
+  optimizer:
+    component: "agents/optimization_coordinator"
+    vars:
+      role: "optimization_coordinator"
+    
+  tournament_manager:
+    component: "agents/tournament_coordinator"
+    vars:
+      role: "tournament_coordinator"
+    
+  evaluator:
+    component: "agents/evaluation_processor"
+    vars:
+      role: "evaluation_processor"
+    
+  judge:
+    component: "evaluations/llm_judge"
+    vars:
+      evaluation_type: "comparative"
+  
+  # Variant agents will be spawned dynamically by coordinator
+
+routing:
+  rules:
+    # Optimization events flow
+    - pattern: "optimization:*"
+      from: "optimizer"
+      to: "optimization_service"
+    
+    # Tournament coordination
+    - pattern: "tournament:*"
+      from: "tournament_manager"
+      to: "*"
+    
+    # Evaluation flow
+    - pattern: "evaluation:complete"
+      from: "judge"
+      to: "evaluator"
+    
+    # Learning application
+    - pattern: "optimization:insights"
+      from: "evaluator"
+      to: "optimizer"
+    
+    # Agent coordination
+    - pattern: "agent:spawn*"
+      from: "*"
+      to: "agent_service"
+    
+    # Completion flow
+    - pattern: "completion:*"
+      from: "*"
+      to: "completion_service"
+
+coordination:
+  turn_taking:
+    mode: "event_driven"
+    phases:
+      - name: "optimization"
+        description: "Optimize base component"
+        trigger: "start"
+        agents:
+          - optimizer: |
+              Please optimize the component {{component_to_optimize}} using {{optimization_framework}}.
+              Use these settings:
+              - Optimizer: mipro
+              - Trials: {{num_trials}}
+              - Auto: medium
+              
+              Start the optimization and monitor its progress.
+              When complete, prepare for tournament testing.
+      
+      - name: "tournament_setup"
+        description: "Prepare tournament variants"
+        trigger: "optimization:complete"
+        agents:
+          - optimizer: |
+              Optimization is complete. Now set up tournament testing:
+              1. Spawn the original component as variant_original
+              2. Spawn the optimized component as variant_optimized
+              3. Create a manual baseline variant as variant_manual
+              4. Hand off to tournament manager
+      
+      - name: "tournament_execution"
+        description: "Run tournament"
+        trigger: "tournament:ready"
+        agents:
+          - tournament_manager: |
+              Execute tournament with these variants:
+              - variant_original
+              - variant_optimized  
+              - variant_manual
+              
+              Test prompt: {{test_prompt}}
+              
+              Collect all responses and performance metrics.
+      
+      - name: "judge_evaluation"
+        description: "Judge evaluates results"
+        trigger: "tournament:results_ready"
+        agents:
+          - judge: |
+              Evaluate the tournament results based on:
+              - Response quality and accuracy
+              - Cost efficiency
+              - Processing speed
+              - Overall value
+              
+              Provide rankings and detailed assessment.
+      
+      - name: "apply_learnings"
+        description: "Process results and apply insights"
+        trigger: "evaluation:complete"
+        agents:
+          - evaluator: |
+              Process the judge's evaluation:
+              1. Extract key insights
+              2. Identify winning patterns
+              3. Create an improved component combining best elements
+              4. Document optimization learnings
+              5. Recommend next steps
+  
+  termination:
+    conditions:
+      - event: "optimization:learning_applied"
+      - timeout: 900  # 15 minutes max
+
+event_subscriptions:
+  # Optimizer subscribes to optimization service events
+  optimizer:
+    - "optimization:status"
+    - "optimization:progress"
+    - "optimization:complete"
+  
+  # Tournament manager subscribes to completion events
+  tournament_manager:
+    - "completion:result"
+    - "agent:spawned"
+  
+  # Evaluator subscribes to all evaluation events
+  evaluator:
+    - "evaluation:*"
+    - "tournament:complete"
+
+metadata:
+  tags: ["optimization", "tournament", "evaluation", "native"]
+  features:
+    - "Fully KSI-native execution"
+    - "No external Python scripts"
+    - "Event-driven coordination"
+    - "Self-contained pipeline"

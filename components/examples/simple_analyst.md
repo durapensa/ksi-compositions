@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: simple_analyst
 version: 1.0.0
 description: Basic business analyst for testing persona-first architecture

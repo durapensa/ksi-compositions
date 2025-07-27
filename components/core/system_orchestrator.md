@@ -1,5 +1,5 @@
 ---
-type: core
+component_type: core
 name: system_orchestrator
 version: 1.0.0
 description: Base component for pattern-aware orchestration agents

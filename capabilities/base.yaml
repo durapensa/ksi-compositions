@@ -1,5 +1,5 @@
 name: base
-type: capability
+component_type: capability
 version: 1.0.0
 description: "Base capability providing fundamental agent operations"
 author: ksi
@@ -54,7 +54,7 @@ knowledge:
 validation:
   required_fields:
     - name
-    - type
+    - component_type
     - permissions
   event_format: json
   permission_validation: true

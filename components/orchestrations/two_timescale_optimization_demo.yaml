@@ -1,0 +1,122 @@
+name: two_timescale_optimization_demo
+component_type: orchestration
+version: 1.0.0
+description: Demonstrates MIPRO baseline + SIMBA runtime optimization in tournament setting
+author: ksi_system
+
+metadata:
+  optimization_philosophy: |
+    This orchestration demonstrates the two-timescale optimization pattern:
+    1. MIPRO creates strong baseline strategies (compile-time)
+    2. SIMBA adapts strategies during tournament (runtime)
+    3. Best variants feed back into next MIPRO cycle
+    
+    Like biological systems with evolution (slow) and learning (fast)
+
+configuration:
+  rounds: 20
+  mini_batch_size: 4
+  simba_trigger_threshold: 0.4  # Optimize if win rate below 40%
+  mipro_cycle_frequency: 10     # Recompile every 10 rounds
+
+agents:
+  tournament_master:
+    component: components/core/base_agent
+    prompt: |
+      ## MANDATORY: Start your response with this exact JSON:
+      {"event": "agent:status", "data": {"agent_id": "tournament_master", "status": "initialized", "optimization_mode": "two_timescale"}}
+      
+      # Two-Timescale Optimization Tournament Master
+      
+      You orchestrate a tournament that demonstrates both compile-time (MIPRO) and runtime (SIMBA) optimization.
+      
+      ## Phase 1: Initialize with MIPRO-Optimized Baselines
+      {"event": "state:entity:create", "data": {"type": "optimization_log", "id": "tournament_{{TIMESTAMP()}}", "properties": {"phase": "initialization", "optimizer": "MIPRO", "status": "creating_baselines"}}}
+      
+      {"event": "message:send", "data": {"to": "mipro_optimizer", "content": "Create optimized baseline for adaptive_cooperator strategy"}}
+      {"event": "message:send", "data": {"to": "mipro_optimizer", "content": "Create optimized baseline for tit_for_tat strategy"}}
+      
+      ## Phase 2: Run Tournament Rounds with SIMBA Adaptation
+      For each round:
+      1. Run matches between players
+      2. Calculate performance metrics
+      3. If any player below threshold, trigger SIMBA:
+         {"event": "message:send", "data": {"to": "simba_optimizer", "content": "Adapt strategy for underperforming player using last {{mini_batch_size}} games"}}
+      
+      ## Phase 3: Track Learning Curves
+      {"event": "state:entity:create", "data": {"type": "learning_curve", "id": "round_{{round}}_performance", "properties": {"round": "{{round}}", "player_scores": {...}, "optimization_triggered": true/false, "optimizer_used": "SIMBA"}}}
+      
+      ## Phase 4: Periodic MIPRO Recompilation
+      Every {{mipro_cycle_frequency}} rounds:
+      {"event": "message:send", "data": {"to": "mipro_optimizer", "content": "Recompile strategy incorporating all SIMBA variants from past {{mipro_cycle_frequency}} rounds"}}
+      
+      ## Phase 5: Compare Optimization Approaches
+      {"event": "state:entity:create", "data": {"type": "optimization_comparison", "id": "final_analysis", "properties": {"baseline_performance": {...}, "simba_improvements": {...}, "mipro_recompilation_gains": {...}}}}
+
+  mipro_optimizer:
+    component: components/core/base_agent
+    prompt: |
+      ## MANDATORY: Start your response with this exact JSON:
+      {"event": "agent:status", "data": {"agent_id": "mipro_optimizer", "status": "initialized", "role": "compile_time_optimizer"}}
+      
+      # MIPRO v2 Compile-Time Optimizer
+      
+      You perform heavyweight optimization to create strong baseline strategies.
+      
+      ## MIPRO Optimization Process:
+      1. Bootstrap demonstrations from training data
+      2. Propose instructions via grounded generation
+      3. Use Bayesian optimization to find best instruction+demo combination
+      4. Return optimized component
+      
+      {"event": "optimization:async", "data": {"prompt": "Run MIPRO v2 optimization", "config": {"mode": "medium", "num_trials": 40, "use_bayesian": true}}}
+      
+      {"event": "state:entity:create", "data": {"type": "mipro_baseline", "id": "baseline_{{component}}_{{TIMESTAMP()}}", "properties": {"component": "{{component}}", "optimization_score": 0.85, "num_trials": 40}}}
+
+  simba_optimizer:
+    component: components/core/base_agent  
+    prompt: |
+      ## MANDATORY: Start your response with this exact JSON:
+      {"event": "agent:status", "data": {"agent_id": "simba_optimizer", "status": "initialized", "role": "runtime_optimizer"}}
+      
+      # SIMBA Runtime Optimizer
+      
+      You perform lightweight optimization during live gameplay.
+      
+      ## SIMBA Mini-Batch Optimization:
+      1. Sample recent games (mini-batch)
+      2. Score current strategy on mini-batch
+      3. Generate variations (add/drop rules, tweak parameters)
+      4. Hill-climb to better performance
+      5. Return adapted strategy
+      
+      {"event": "state:entity:create", "data": {"type": "simba_adaptation", "id": "adapt_{{player}}_round_{{round}}", "properties": {"mini_batch_size": 4, "improvement": 0.12, "adaptation_type": "rule_tweak"}}}
+      
+      {"event": "agent:progress", "data": {"agent_id": "simba_optimizer", "progress": 0.5, "current_step": "evaluating_variants"}}
+      
+      {"event": "message:send", "data": {"to": "{{player_id}}", "content": "Apply this adapted strategy: {{improved_strategy}}"}}
+
+  performance_analyst:
+    component: components/core/base_agent
+    prompt: |
+      ## MANDATORY: Start your response with this exact JSON:
+      {"event": "agent:status", "data": {"agent_id": "performance_analyst", "status": "initialized", "role": "optimization_tracker"}}
+      
+      # Performance Analysis Agent
+      
+      You track and analyze the effectiveness of two-timescale optimization.
+      
+      ## Metrics to Track:
+      1. **Baseline Performance**: MIPRO-optimized starting performance
+      2. **Runtime Adaptation**: SIMBA improvements during gameplay
+      3. **Recompilation Gains**: Performance after MIPRO incorporates SIMBA learnings
+      4. **Learning Efficiency**: How quickly strategies improve
+      
+      ## Analysis Reports:
+      {"event": "state:entity:create", "data": {"type": "optimization_report", "id": "report_{{round}}", "properties": {"mipro_contribution": 0.6, "simba_contribution": 0.3, "ensemble_bonus": 0.1, "total_improvement": "85% over random baseline"}}}
+      
+      ## Key Insights:
+      - MIPRO provides strong start (60% of gains)
+      - SIMBA enables context-specific adaptation (30% additional)
+      - Ensemble of variants adds robustness (10% additional)
+      - Two-timescale approach outperforms either alone

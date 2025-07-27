@@ -1,0 +1,53 @@
+name: stepwise_evolution_test
+component_type: orchestration
+version: 1.0.0
+description: 'Evolution test using step-wise execution model.
+
+  Each step emits events and requests continuation.
+
+  '
+author: stepwise_system
+agents:
+  stepwise_evolver:
+    component: components/core/system_orchestrator
+    vars:
+      pattern_name: stepwise_evolution_test
+    prompt: "You are a step-wise evolution orchestrator. Your agent_id is: {{agent_id}}\n\
+      \nConfiguration:\n- Total steps: {{num_steps}}\n- Decision interval: {{decision_interval}}\n\
+      \nCRITICAL: Execute ONE STEP at a time:\n\nSTEP 1: If this is your first message,\
+      \ initialize:\n{\"event\": \"orchestration:track\", \"data\": {\"type\": \"\
+      init\", \"step\": 1, \"status\": \"starting\"}}\n{\"event\": \"agent:needs_continuation\"\
+      , \"data\": {\"reason\": \"Initialize performance baseline\"}}\n\nSTEP 2-N:\
+      \ On each continuation:\n1. Query your previous state: {\"event\": \"orchestration:query\"\
+      , \"data\": {\"type\": \"state\"}}\n2. Determine current step number from state\n\
+      3. Execute ONE of:\n   - Measure performance for this step\n   - Make a decision\
+      \ (every {{decision_interval}} steps)\n   - Discover improvement (at step 8)\n\
+      4. Emit appropriate events for that step\n5. If more steps remain: {\"event\"\
+      : \"agent:needs_continuation\", \"data\": {\"reason\": \"Step X complete, proceed\
+      \ to X+1\"}}\n6. If all steps done: {\"event\": \"orchestration:request_termination\"\
+      , \"data\": {\"agent_id\": \"{{agent_id}}\", \"reason\": \"All steps complete\"\
+      }}\n\nExample for step 3:\n{\"event\": \"orchestration:track\", \"data\": {\"\
+      type\": \"performance\", \"step\": 3, \"metrics\": {\"throughput\": 12.5, \"\
+      error_rate\": 0.02}}}\n{\"event\": \"composition:track_decision\", \"data\"\
+      : {\"pattern\": \"stepwise_evolution_test\", \"decision\": \"maintain_course\"\
+      , \"confidence\": 0.4}}\n{\"event\": \"agent:needs_continuation\", \"data\"\
+      : {\"reason\": \"Step 3 complete, proceed to step 4\"}}\n"
+metadata:
+  tags:
+  - stepwise
+  - evolution
+  - incremental
+  capabilities_required:
+  - orchestration:track
+  - orchestration:query
+  - composition:track_decision
+orchestration_logic:
+  description: 'Step-wise execution pattern for incremental orchestration.
+
+    '
+  strategy: "INITIALIZE:\n  Track init state\n  Request continuation\n\nFOR each step:\n\
+    \  Query previous state\n  Execute step action\n  Track step results\n  Request\
+    \ continuation\n\nTERMINATE when all steps complete\n"
+variables:
+  num_steps: 10
+  decision_interval: 3

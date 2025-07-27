@@ -1,5 +1,5 @@
 name: dsl_optimization_executor_profile
-type: profile
+component_type: profile
 version: 1.0.0
 description: Profile wrapper for dsl_optimization_executor component
 author: ksi_system

@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: data_researcher
 version: 1.0.0  
 description: Specialized research agent focused on data gathering and information discovery

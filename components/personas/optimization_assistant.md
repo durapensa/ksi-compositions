@@ -1,6 +1,6 @@
 ---
 version: 2.1.0
-type: persona
+component_type: persona
 author: optimization_service
 created_at: 2025-01-18
 description: Assistant for DSPy prompt optimization tasks

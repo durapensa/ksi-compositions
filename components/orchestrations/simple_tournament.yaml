@@ -1,0 +1,33 @@
+name: simple_tournament
+component_type: orchestration
+version: 1.0.0
+description: Simple tournament between analyst variants
+author: ksi
+
+agents:
+  analyst_1:
+    component: "components/core/base_agent"
+    prompt: "You are analyst #1 (basic approach). Analyze this data: {{prompt}}"
+    
+  analyst_2:
+    component: "components/core/base_agent"
+    prompt: "You are analyst #2 (detailed approach). Analyze this data: {{prompt}}"
+    
+  analyst_3:
+    component: "components/core/base_agent"
+    prompt: "You are analyst #3 (concise approach). Analyze this data: {{prompt}}"
+
+routing:
+  rules:
+    - pattern: "agent:response"
+      from: "*"
+      to: "!self"
+
+coordination:
+  turn_taking:
+    mode: "sequential"
+  
+  termination:
+    conditions:
+      - rounds: 1
+      - timeout: 60

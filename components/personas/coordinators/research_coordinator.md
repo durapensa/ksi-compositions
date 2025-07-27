@@ -1,5 +1,5 @@
 ---
-type: persona
+component_type: persona
 name: research_coordinator
 version: 1.0.0
 description: Research workflow coordinator with state management and agent oversight capabilities

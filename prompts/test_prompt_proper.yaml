@@ -1,9 +1,0 @@
-name: test_prompt_proper
-type: prompt
-version: 1.0.0
-description: Testing proper prompt creation
-author: test_user
-mixins: []
-components: []
-variables: {}
-metadata: {}

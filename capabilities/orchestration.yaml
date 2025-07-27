@@ -1,5 +1,5 @@
 name: orchestration
-type: capability
+component_type: capability
 version: 1.0.0
 description: "Multi-agent orchestration capabilities for spawning, coordinating, and managing agents"
 author: ksi

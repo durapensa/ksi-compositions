@@ -1,5 +1,5 @@
 ---
-type: evaluation
+component_type: evaluation
 name: dsl_interpretability
 version: 1.0.0
 description: Evaluation suite for measuring DSL interpretation quality and natural understanding

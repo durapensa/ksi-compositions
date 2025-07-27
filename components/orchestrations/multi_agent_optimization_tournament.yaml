@@ -1,0 +1,76 @@
+---
+name: multi_agent_optimization_tournament
+component_type: orchestration  
+version: 1.0.0
+description: |
+  Multi-agent optimization tournament orchestration.
+  Coordinator manages optimizer agents that create variants and run tournaments.
+  Demonstrates delegation patterns and agent coordination.
+author: claude_code
+timestamp: 2025-07-26 18:30:00+00:00
+
+agents:
+  coordinator:
+    component: components/core/orchestration_coordinator
+    config:
+      security_profile: self_improver
+      capabilities:
+        - orchestration
+        - agent_spawn
+        - state_management
+    vars:
+      initial_prompt: |
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "role": "tournament_coordinator"}}
+        
+        You coordinate an optimization tournament. Your workflow:
+        
+        1. Spawn optimization agents:
+        {"event": "agent:spawn_from_component", "data": {"component": "components/agents/dsl_optimization_executor", "agent_id": "optimizer_mipro", "config": {"security_profile": "self_improver"}}}
+        {"event": "agent:spawn_from_component", "data": {"component": "components/agents/dsl_optimization_executor", "agent_id": "optimizer_simba", "config": {"security_profile": "self_improver"}}}
+        
+        2. Delegate optimization tasks:
+        {"event": "completion:async", "data": {"agent_id": "optimizer_mipro", "prompt": "Optimize {{target_component}} using MIPRO with {{num_trials}} trials. Focus on clarity."}}
+        {"event": "completion:async", "data": {"agent_id": "optimizer_simba", "prompt": "Optimize {{target_component}} using SIMBA incremental learning. Start from baseline."}}
+        
+        3. Monitor progress (every 60s):
+        {"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "progress": 0.5, "message": "Optimizers running..."}}
+        
+        4. After optimizations complete, spawn judge:
+        {"event": "agent:spawn_from_component", "data": {"component": "components/evaluations/judges/optimization_judge", "agent_id": "tournament_judge"}}
+        
+        5. Run tournament evaluation:
+        {"event": "completion:async", "data": {"agent_id": "tournament_judge", "prompt": "Compare optimization results from MIPRO and SIMBA variants. Test prompt: {{test_prompt}}"}}
+        
+        6. Complete workflow:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "tournament_complete", "winner": "TBD"}}
+
+  optimizer_mipro:
+    # Spawned dynamically by coordinator
+    
+  optimizer_simba:
+    # Spawned dynamically by coordinator
+    
+  tournament_judge:
+    # Spawned dynamically by coordinator
+
+variables:
+  target_component: "{{component|default:components/personas/analysts/data_analyst}}"
+  num_trials: "{{trials|default:10}}"
+  test_prompt: "{{prompt|default:Analyze market trends: Tech +23%, Healthcare +18%, Energy -5%, Finance +12%}}"
+  tournament_rounds: "{{rounds|default:3}}"
+
+orchestration_logic: |
+  Multi-agent tournament pattern:
+  1. Coordinator spawns specialized optimizer agents
+  2. Each optimizer uses different techniques (MIPRO vs SIMBA)
+  3. Optimizers work in parallel on same component
+  4. Judge evaluates results in tournament format
+  5. Coordinator tracks state and reports winner
+  
+  Key patterns demonstrated:
+  - Dynamic agent spawning with security profiles
+  - Parallel optimization strategies
+  - Agent-to-agent delegation via completion:async
+  - State-based coordination
+  - Tournament-based evaluation

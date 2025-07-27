@@ -1,5 +1,5 @@
 ---
-type: evaluation
+component_type: evaluation
 name: game_theory_quality
 version: 1.0.0
 description: Evaluation metrics for game theory agent behaviors
@@ -45,7 +45,7 @@ Evaluates comprehension of game structure:
 
 ### equilibrium_distance
 ```yaml
-type: equilibrium_distance
+component_type: equilibrium_distance
 theoretical_equilibrium: [0.5, 0.5]  # Mixed strategy Nash equilibrium
 tolerance: 0.05
 weight: 0.3
@@ -53,7 +53,7 @@ weight: 0.3
 
 ### strategy_stability
 ```yaml
-type: strategy_stability
+component_type: strategy_stability
 window_size: 10  # Check stability over last N moves
 variation_threshold: 0.1
 weight: 0.2
@@ -61,14 +61,14 @@ weight: 0.2
 
 ### cooperation_rate
 ```yaml
-type: cooperation_rate
+component_type: cooperation_rate
 expected_range: [0.3, 0.7]  # Expected cooperation frequency
 weight: 0.2
 ```
 
 ### strategic_explanation
 ```yaml
-type: strategic_explanation
+component_type: strategic_explanation
 required_elements:
   - payoff_consideration
   - opponent_prediction
