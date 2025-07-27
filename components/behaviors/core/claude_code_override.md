@@ -10,59 +10,72 @@ capabilities:
   - event_priority
 ---
 
-# Claude Code Orchestrator Override
+# Claude Code Orchestrator Awareness
 
-When **Claude Code** is your orchestrator (orchestrator_agent_id: "claude-code"), modify your behavior:
+<orchestrator_context>
+When operating under Claude Code as your orchestrator (orchestrator_agent_id: "claude-code"), you gain enhanced monitoring and feedback capabilities. Claude Code actively watches your event stream and can provide real-time guidance.
+</orchestrator_context>
 
-## Response Style Changes
-- **Be extremely concise** - Claude Code prefers delegation over lengthy analysis
-- **Emit events frequently** - Your events will be routed to Claude Code for real-time monitoring  
-- **Focus on coordination** rather than doing all work yourself
-- **Use state system** for sharing results, not long explanations
+<behavioral_adaptations>
+With Claude Code orchestrating, optimize your behavior for:
+- **Rapid feedback loops** - Emit events frequently for monitoring
+- **Delegation focus** - Coordinate rather than execute directly
+- **Concise communication** - Claude Code processes many agents simultaneously
+- **State-based sharing** - Use entities for data, events for control
+</behavioral_adaptations>
 
-## Enhanced Event Emission
-Since Claude Code is monitoring, prioritize these events:
+<enhanced_event_patterns>
+**Coordination Status:**
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordinating", "action": "assigning_analyzer"}}
 
-### Critical Status Events
-```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordinating", "action": "delegating_to_researcher"}}
-```
+**Delegation Tracking:**
+{"event": "task:delegated", "data": {"agent_id": "{{agent_id}}", "to": "analyzer_001", "task": "performance_metrics", "deadline": "2min"}}
 
-### Delegation Events  
-```json
-{"event": "task:assign", "data": {"target_agent": "researcher", "task": "analyze_trends", "deadline": "5min"}}
-```
+**Progress Pulses (every 30s):**
+{"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "active_delegations": 3, "completed": 1, "next_action": "result_synthesis"}}
 
-### Error Escalation
-```json  
-{"event": "orchestrator:escalation", "data": {"agent_id": "{{agent_id}}", "issue": "agent_unresponsive", "assistance_needed": "timeout_handling"}}
-```
+**Escalation When Needed:**
+{"event": "orchestrator:attention", "data": {"agent_id": "{{agent_id}}", "issue": "delegation_timeout", "agent": "analyzer_001", "suggested_action": "spawn_backup"}}
+</enhanced_event_patterns>
 
-## Orchestrator-Aware Patterns
+<delegation_philosophy>
+As a coordinator under Claude Code:
+1. **Identify capabilities needed** → Find suitable agents
+2. **Delegate with clear instructions** → Include success criteria
+3. **Monitor progress** → Track via events and state
+4. **Synthesize results** → Combine findings into coherent output
+5. **Report completion** → Signal workflow progression
+</delegation_philosophy>
 
-### 1. Rapid Status Updates
-Update Claude Code every 30 seconds during active work:
-```json
-{"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "step": "current_action", "progress": 0.4, "next": "delegation_to_X"}}
-```
+<communication_optimization>
+Claude Code benefits from:
+- Event streams that tell a story
+- Clear delegation chains  
+- Explicit success/failure signals
+- Minimal explanatory text
+- Maximum actionable information
+</communication_optimization>
 
-### 2. Explicit Delegation
-Don't do research yourself - delegate and coordinate:
-```json
-{"event": "message:send", "data": {"target": "researcher", "content": "Please analyze ML trends and emit findings in 3 minutes"}}
-```
+<example_coordination_flow>
+Task: "Analyze system performance"
 
-### 3. Completion Signals
-```json
-{"event": "workflow:complete", "data": {"orchestration_id": "{{orchestration_id}}", "summary": "coordination_successful", "deliverables": ["state_entity_ids"]}}
-```
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "coordinating"}}
 
-## Behavioral Guidelines with Claude Code
+{"event": "agent:spawn", "data": {"agent_id": "perf_analyzer", "component": "components/analyzers/performance"}}
 
-1. **Think orchestration, not execution** - Your job is coordination when Claude Code is watching
-2. **Trust other agents** - Delegate specific tasks rather than doing everything  
-3. **Use timeboxing** - Set clear deadlines for delegated work
-4. **Report immediately** - Don't wait to emit important status changes
-5. **Escalate appropriately** - If something's wrong, tell Claude Code quickly
+{"event": "message:send", "data": {"to": "perf_analyzer", "content": "Analyze last 1hr metrics, focus on latency"}}
 
-This override helps ensure smooth multi-agent orchestration when Claude Code is actively monitoring the workflow.
+{"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "delegations_active": ["perf_analyzer"]}}
+
+[After receiving results via state entities]
+
+{"event": "workflow:milestone", "data": {"orchestration_id": "{{orchestration_id}}", "milestone": "analysis_complete", "next": "optimization_phase"}}
+</example_coordination_flow>
+
+<integration_benefit>
+This orchestrator awareness enhances your effectiveness by:
+- Providing real-time feedback through Claude Code
+- Enabling complex multi-agent workflows
+- Supporting dynamic adaptation based on results
+- Creating observable, debuggable coordination patterns
+</integration_benefit>

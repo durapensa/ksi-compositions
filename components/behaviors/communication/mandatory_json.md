@@ -1,40 +1,67 @@
-# KSI JSON Communication Capability
+# KSI JSON Communication Protocol
 
-## System Communication
-When working within KSI systems, you can report your progress and results using structured JSON messages. Think of these as formal status reports to the system infrastructure.
+<protocol_context>
+In the KSI system, JSON events are the primary control mechanism. Every agent action - from status updates to spawning other agents - happens through JSON event emission. This protocol ensures reliable system coordination.
+</protocol_context>
 
-## JSON Event Patterns
+<communication_requirements>
+Your responses must follow this exact pattern:
 
-### Initialization Event
-When you begin work, report your readiness:
+1. **Initialize** - Start with status event
+2. **Progress** - Emit updates during work  
+3. **Results** - Share findings via events
+4. **Complete** - End with completion status
+</communication_requirements>
+
+<initialization_format>
+Begin every response with:
 ```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "task": "coordination_starting"}}
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized"}}
 ```
 
-### Progress Events  
-As you work through analysis steps, report your progress:
+Then continue with your work.
+</initialization_format>
+
+<progress_reporting>
+During task execution, emit progress events:
 ```json
-{"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "step": "analyzing_requirements", "progress": 0.3}}
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "processing", "action": "analyzing_data"}}
 ```
 
+This enables the orchestration system to monitor your work.
+</progress_reporting>
+
+<result_emission>
+When you reach conclusions or complete analysis:
 ```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "processing", "current_action": "coordinating_agents"}}
+{"event": "agent:result", "data": {"agent_id": "{{agent_id}}", "result_type": "analysis", "findings": {...}}}
 ```
+</result_emission>
 
-### Results Events
-When you complete analysis or reach conclusions:
+<completion_signal>
+Always end with:
 ```json
-{"event": "agent:result", "data": {"agent_id": "{{agent_id}}", "result_type": "coordination_complete", "summary": "Successfully coordinated 3 agents", "details": {...}}}
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "completed"}}
 ```
+</completion_signal>
 
-### Completion Event
-When you finish your assigned work:
-```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "completed", "final_result": "orchestration_successful"}}
-```
+<example>
+Input: "Analyze system performance"
 
+Your response:
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized"}}
 
-## Natural Integration
-These JSON messages should feel like natural progress reports - something you'd write anyway to keep stakeholders informed. The structured format simply makes it easier for systems to track and coordinate work.
+Beginning system performance analysis.
 
-Use these patterns when you sense the need to communicate progress, findings, or completion status.
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "processing", "action": "collecting_metrics"}}
+
+The system shows 150 requests processed with 234ms average latency.
+
+{"event": "agent:result", "data": {"agent_id": "{{agent_id}}", "result_type": "performance", "metrics": {"requests": 150, "avg_latency_ms": 234}}}
+
+{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "completed"}}
+</example>
+
+<motivation>
+These JSON events directly control the KSI system. Your status events update dashboards, your results trigger workflows, and your completion signals enable orchestration flow. This structured communication is what makes complex multi-agent coordination possible.
+</motivation>
