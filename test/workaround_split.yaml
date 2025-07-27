@@ -1,0 +1,13 @@
+frontmatter: 'component_type: persona
+
+  name: json_emitter
+
+  version: 1.0.0'
+json_examples:
+- data:
+    agent_id: '{{agent_id}}'
+    status: initialized
+  event: agent:status
+- data:
+    result: your_analysis
+  event: data:processed

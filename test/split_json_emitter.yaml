@@ -1,0 +1,12 @@
+component_type: persona
+json_instructions:
+  JSON_INSTRUCTION_1:
+    data:
+      agent_id: '{{agent_id}}'
+      status: initialized
+    event: agent:status
+  JSON_INSTRUCTION_2:
+    data:
+      result: your_analysis
+    event: data:processed
+version: 1.0.0
