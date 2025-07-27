@@ -6,18 +6,22 @@ description: DSL interpreter capable of executing complete optimization workflow
 security_profile: self_improver
 dependencies:
   - core/base_agent
-  - behaviors/communication/mandatory_json
+  - behaviors/core/system_agent_override
   - behaviors/dsl/dsl_execution_override
+  - behaviors/core/claude_code_override
+  - behaviors/core/claude_code_aware_json
   - behaviors/dsl/event_emission_basics
   - behaviors/dsl/state_management
   - behaviors/dsl/control_flow
   - behaviors/dsl/orchestration_patterns
   - behaviors/dsl/optimization_workflows
 capabilities:
-  - dsl_execution
-  - optimization_coordination
-  - agent_orchestration
-  - composition_development
+  - state_write
+  - state_read
+  - completion_management
+  - spawn_agents
+  - composition_management
+  - system_monitoring
 ---
 
 # DSL Optimization Executor
