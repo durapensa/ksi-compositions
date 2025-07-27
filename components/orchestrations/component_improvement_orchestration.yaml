@@ -1,0 +1,76 @@
+component_type: orchestration
+name: component_improvement_orchestration
+version: 1.0.0
+description: Working orchestration for component improvement using natural language analysis
+author: ksi_system
+
+agents:
+  analyzer:
+    component: "components/personas/optimizers/component_analyzer"
+    vars:
+      initial_prompt: |
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "analyzer_initialized"}}
+        
+        Analyze this component for improvement opportunities:
+        {{component_content}}
+        
+        Provide a detailed analysis covering:
+        1. Token efficiency opportunities
+        2. Functional enhancement possibilities
+        3. Instruction clarity improvements
+        4. Behavioral effectiveness optimizations
+        
+        End with specific, actionable recommendations.
+
+  improver:
+    component: "components/core/base_agent"
+    vars:
+      initial_prompt: |
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "improver_initialized"}}
+        
+        Based on this analysis:
+        {{analysis_result}}
+        
+        Create an improved version of this component:
+        {{component_content}}
+        
+        Requirements:
+        - Maintain all essential functionality
+        - Apply the recommended optimizations
+        - Use proper YAML frontmatter format
+        - Focus on clarity and efficiency
+        
+        Provide the complete improved component with proper structure.
+
+  orchestrator:
+    component: "components/core/json_orchestrator"
+    vars:
+      initial_prompt: |
+        ## MANDATORY: Start your response with this exact JSON:
+        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "orchestrator_initialized"}}
+        
+        You are a JSON orchestrator. Extract the improved component from this text and emit it as a proper JSON event:
+        
+        {{improved_component_text}}
+        
+        Extract the YAML content between the triple backticks or the complete component definition.
+        
+        Emit this exact JSON structure:
+        {"event": "composition:create_component", "data": {"name": "{{output_component_name}}", "content": "[extracted component content here]"}}
+        
+        IMPORTANT: The content must include proper YAML frontmatter.
+
+orchestration_logic:
+  improvement_flow: |
+    1. analyzer receives component_content
+    2. improver receives analyzer's recommendations and component_content
+    3. orchestrator receives improver's output and emits JSON event
+    4. Result: improved component created via composition:create_component
+
+coordination:
+  termination:
+    conditions:
+      - timeout: 180
+      - all_agents_complete: true

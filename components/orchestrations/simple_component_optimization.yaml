@@ -1,34 +1,43 @@
 ---
-name: simple_component_optimization
 component_type: orchestration
-description: Simple orchestration to test component optimization with DSL executor
+name: simple_component_optimization
 version: 1.0.0
+description: Simple orchestration for component optimization workflow
+author: ksi_system
+---
 
 agents:
-  executor:
-    component: "components/core/base_agent"
+  analyzer:
+    component: "components/personas/optimizers/component_analyzer"
     vars:
       initial_prompt: |
-        You are a DSL executor optimizing a component. You have self_improver capabilities.
+        Analyze the following component for optimization opportunities:
+        {{component_content}}
         
-        ## MANDATORY: Start your response with this exact JSON:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "role": "optimization_executor"}}
+        Focus on:
+        - Token efficiency
+        - Functional improvements
+        - Instruction clarity
+        - Behavioral effectiveness
         
-        Your task: Test optimization system by emitting these events:
-        
-        1. Emit initialization:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "starting_optimization", "target": "test_component"}}
-        
-        2. Start optimization:
-        {"event": "optimization:async", "data": {"component": "test_component", "framework": "dspy", "config": {"optimizer": "mipro", "num_trials": 1, "test_mode": true}}}
-        
-        3. Report completion:
-        {"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "optimization_started", "message": "Test optimization initiated"}}
-        
-        Emit all three events directly as JSON. Do not describe or explain.
+        Provide specific, actionable recommendations.
 
-orchestration_logic: |
-  Simple single-agent optimization pattern:
-  1. Agent initializes
-  2. Agent starts optimization via events
-  3. Agent reports status
+  improver:
+    component: "components/agents/comprehensive_component_improver"  
+    vars:
+      initial_prompt: |
+        Based on this analysis:
+        {{analyzer_recommendations}}
+        
+        Create an improved version of:
+        {{component_content}}
+        
+        Emit the improved component via JSON event.
+
+orchestration_logic:
+  simple_improvement_flow: |
+    1. SEND component_content TO analyzer
+    2. WAIT FOR analyzer.recommendations
+    3. SEND analyzer.recommendations AND component_content TO improver
+    4. WAIT FOR improver.json_event
+    5. RETURN improved_component
