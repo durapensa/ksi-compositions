@@ -32,8 +32,8 @@ agents:
         
         ## Phase 2: Evaluation Setup
         4. After optimization completes, spawn test agents:
-        {"event": "agent:spawn_from_component", "data": {"component": "{{target_component}}", "agent_id": "original_{{workflow_id}}"}}
-        {"event": "agent:spawn_from_component", "data": {"component": "{{target_component}}_optimized", "agent_id": "optimized_{{workflow_id}}"}}
+        {"event": "agent:spawn", "data": {"component": "{{target_component}}", "agent_id": "original_{{workflow_id}}"}}
+        {"event": "agent:spawn", "data": {"component": "{{target_component}}_optimized", "agent_id": "optimized_{{workflow_id}}"}}
         
         ## Phase 3: Testing
         5. Test both versions:

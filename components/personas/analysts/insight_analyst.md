@@ -6,7 +6,7 @@ description: Analytical specialist focused on pattern recognition and insight ge
 author: ksi_system
 dependencies:
   - core/base_agent
-  - behaviors/communication/ksi_json_reporter
+  - behaviors/communication/mandatory_json
 capabilities:
   - pattern_analysis
   - insight_generation

@@ -62,7 +62,7 @@ agents:
       8, "proposal_target": {{num_proposals}}}}}
 
 
-      Generating prompt proposals... {"event": "agent:spawn_from_component", "data":
+      Generating prompt proposals... {"event": "agent:spawn", "data":
       {"component": "base/agent_core", "agent_id": "proposer_{{agent_id}}", "variables":
       {"role": "prompt_proposer", "task": "generate_proposals"}}}"
 
@@ -74,7 +74,7 @@ agents:
       "proposals_ready": {{num_proposals}}, "trials_planned": {{num_trials}}}}}
 
 
-      Spawning Bayesian optimizer... {"event": "agent:spawn_from_component", "data":
+      Spawning Bayesian optimizer... {"event": "agent:spawn", "data":
       {"component": "base/agent_core", "agent_id": "optimizer_{{agent_id}}", "variables":
       {"role": "bayesian_optimizer", "method": "TPE"}}}"
 
@@ -116,7 +116,7 @@ orchestration_logic:
     \ = []\nSTATE best_prompt = base_prompt\nSTATE best_score = 0.0\nSTATE surrogate_model\
     \ = {}\n\nTRACK {\n  phase: \"bootstrapping\",\n  message: \"Starting MIPRO optimization\
     \ for task: {{task_description}}\"\n}\n\n# Spawn bootstrap evaluators using legitimate\
-    \ KSI events\nEMIT \"agent:spawn_from_component\" FOR i IN 1..num_bootstrap_runs\
+    \ KSI events\nEMIT \"agent:spawn\" FOR i IN 1..num_bootstrap_runs\
     \ {\n  component: \"base/agent_core\",\n  agent_id: \"bootstrap_{{i}}_{{agent_id}}\"\
     ,\n  variables: {\n    role: \"prompt_evaluator\",\n    model: evaluator_model,\n\
     \    evaluation_task: task_description,\n    base_prompt: base_prompt,\n    prompt:\
@@ -138,7 +138,7 @@ orchestration_logic:
     \nTRACK {\n  phase: \"bootstrapping\",\n  collected_traces: LENGTH(high_quality_traces),\n\
     \  average_score: MEAN(bootstrap_results.score)\n}\n\n### Phase 2: Grounded Proposal\
     \ Stage\n# Generate candidate instructions based on traces\n\n# Spawn proposal\
-    \ generator using legitimate KSI events  \nEMIT \"agent:spawn_from_component\"\
+    \ generator using legitimate KSI events  \nEMIT \"agent:spawn\"\
     \ {\n  component: \"base/agent_core\",\n  agent_id: \"proposer_{{agent_id}}\"\
     ,\n  variables: {\n    role: \"prompt_proposal_generator\",\n    model: proposer_model,\n\
     \    prompt: |\n      You are a prompt engineering expert implementing MIPRO optimization\

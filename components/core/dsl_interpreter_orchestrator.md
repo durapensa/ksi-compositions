@@ -36,7 +36,7 @@ You will receive orchestration DSL code that describes a workflow. Your job is t
 - `APPEND collection item` → Add to a list
 
 ### Agent Operations
-- `SPAWN agent WITH component: "path"` → Emit: {"event": "agent:spawn_from_component", "data": {"component": "path", "agent_id": "generated_id"}}
+- `SPAWN agent WITH component: "path"` → Emit: {"event": "agent:spawn", "data": {"component": "path", "agent_id": "generated_id"}}
 - `SEND {to: agent, message: content}` → Emit: {"event": "message:send", "data": {"to": "agent", "content": content}}
 - `AWAIT {from: agent}` → Wait for response, then continue
 

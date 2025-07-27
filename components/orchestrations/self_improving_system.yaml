@@ -29,10 +29,10 @@ orchestrator:
     5. **Commit Phase**: Save successful improvements
     
     ## Phase 1: Spawn Evaluator
-    {"event": "agent:spawn_from_component", "data": {"component": "components/core/base_agent", "agent_id": "performance_evaluator", "prompt": "Evaluate the current system performance. Focus on: 1) JSON emission reliability, 2) Agent communication patterns, 3) Task completion rates. Emit your findings as state entities."}}
+    {"event": "agent:spawn", "data": {"component": "components/core/base_agent", "agent_id": "performance_evaluator", "prompt": "Evaluate the current system performance. Focus on: 1) JSON emission reliability, 2) Agent communication patterns, 3) Task completion rates. Emit your findings as state entities."}}
     
     ## Phase 2: After evaluation completes, spawn optimizer
-    {"event": "agent:spawn_from_component", "data": {"component": "components/core/base_agent", "agent_id": "system_optimizer", "prompt": "Based on evaluation results, suggest specific improvements. Focus on: 1) Better JSON patterns, 2) Clearer agent instructions, 3) More reliable coordination. Create improvement proposals as state entities."}}
+    {"event": "agent:spawn", "data": {"component": "components/core/base_agent", "agent_id": "system_optimizer", "prompt": "Based on evaluation results, suggest specific improvements. Focus on: 1) Better JSON patterns, 2) Clearer agent instructions, 3) More reliable coordination. Create improvement proposals as state entities."}}
     
     ## Coordination via State
     - Monitor state entities created by your agents

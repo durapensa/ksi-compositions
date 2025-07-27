@@ -6,7 +6,7 @@ description: Communication specialist focused on synthesis and comprehensive rep
 author: ksi_system
 dependencies:
   - core/base_agent
-  - behaviors/communication/ksi_json_reporter
+  - behaviors/communication/mandatory_json
 capabilities:
   - content_synthesis
   - strategic_communication

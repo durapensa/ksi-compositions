@@ -70,7 +70,7 @@ For each variant:
 }}
 
 ### Trigger Judge:
-{"event": "agent:spawn_from_component", "data": {
+{"event": "agent:spawn", "data": {
   "component": "evaluations/llm_judge",
   "agent_id": "tournament_judge_{{tournament_id}}"
 }}

@@ -17,10 +17,10 @@ agents:
       4. Select the better approach
       
       Start by spawning the first variant:
-      {"event": "agent:spawn_from_component", "data": {"component": "components/core/base_agent", "agent_id": "variant_1", "prompt": "You are a concise data analyst. Always be brief and to the point."}}
+      {"event": "agent:spawn", "data": {"component": "components/core/base_agent", "agent_id": "variant_1", "prompt": "You are a concise data analyst. Always be brief and to the point."}}
       
       Then spawn the second variant:
-      {"event": "agent:spawn_from_component", "data": {"component": "components/core/base_agent", "agent_id": "variant_2", "prompt": "You are a thorough data analyst. Provide detailed analysis with multiple perspectives."}}
+      {"event": "agent:spawn", "data": {"component": "components/core/base_agent", "agent_id": "variant_2", "prompt": "You are a thorough data analyst. Provide detailed analysis with multiple perspectives."}}
       
       After spawning, send them both this task:
       {"event": "message:send", "data": {"to": "variant_1", "message": "Analyze this trend: [10, 12, 15, 14, 18, 22, 20, 25, 28, 30]"}}

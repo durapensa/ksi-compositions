@@ -66,7 +66,7 @@ After tournament:
 }}
 
 ### Spawn Agents:
-{"event": "agent:spawn_from_component", "data": {
+{"event": "agent:spawn", "data": {
   "component": "{{component_path}}",
   "agent_id": "{{agent_id}}"
 }}

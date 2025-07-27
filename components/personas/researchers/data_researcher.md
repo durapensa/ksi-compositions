@@ -6,7 +6,7 @@ description: Specialized research agent focused on data gathering and informatio
 author: ksi_system
 dependencies:
   - core/base_agent
-  - behaviors/communication/ksi_json_reporter
+  - behaviors/communication/mandatory_json
 capabilities:
   - information_gathering
   - data_analysis

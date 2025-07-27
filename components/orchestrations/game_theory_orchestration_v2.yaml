@@ -118,7 +118,7 @@ routing_rules:
   forward: true
 transformers:
 - source: state:entity:update
-  target: agent:spawn_from_component
+  target: agent:spawn
   condition: type == 'game_environment' AND phase == 'agent_spawning'
   mapping:
     component: base/agent_core

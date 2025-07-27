@@ -54,7 +54,7 @@ For optimization assessment, compare original vs optimized:
 ### Phase 3: Behavioral Validation
 ```bash
 # Test agent spawn and basic functionality
-ksi send agent:spawn_from_component --component "optimized_component_path"
+ksi send agent:spawn --component "optimized_component_path"
 # Monitor for expected events
 ksi send monitor:get_events --agent-id "spawned_agent_id"
 ```

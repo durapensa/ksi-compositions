@@ -95,7 +95,7 @@ orchestration_logic:
       
       BRANCH tournament_tracking:
         AWAIT {
-          event_pattern: "agent:spawn_from_component",
+          event_pattern: "agent:spawn",
           filter: {agent_id: CONTAINS("variant")},
           timeout: {{max_duration_minutes}} * 60
         } AS tournament_setup

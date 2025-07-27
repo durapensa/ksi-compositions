@@ -26,8 +26,8 @@ agents:
         You coordinate an optimization tournament. Your workflow:
         
         1. Spawn optimization agents:
-        {"event": "agent:spawn_from_component", "data": {"component": "components/agents/dsl_optimization_executor", "agent_id": "optimizer_mipro", "config": {"security_profile": "self_improver"}}}
-        {"event": "agent:spawn_from_component", "data": {"component": "components/agents/dsl_optimization_executor", "agent_id": "optimizer_simba", "config": {"security_profile": "self_improver"}}}
+        {"event": "agent:spawn", "data": {"component": "components/agents/dsl_optimization_executor", "agent_id": "optimizer_mipro", "config": {"security_profile": "self_improver"}}}
+        {"event": "agent:spawn", "data": {"component": "components/agents/dsl_optimization_executor", "agent_id": "optimizer_simba", "config": {"security_profile": "self_improver"}}}
         
         2. Delegate optimization tasks:
         {"event": "completion:async", "data": {"agent_id": "optimizer_mipro", "prompt": "Optimize {{target_component}} using MIPRO with {{num_trials}} trials. Focus on clarity."}}
@@ -37,7 +37,7 @@ agents:
         {"event": "agent:progress", "data": {"agent_id": "{{agent_id}}", "progress": 0.5, "message": "Optimizers running..."}}
         
         4. After optimizations complete, spawn judge:
-        {"event": "agent:spawn_from_component", "data": {"component": "components/evaluations/judges/optimization_judge", "agent_id": "tournament_judge"}}
+        {"event": "agent:spawn", "data": {"component": "components/evaluations/judges/optimization_judge", "agent_id": "tournament_judge"}}
         
         5. Run tournament evaluation:
         {"event": "completion:async", "data": {"agent_id": "tournament_judge", "prompt": "Compare optimization results from MIPRO and SIMBA variants. Test prompt: {{test_prompt}}"}}

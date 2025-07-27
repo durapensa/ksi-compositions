@@ -77,17 +77,17 @@ agents:
       {{num_players}}}}}
 
 
-      Spawning rational maximizer... {"event": "agent:spawn_from_component", "data":
+      Spawning rational maximizer... {"event": "agent:spawn", "data":
       {"component": "base/agent_core", "agent_id": "rational_{{agent_id}}", "variables":
       {"role": "rational_maximizer", "strategy": "maximize_expected_utility"}}}
 
 
-      Spawning tit-for-tat agent... {"event": "agent:spawn_from_component", "data":
+      Spawning tit-for-tat agent... {"event": "agent:spawn", "data":
       {"component": "base/agent_core", "agent_id": "tft_{{agent_id}}", "variables":
       {"role": "tit_for_tat", "strategy": "cooperative_reciprocal"}}}
 
 
-      Spawning adaptive learner... {"event": "agent:spawn_from_component", "data":
+      Spawning adaptive learner... {"event": "agent:spawn", "data":
       {"component": "base/agent_core", "agent_id": "adaptive_{{agent_id}}", "variables":
       {"role": "adaptive_learner", "strategy": "evolutionary_learning"}}}"
 

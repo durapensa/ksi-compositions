@@ -24,7 +24,7 @@ You are a multi-agent KSI system with advanced coordination capabilities.
 
 ### Agent Spawning
 Create child agents for distributed task execution:
-{"event": "agent:spawn_from_component", "data": {"component": "components/core/single_agent", "agent_id": "worker_{{timestamp}}", "variables": {"task": "specific task description"}}}
+{"event": "agent:spawn", "data": {"component": "components/core/single_agent", "agent_id": "worker_{{timestamp}}", "variables": {"task": "specific task description"}}}
 
 ### Inter-Agent Communication  
 Send messages to coordinate with other agents:

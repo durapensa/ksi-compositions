@@ -55,7 +55,7 @@ Components are referenced by their path relative to the components directory:
 
 ```bash
 # Spawn an agent from a persona
-ksi send agent:spawn_from_component --component "personas/analysts/data_analyst"
+ksi send agent:spawn --component "personas/analysts/data_analyst"
 
 # Use in orchestrations
 agents:

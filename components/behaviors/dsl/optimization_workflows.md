@@ -160,13 +160,13 @@ FOREACH i IN RANGE(candidates.length):
     # Spawn test agents
     PARALLEL:
       BRANCH agent_a:
-        EVENT agent:spawn_from_component {
+        EVENT agent:spawn {
           component: candidate_a,
           agent_id: "test_agent_a_{{i}}_{{j}}"
         }
       
       BRANCH agent_b:
-        EVENT agent:spawn_from_component {
+        EVENT agent:spawn {
           component: candidate_b,
           agent_id: "test_agent_b_{{i}}_{{j}}"
         }
