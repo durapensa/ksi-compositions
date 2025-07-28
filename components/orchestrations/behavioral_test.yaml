@@ -1,0 +1,52 @@
+---
+component_type: orchestration
+name: behavioral_test
+version: 1.0.0
+description: Actually runs behavioral tests on components by spawning agents
+author: claude_code
+---
+
+# Behavioral Test Orchestration
+
+Actually evaluates components by spawning agents and testing their behavior.
+
+agents:
+  evaluator:
+    component: "components/core/base_agent"
+    dependencies:
+      - "behaviors/communication/ksi_events_as_tool_calls"
+    capabilities:
+      - agent
+      - composition
+      - state
+    vars:
+      initial_prompt: |
+        You are the Behavioral Test Evaluator.
+        
+        Your task is to evaluate the component: {{component_path}}
+        
+        Steps:
+        1. First, spawn a test agent using the component
+        2. Send test prompts to verify behavior
+        3. Monitor responses and events
+        4. Compile test results
+        
+        Use KSI tool calls to:
+        - agent:spawn to create the test agent
+        - completion:async to send test prompts
+        - Report results as state entities
+
+orchestration_logic:
+  flow: |
+    1. Evaluator receives component_path to test
+    2. Evaluator spawns agent with that component
+    3. Evaluator runs behavioral tests:
+       - Basic response test
+       - Event emission test (if applicable)
+       - Task completion test
+    4. Evaluator stores results in state
+    5. Results used for certificate generation
+
+  coordination: |
+    The evaluator agent has full control over the testing process.
+    It dynamically spawns and tests based on component type.
