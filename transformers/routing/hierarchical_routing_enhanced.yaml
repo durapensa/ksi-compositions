@@ -28,24 +28,15 @@ transformers:
         request_id: "{{_ksi_context._request_id|none}}"  # From context
     description: Routes events between agents with auto-timestamp
 
-  # Simplified orchestration routing
-  - source: "routing:agent_to_orchestration"
-    target: "orchestration:event"
-    mapping:
-      orchestration_id: "{{orchestration_id}}"
-      source_agent: "{{source_agent_id}}"
-      event: "{{event_name}}"
-      data: "{{event_data}}"
-      timestamp: "{{timestamp_utc()}}"
-      routed_from: "{{_ksi_context._agent_id|unknown}}"
-    description: Routes to orchestration with context tracking
+  # Orchestration routing removed in Stage 2.4 migration
+  # Dynamic routing handles parent-child relationships
 
   # Pass-through error routing for critical errors
   - source: "agent:error"
-    target: "orchestration:critical_error"
+    target: "monitor:critical_error"
     condition: "severity == 'critical'"
     mapping: "{{$}}"  # Pass entire error structure
-    description: Critical errors pass through unchanged
+    description: Critical errors pass through to monitoring
 
   # Enhanced error logging for non-critical
   - source: "agent:error"
@@ -60,17 +51,16 @@ transformers:
       context_summary: "{{upper(error.type)|ERROR}} in {{agent_id}}"
     description: Non-critical errors with enhanced metadata
 
-  # Status change propagation
+  # Status change propagation - now routes to monitoring
   - source: "agent:status_changed"
-    target: "orchestration:agent_status_update"
+    target: "monitor:agent_status_update"
     mapping:
       agent_id: "{{agent_id}}"
       new_status: "{{status}}"
       previous_status: "{{previous_status|unknown}}"
       changed_at: "{{timestamp_utc()}}"
-      orchestration_id: "{{_ksi_context.orchestration_id|none}}"
       change_summary: "Agent {{agent_id}} is now {{upper(status)}}"
-    description: Propagate status changes with enrichment
+    description: Propagate status changes to monitoring system
 
   # Simple event forwarding
   - source: "agent:metric"
@@ -78,21 +68,8 @@ transformers:
     mapping: "{{$}}"  # Just forward everything
     description: Pass metrics through unchanged
 
-  # Complex aggregation example
-  - source: "orchestration:summary_request"
-    target: "orchestration:summary_response"
-    async: true
-    mapping:
-      orchestration_id: "{{id}}"
-      agent_count: "{{len(agents)}}"
-      first_agent: "{{agents.0.id|no_agents}}"
-      status_summary: "Orchestration {{id}} has {{len(agents)}} agents"
-      metrics:
-        total_tokens: "{{metrics.tokens|0}}"
-        total_requests: "{{metrics.requests|0}}"
-        avg_response_time: "{{metrics.total_time / metrics.requests|0}}"
-      timestamp: "{{timestamp_utc()}}"
-    description: Generate orchestration summary with calculations
+  # Orchestration summary transformers removed in Stage 2.4 migration
+  # Dynamic routing provides coordination without centralized orchestration
 
 # Multi-target example (when supported)
 multi_target_transformers:
@@ -112,11 +89,4 @@ multi_target_transformers:
     description: Broadcast important events to multiple systems
 
 # Response routing with enhanced templates
-response_routes:
-  - transform_pattern: "orchestration:summary_request"
-    response_event: "orchestration:summary_complete"
-    mapping:
-      original_request: "{{_transform.source_data}}"
-      summary: "{{response}}"
-      completed_at: "{{timestamp_utc()}}"
-      processing_time_ms: "{{time() * 1000 - _transform.start_time|0}}"
+# Orchestration response routes removed in Stage 2.4 migration

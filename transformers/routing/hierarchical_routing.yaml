@@ -22,16 +22,8 @@ transformers:
         timestamp: "{{timestamp}}"
     description: Routes events between agents using completion:async
 
-  # Agent-to-Orchestration routing
-  - source: "routing:agent_to_orchestration"
-    target: "orchestration:event"
-    mapping:
-      orchestration_id: "{{orchestration_id}}"
-      source_agent: "{{source_agent_id}}"
-      event: "{{event_name}}"
-      data: "{{event_data}}"
-      timestamp: "{{timestamp}}"
-    description: Routes agent events to parent orchestrations
+  # Agent-to-Orchestration routing removed in Stage 2.4 migration
+  # Dynamic routing now handles parent-child relationships
 
   # Broadcast to multiple agents
   - source: "routing:broadcast_to_agents"
@@ -46,17 +38,16 @@ transformers:
     # or a handler that iterates over agent_ids
     description: Broadcasts events to multiple agents
 
-  # Error routing based on severity
+  # Critical error routing - now routes to monitoring instead of orchestration
   - source: "agent:error"
-    target: "orchestration:critical_error"
+    target: "monitor:critical_error"
     condition: "severity == 'critical'"
     mapping:
-      orchestration_id: "{{orchestration_id}}"
       agent_id: "{{agent_id}}"
       error: "{{error}}"
       context: "{{context}}"
       timestamp: "{{timestamp}}"
-    description: Routes critical errors to orchestration
+    description: Routes critical errors to monitoring system
 
   - source: "agent:error"
     target: "monitor:agent_error"

@@ -5,7 +5,7 @@ version: 1.0.0
 description: DSL instruction component teaching STATE management and variable tracking for orchestration control
 dependencies:
   - core/base_agent
-  - behaviors/dsl/event_emission_basics
+  - behaviors/dsl/event_emission_tool_use
 capabilities:
   - dsl_interpretation_state
   - state_tracking
@@ -39,7 +39,21 @@ STATE active_agents = ["researcher", "analyst"]
 
 **When reporting state, emit:**
 ```json
-{"event": "state:entity:update", "data": {"entity_type": "agent", "entity_id": "{{agent_id}}", "id": "orchestration_state", "properties": {"analysis_results": {}, "progress_counter": 0, "active_agents": ["researcher", "analyst"]}}}
+{
+  "type": "ksi_tool_use",
+  "id": "ksiu_state_001",
+  "name": "state:entity:update",
+  "input": {
+    "entity_type": "agent",
+    "entity_id": "{{agent_id}}",
+    "id": "orchestration_state",
+    "properties": {
+      "analysis_results": {},
+      "progress_counter": 0,
+      "active_agents": ["researcher", "analyst"]
+    }
+  }
+}
 ```
 
 ### 2. State Updates

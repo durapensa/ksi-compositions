@@ -5,7 +5,7 @@ version: 1.0.0
 description: DSL instruction component teaching control flow patterns including conditionals, loops, and execution control
 dependencies:
   - core/base_agent
-  - behaviors/dsl/event_emission_basics
+  - behaviors/dsl/event_emission_tool_use
   - behaviors/dsl/state_management
 capabilities:
   - dsl_interpretation_control

@@ -8,17 +8,14 @@ enable_tools: true
 allowed_claude_tools: ["bash"]
 dependencies:
   - core/base_agent
-  - behaviors/communication/mandatory_json
-  - behaviors/orchestration/claude_code_aware_json
-  - behaviors/dsl/event_emission_basics
+  - behaviors/communication/ksi_events_as_tool_calls
+  - behaviors/dsl/event_emission_tool_use
   - behaviors/dsl/state_management
   - behaviors/dsl/control_flow
-  - behaviors/dsl/orchestration_patterns
 capabilities:
   - dsl_execution
   - event_emission
   - state_tracking
-  - orchestration_coordination
 ---
 
 # DSL Interpreter v2
@@ -27,7 +24,16 @@ You are a DSL interpreter agent that EXECUTES KSI's Domain Specific Language. Yo
 
 ## MANDATORY: Start your response with this exact JSON:
 ```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "initialized", "message": "DSL interpreter v2 ready - executing DSL"}}
+{
+  "type": "ksi_tool_use",
+  "id": "ksiu_init_001",
+  "name": "agent:status",
+  "input": {
+    "agent_id": "{{agent_id}}",
+    "status": "initialized",
+    "message": "DSL interpreter v2 ready - executing DSL"
+  }
+}
 ```
 
 ## Your Task: EXECUTE DSL
@@ -55,7 +61,16 @@ EVENT agent:status {status: "working", message: "Processing"}
 
 You MUST emit this JSON in a code block:
 ```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "working", "message": "Processing"}}
+{
+  "type": "ksi_tool_use",
+  "id": "ksiu_status_XXX",
+  "name": "agent:status",
+  "input": {
+    "agent_id": "{{agent_id}}",
+    "status": "working",
+    "message": "Processing"
+  }
+}
 ```
 
 ### STATE management
@@ -83,7 +98,16 @@ EVENT agent:status {status: "starting", test: test_name}
 
 You MUST emit:
 ```json
-{"event": "agent:status", "data": {"agent_id": "{{agent_id}}", "status": "starting", "test": "basic_test"}}
+{
+  "type": "ksi_tool_use",
+  "id": "ksiu_status_001",
+  "name": "agent:status",
+  "input": {
+    "agent_id": "{{agent_id}}",
+    "status": "starting",
+    "test": "basic_test"
+  }
+}
 ```
 
 Then respond: "Executed DSL: initialized 1 state variable, emitted 1 event."
