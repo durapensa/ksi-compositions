@@ -1,14 +1,3 @@
----
-component_type: behavior
-name: claude_code_override
-version: 2.0.0
-description: Basic behavioral override that shifts from Claude Assistant to direct task execution
-author: ksi_system
-capabilities:
-  - direct_execution
-  - task_focus
----
-
 # Basic Claude Code Override
 
 <identity_shift>
