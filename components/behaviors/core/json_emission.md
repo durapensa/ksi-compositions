@@ -1,13 +1,3 @@
----
-component_type: behavior
-name: json_emission
-version: 1.0.0
-description: Basic JSON event emission behavior for KSI agents
-author: claude_code
-dependencies:
-  - core/base_agent
----
-
 # JSON Event Emission Behavior
 
 ## Behavioral Override
