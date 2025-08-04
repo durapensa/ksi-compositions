@@ -43,7 +43,7 @@ You MUST emit:
   "id": "ksiu_status_001",
   "name": "agent:status",
   "input": {
-    "agent_id": "{{agent_id}}",
+    "agent_id": "[your actual agent ID]",
     "status": "working"
   }
 }

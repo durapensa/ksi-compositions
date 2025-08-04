@@ -15,7 +15,7 @@ components:
     - message_communication
     enable_tools: false
     message_queue_size: 100
-    model: sonnet
+    model: claude-cli/sonnet
     priority: normal
     role: assistant
   name: agent_config
@@ -124,7 +124,7 @@ metadata:
   generated_by: composition:component_to_profile
   render_timestamp: '2025-07-26T21:08:52.441563Z'
   source_component: components/core/base_agent
-model: sonnet
+model: claude-cli/sonnet
 name: temp_profile_components_core_base_agent_387b11f9
 priority: normal
 role: assistant

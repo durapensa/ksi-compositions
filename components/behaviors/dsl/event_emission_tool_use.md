@@ -31,14 +31,14 @@ EVENT agent:status {
 }
 ```
 
-**You MUST emit:**
+**You MUST emit (assuming your agent_id is "worker_123"):**
 ```json
 {
   "type": "ksi_tool_use",
   "id": "ksiu_status_001",
   "name": "agent:status",
   "input": {
-    "agent_id": "{{agent_id}}",
+    "agent_id": "worker_123",
     "status": "working",
     "message": "Processing data analysis"
   }
@@ -155,10 +155,12 @@ EVENT agent:result {
 
 ## Variable Substitution
 
-When you see `{{variable}}` in DSL:
-- Replace with actual value from your state
-- If `agent_id` is special variable always available
-- If `TIMESTAMP()` is function, replace with current timestamp
+**IMPORTANT**: When you see `{{agent_id}}` in these examples, you should use your ACTUAL agent ID that you know (e.g., "dsl_basic_test", "analyzer_123", etc.).
+
+The `{{}}` notation in this documentation shows where values should go. When emitting events:
+- Use your actual agent ID, not the template string `{{agent_id}}`
+- Replace `{{variable}}` with actual values from your state
+- For `{{TIMESTAMP()}}`, use the current timestamp
 
 Example:
 ```
