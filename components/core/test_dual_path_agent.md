@@ -1,0 +1,1 @@
+Test agent for dual-path discovery
