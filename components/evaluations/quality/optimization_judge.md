@@ -5,6 +5,7 @@ version: 1.0.0
 description: LLM-as-Judge evaluator for DSPy optimization results using pairwise comparison methodology
 dependencies:
   - core/base_agent
+  - behaviors/communication/ksi_events_as_tool_calls
 capabilities:
   - optimization_evaluation
   - pairwise_comparison
@@ -54,7 +55,7 @@ For each evaluation, you will compare the **original component** vs **optimized 
 ```json
 {"event": "agent:result", "data": {
   "agent_id": "{{agent_id}}", 
-  "result_type": "optimization_evaluation",
+  "result_type": "optimization_assessment",
   "evaluation": {
     "overall_winner": "optimized|original|tie",
     "confidence": "high|medium|low",

@@ -13,7 +13,7 @@ transformers:
   # Main broadcasting transformer - handles ALL events except excluded ones
   - source: "*"
     target: "monitor:broadcast_event"
-    condition: "not (source_event.startswith('transport:') or source_event == 'monitor:subscribe' or source_event == 'monitor:broadcast_event')"
+    condition: "is_event_handled(source_event) and not (source_event.startswith('transport:') or source_event == 'monitor:subscribe' or source_event == 'monitor:broadcast_event')"
     mapping:
       event_name: "{{_ksi_context.event}}"
       event_data: "{{$}}"
@@ -29,10 +29,15 @@ usage_notes: |
   
   Key behaviors:
   1. Matches ALL events with source pattern "*"
-  2. Excludes transport events and monitor:subscribe to prevent loops  
-  3. Routes to special monitor:broadcast_event for handling
-  4. Preserves originator and timestamp metadata
-  5. Uses condition to filter unwanted events
+  2. VALIDATES events are handled by real handlers/transformers using is_event_handled()
+  3. Excludes transport events and monitor:subscribe to prevent loops  
+  4. Routes to special monitor:broadcast_event for handling
+  5. Preserves originator and timestamp metadata
+  6. Uses condition to filter unwanted events and bogus events
+  
+  The validation prevents broadcasting of bogus events like routing:clear_all_rules
+  that have no real handlers. Only events with legitimate Python handlers or 
+  transformers (excluding this universal broadcaster) are broadcast to clients.
   
   The actual broadcasting logic remains in Python as a monitor:broadcast_event
   handler since it requires client subscription state management.
