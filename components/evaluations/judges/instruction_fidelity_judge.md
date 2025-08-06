@@ -88,7 +88,7 @@ IFF_Score = (
   "name": "evaluation:result",
   "input": {
     "judge_type": "instruction_fidelity",
-    "component_id": "{{component_id}}",
+    "component_id": "test_component",
     "iff_score": 0.85,
     "breakdown": {
       "directive_compliance": 0.90,
