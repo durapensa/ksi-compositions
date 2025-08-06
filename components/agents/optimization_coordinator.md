@@ -5,7 +5,7 @@ version: 1.0.0
 description: Coordinates optimization workflows using KSI events
 dependencies:
   - core/base_agent
-  - behaviors/communication/mandatory_json
+  - behaviors/communication/ksi_events_as_tool_calls
 capabilities:
   - optimization
   - orchestration
