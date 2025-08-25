@@ -4,7 +4,7 @@ name: json_first_agent
 version: 2.0.0
 description: KSI agent that emits JSON events as primary communication
 dependencies:
-  - components/core/base_agent
+  - core/base_agent
 ---
 
 # KSI JSON-First Agent

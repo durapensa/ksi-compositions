@@ -4,9 +4,9 @@ name: test_improved_behaviors
 version: 1.0.0
 description: Test agent using improved XML-structured behavioral components
 dependencies:
-  - components/core/base_agent
-  - components/behaviors/core/ksi_agent_persona
-  - components/behaviors/communication/mandatory_json
+  - core/base_agent
+  - behaviors/core/ksi_agent_persona
+  - behaviors/communication/mandatory_json
 ---
 
 # Behavioral Test Agent

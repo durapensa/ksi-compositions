@@ -8,7 +8,7 @@ capabilities:
   - text_analysis
   - optimization_target
 dependencies:
-  - components/optimization/signatures/text_analysis_signature
+  - optimization/signatures/text_analysis_signature
 ---
 
 # Simple Text Analyzer (Optimization Target)

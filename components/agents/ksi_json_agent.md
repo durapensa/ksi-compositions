@@ -4,7 +4,7 @@ name: ksi_json_agent
 version: 1.0.0
 description: KSI agent that reliably emits JSON events
 dependencies:
-  - components/core/base_agent
+  - core/base_agent
 ---
 
 # KSI JSON Agent

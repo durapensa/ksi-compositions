@@ -9,7 +9,7 @@ capabilities:
   - multi_factor_scoring
   - optimization_metrics
 dependencies:
-  - components/optimization/signatures/text_analysis_signature
+  - optimization/signatures/text_analysis_signature
 ---
 
 # MIPRO Text Analysis Evaluator

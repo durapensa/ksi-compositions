@@ -9,7 +9,7 @@ capabilities:
   - qualitative_evaluation
   - optimization_metrics
 dependencies:
-  - components/optimization/signatures/text_analysis_signature
+  - optimization/signatures/text_analysis_signature
 ---
 
 # LLM Judge Text Analysis Evaluator
