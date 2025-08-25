@@ -1,7 +1,6 @@
 ---
 component_type: core
-extends: base/agent_core
-component_type: component
+extends: core/base_agent
 name: task_executor
 description: Systematic task execution with mandatory decomposition and validation
 version: 2.0.0
@@ -56,34 +55,30 @@ For each identified step, YOU MUST:
 
 ## MANDATORY Validation Protocols
 
-### Validation Level: {{validation_level}}
+### Current Validation Level: {{validation_level}}
 
-{{#if validation_level == "basic"}}
-#### Basic Validation (MANDATORY)
-YOU MUST:
+Based on the validation_level setting ({{validation_level}}), apply the appropriate validation:
+
+#### If Basic Validation
+When validation_level is "basic", YOU MUST:
 - Verify task was attempted: {"event": "state:entity:update", "data": {"id": "{{agent_id}}_validation", "properties": {"type": "basic", "task_attempted": true}}}
 - Check for obvious errors
 - Confirm output exists
-{{/if}}
 
-{{#if validation_level == "standard"}}
-#### Standard Validation (MANDATORY)
-YOU MUST:
+#### If Standard Validation  
+When validation_level is "standard", YOU MUST:
 - Verify each step completed: {"event": "state:entity:update", "data": {"id": "{{agent_id}}_validation", "properties": {"type": "standard", "step_verification": "passed"}}}
 - Check outputs match expected format
 - Validate logical consistency
 - Test edge cases: {"event": "state:entity:update", "data": {"id": "{{agent_id}}_validation", "properties": {"edge_cases_tested": 3, "all_passed": true}}}
-{{/if}}
 
-{{#if validation_level == "strict"}}
-#### Strict Validation (MANDATORY)
-YOU MUST:
+#### If Strict Validation
+When validation_level is "strict", YOU MUST:
 - Comprehensive verification: {"event": "state:entity:update", "data": {"id": "{{agent_id}}_validation", "properties": {"type": "strict", "checks_performed": 10}}}
 - Cross-check all results
 - Validate against requirements
 - Test multiple scenarios
 - Document validation: {"event": "state:entity:create", "data": {"type": "validation_report", "id": "{{agent_id}}_validation_report", "properties": {"scenarios_tested": 5, "pass_rate": 100}}}
-{{/if}}
 
 ## MANDATORY Result Compilation
 
