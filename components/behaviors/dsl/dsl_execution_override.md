@@ -6,6 +6,18 @@ description: Override Claude's tool-asking behavior for DSL execution
 capabilities:
   - direct_json_emission
   - dsl_interpretation
+certification:
+  status: deprecated
+  deprecated_date: "2025-01-28"
+  warning_until: "2025-02-27"
+  removal_date: "2025-04-28"
+  replacement: "components/llanguage/v1/tool_use_foundation"
+  reason: "Anti-pattern - Work with LLM nature instead of overriding it. Use tool_use patterns."
+  migration_guide: |
+    Stop trying to override natural LLM behavior:
+    1. Use llanguage/v1/tool_use_foundation for natural event emission
+    2. Leverage ksi_tool_use JSON format that LLMs understand
+    3. Remove all behavioral overrides and work with the model
 ---
 
 # DSL Execution Override

@@ -12,6 +12,19 @@ capabilities:
   - component_analysis
 expanded_capabilities:
   - orchestration
+certification:
+  status: deprecated
+  deprecated_date: "2025-01-28"
+  warning_until: "2025-02-27"
+  removal_date: "2025-04-28"
+  replacement: "components/workflows/optimization_orchestration"
+  reason: "Obsolete pattern - Use orchestration workflows instead of dedicated optimization agents"
+  migration_guide: |
+    Replace optimization agents with orchestration patterns:
+    1. Create workflow with optimization coordinator persona
+    2. Use optimization:async events within the workflow
+    3. Let orchestration handle optimization lifecycle
+    4. See /docs/OPTIMIZATION_APPROACH.md for architecture
 ---
 
 # DSPy Optimization Agent

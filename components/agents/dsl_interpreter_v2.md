@@ -16,6 +16,19 @@ capabilities:
   - dsl_execution
   - event_emission
   - state_tracking
+certification:
+  status: deprecated
+  deprecated_date: "2025-01-28"
+  warning_until: "2025-02-27"
+  removal_date: "2025-04-28"
+  replacement: "components/llanguage/v1/tool_use_foundation"
+  reason: "Obsolete concept - LLMs ARE the interpreters through comprehension, not code execution"
+  migration_guide: |
+    Replace DSL interpreter agents with llanguage components:
+    1. Use llanguage/v1/tool_use_foundation for event emission
+    2. Use llanguage/v1/coordination_patterns for orchestration
+    3. Use llanguage/v1/state_comprehension for state management
+    4. Remove all references to DSL "execution" or "interpretation"
 ---
 
 # DSL Interpreter v2
