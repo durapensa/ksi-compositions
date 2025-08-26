@@ -4,7 +4,7 @@ version: 1.0.0
 description: Test component for pre-certification validation
 dependencies:
   - components/core/base_agent
-  - components/behaviors/communication/mandatory_json
+  - components/behaviors/communication/ksi_events_as_tool_calls
 extends: components/core/base_agent
 mixins:
   - components/behaviors/ksi_events_as_tool_calls

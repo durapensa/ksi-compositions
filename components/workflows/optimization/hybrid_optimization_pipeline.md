@@ -5,13 +5,13 @@ version: 1.0.0
 description: Orchestrates hybrid DSPy/MIPRO + LLM-as-Judge optimization
 workflow_type: optimization
 dependencies:
-  - workflows/optimization/behavioral_optimization_flow
-  - evaluations/judges/instruction_fidelity_judge
-  - evaluations/judges/token_efficiency_judge
+- in_development/workflows/optimization/behavioral_optimization_flow
+- in_development/evaluations/judges/instruction_fidelity_judge
+- in_development/evaluations/judges/token_efficiency_judge
 capabilities:
-  - hybrid_optimization
-  - comparative_analysis
-  - automated_selection
+- hybrid_optimization
+- comparative_analysis
+- automated_selection
 ---
 
 # Hybrid Optimization Pipeline

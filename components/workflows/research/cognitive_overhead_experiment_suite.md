@@ -4,9 +4,9 @@ name: cognitive_overhead_experiment_suite
 version: 1.0.0
 description: Systematic workflow for testing cognitive overhead across multiple conditions
 dependencies:
-  - personas/researchers/cognitive_overhead_experimenter
-  - evaluations/attractors/arithmetic_with_emergence
-  - evaluations/logic/baseline_arithmetic
+- personas/researchers/cognitive_overhead_experimenter
+- in_development/evaluations/attractors/arithmetic_with_emergence
+- in_development/evaluations/logic/baseline_arithmetic
 ---
 
 # Cognitive Overhead Experiment Suite

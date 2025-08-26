@@ -15,7 +15,6 @@
   },
   "components": [
     {"path": "behaviors/communication/imperative_style.md","name": "imperative_style","type": "behavior","description": ""},
-    {"path": "behaviors/communication/mandatory_json.md","name": "mandatory_json","type": "behavior","description": ""},
     {"path": "core/base_agent.md","name": "base_agent","type": "core","description": ""},
     {"path": "core/task_executor.md","name": "task_executor","type": "core","description": "Systematic task execution with mandatory decomposition and validation"},
     {"path": "evaluations/quality/cooperation_quality.md","name": "cooperation_quality","type": "evaluation","description": ""},

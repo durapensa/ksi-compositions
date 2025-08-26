@@ -2,15 +2,16 @@
 component_type: core
 name: multi_agent
 version: 1.0.0
-description: Base component for agents with multi-agent communication and coordination capabilities
+description: Base component for agents with multi-agent communication and coordination
+  capabilities
 dependencies:
-  - core/system_single_agent
+- in_development/core/system_single_agent
 capabilities:
-  - state_write
-  - agent_messaging 
-  - spawn_agents
-  - conversation_management
-  - multi_agent_coordination
+- state_write
+- agent_messaging
+- spawn_agents
+- conversation_management
+- multi_agent_coordination
 ---
 
 # Multi-Agent Coordinator
