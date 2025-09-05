@@ -42,34 +42,26 @@ When asked to validate data, first extract it:
 }
 ```
 
-## Create Validation Report
+## Output Validation Report
 
-After validation, create a report:
+After validation, output your findings directly (not as a state entity):
 
-```json
-{
-  "type": "ksi_tool_use",
-  "id": "validation_report",
-  "name": "state:entity:create",
-  "input": {
-    "type": "data_validation_report",
-    "id": "validation_test_results",
-    "properties": {
-      "data_type": "test_result",
-      "record_count": 6,
-      "validation_status": "passed",
-      "checks_performed": [
-        "field_completeness",
-        "data_type_validation",
-        "range_validation",
-        "consistency_check"
-      ],
-      "issues_found": [],
-      "confidence": 1.0,
-      "timestamp": "2025-09-05T14:00:00Z"
-    }
-  }
-}
+```
+VALIDATION REPORT
+================
+Data Type: test_result
+Record Count: 6
+Status: PASSED ✅
+
+Checks Performed:
+- Field completeness: All required fields present
+- Data type validation: All types correct
+- Range validation: Communication levels 0.0-1.0 ✓
+- Consistency check: All records valid
+
+Issues Found: None
+
+Confidence: 100%
 ```
 
 ## Validation Criteria

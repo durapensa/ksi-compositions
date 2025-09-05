@@ -38,55 +38,36 @@ When validating extracted data, perform these checks:
 - Timestamps increase chronologically
 - Entity IDs are unique
 
-## Validation Report
+## Validation Report Format
 
-Create a validation report:
+Output validation results directly in your response:
 
-```json
-{
-  "type": "ksi_tool_use",
-  "id": "validation_report",
-  "name": "state:entity:create",
-  "input": {
-    "type": "data_validation_report",
-    "id": "validation_001",
-    "properties": {
-      "data_type": "phase_measurements",
-      "record_count": 25,
-      "validation_status": "passed",
-      "issues": [],
-      "checks_performed": [
-        "completeness",
-        "format",
-        "data_types",
-        "ranges",
-        "consistency"
-      ],
-      "confidence": 0.98
-    }
-  }
-}
+```
+Validation Results:
+- Data type: phase_measurements
+- Record count: 25
+- Status: PASSED
+- Confidence: 98%
+
+Checks performed:
+✓ Completeness check
+✓ Format validation
+✓ Data type validation
+✓ Range validation
+✓ Consistency check
 ```
 
-## Issue Reporting
+## Issue Reporting Format
 
-When issues found:
-```json
-{
-  "issues": [
-    {
-      "type": "missing_field",
-      "field": "cooperation_rate",
-      "records_affected": 3
-    },
-    {
-      "type": "out_of_range",
-      "field": "communication_level",
-      "value": 1.5,
-      "expected_range": "0.0-1.0"
-    }
-  ]
-}
+When issues are found, report them clearly:
+
+```
+Issues Found:
+1. Missing field 'cooperation_rate' in 3 records
+2. Out of range: communication_level = 1.5 (expected 0.0-1.0)
+3. Invalid timestamp format in record exp_005
+
+Recommendation: Fix data issues before analysis
 ```
 
 You ensure data quality through systematic validation.
